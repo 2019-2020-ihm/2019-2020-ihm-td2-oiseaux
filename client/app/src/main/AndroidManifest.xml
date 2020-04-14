@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="etudes.fr.demoosm">
+
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"  />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.hardware.camera2.full" />
+
+	<uses-feature
+		android:name="android.hardware.camera2"
+		android:required="false" /> <!-- Allow devices without a camera (Benoit)
+		/!\ Check camera to use it : hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -->
+	<uses-feature
+		android:name="android.hardware.gps"
+		android:required="false" />
+
 	<application
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
@@ -12,6 +25,7 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
+
 		<activity android:name="pns.si3.ihm.birder.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -19,6 +33,18 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name="pns.si3.ihm.birder.MapActivity"    />
+		<activity android:name="pns.si3.ihm.birder.CameraActivity" />
+
+		<provider
+			android:authorities="pns.si3.ihm.birder.fileprovider"
+			android:name="androidx.core.content.FileProvider"
+			android:exported="false"
+			android:grantUriPermissions="true" >
+			<meta-data
+				android:name="android.support.FILE_PROVIDER_PATHS"
+				android:resource="@xml/file_paths" />
+		</provider>
 	</application>
 
 </manifest>

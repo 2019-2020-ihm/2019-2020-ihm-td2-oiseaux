@@ -7,19 +7,18 @@
 	android:layout_height="match_parent"
 	tools:context="pns.si3.ihm.birder.MainActivity">
 
-	<TextView
-		android:layout_width="match_parent"
+	<Button
+		android:id="@+id/buttonMap"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:textSize="20sp"
-		android:textColor="@android:color/black"
-		android:layout_marginTop="10dp"
-		android:layout_marginBottom="20dp"
-		android:text="Carte des signalisations" />
+		android:text="Map"
+		android:layout_gravity="center" />
 
-	<org.osmdroid.views.MapView
-		android:id="@+id/map"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" />
+	<Button
+		android:id="@+id/buttonCamera"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Camera"
+		android:layout_gravity="center" />
 
 </LinearLayout>
