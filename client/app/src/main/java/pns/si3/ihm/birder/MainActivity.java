@@ -20,13 +20,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.textView_main).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
-                startActivity(mapIntent);
-            }
-        });
         setSpinner();
 
 
@@ -36,11 +29,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         switch(pos){
             case 0:break;
             case 1:{
-                Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
-                startActivity(mapIntent);
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
             }
             break;
-            case 2:break;
+            case 2:{
+                Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+                startActivity(intent);
+            }break;
         }
     }
 

@@ -20,6 +20,8 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="pns.si3.ihm.birder.MapActivity"/>
+		<activity android:name="pns.si3.ihm.birder.ConnexionActivity"/>
+		<activity android:name="pns.si3.ihm.birder.InscriptionActivity"/>
 	</application>
 
 </manifest>

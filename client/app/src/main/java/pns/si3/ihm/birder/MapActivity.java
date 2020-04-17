@@ -96,10 +96,13 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 		switch(position){
 			case 0:break;
 			case 1:{
-				Intent mapIntent = new Intent(MapActivity.this, MainActivity.class);
-				startActivity(mapIntent);
+				Intent intent = new Intent(MapActivity.this, MainActivity.class);
+				startActivity(intent);
 			}break;
-			case 2:break;
+			case 2:{
+				Intent intent = new Intent(MapActivity.this, ConnexionActivity.class);
+				startActivity(intent);
+			}break;
 		}
 	}
 
