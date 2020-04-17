@@ -1,8 +1,13 @@
 package pns.si3.ihm.birder;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,10 +21,11 @@ import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import etudes.fr.demoosm.R;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 	private MapView map;
 
 	@Override
@@ -30,6 +36,8 @@ public class MapActivity extends AppCompatActivity {
 		Configuration.getInstance().load(   getApplicationContext(),
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
 		setContentView(R.layout.activity_map);
+
+		setSpinner();
 
 		map = findViewById(R.id.map);
 		map.setTileSource(TileSourceFactory.MAPNIK);
@@ -69,5 +77,34 @@ public class MapActivity extends AppCompatActivity {
 
 	}
 
+	public void setSpinner(){
+		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);
+		spinner.setOnItemSelectedListener(this);
+		List<String> list = new ArrayList<String>();
+		list.add("Voir Carte");
+		list.add("Dernières signalisations");
+		list.add("Se connecter");
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(dataAdapter);
+	}
 
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		switch(position){
+			case 0:break;
+			case 1:{
+				Intent mapIntent = new Intent(MapActivity.this, MainActivity.class);
+				startActivity(mapIntent);
+			}break;
+			case 2:break;
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+
+	}
 }
