@@ -2,6 +2,7 @@ package pns.si3.ihm.birder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,15 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.buttonCamera).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(MainActivity.this, CameraActivity.class));
+				// startActivity(new Intent(MainActivity.this, CameraActivity.class));
+				Log.i("MAIN", "Sorry this option is unable.");
+			}
+		});
+
+		findViewById(R.id.buttonGPS).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(MainActivity.this, GPSActivity.class));
 			}
 		});
 	}

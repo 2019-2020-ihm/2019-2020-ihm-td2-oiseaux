@@ -12,8 +12,7 @@
 
 	<uses-feature
 		android:name="android.hardware.camera2"
-		android:required="false" /> <!-- Allow devices without a camera (Benoit)
-		/!\ Check camera to use it : hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -->
+		android:required="false" />
 	<uses-feature
 		android:name="android.hardware.gps"
 		android:required="false" />
@@ -26,6 +25,10 @@
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
 
+		<meta-data
+			android:name="com.google.android.geo.API_KEY"
+			android:value="@string/google_maps_key" />
+
 		<activity android:name="pns.si3.ihm.birder.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -35,6 +38,7 @@
 		</activity>
 		<activity android:name="pns.si3.ihm.birder.MapActivity"    />
 		<activity android:name="pns.si3.ihm.birder.CameraActivity" />
+		<activity android:name="pns.si3.ihm.birder.GPSActivity" android:label="@string/title_activity_gps"   />
 
 		<provider
 			android:authorities="pns.si3.ihm.birder.fileprovider"
