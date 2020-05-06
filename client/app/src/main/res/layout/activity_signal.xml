@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:id="@+id/buttonReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retour"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Switch
+        android:id="@+id/switchMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mode avancé  "
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/titleSignal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:text="Signaler un oiseau"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textEspece"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Espèce"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginTop="140dp"
+        android:layout_marginLeft="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editEspece"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="135dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Pigeon"
+        app:layout_constraintLeft_toRightOf="@id/textEspece"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <EditText
+        android:id="@+id/editNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="3"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="195dp"
+        app:layout_constraintLeft_toRightOf="@id/textNombre"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageLocalisation"
+        android:layout_width="65dp"
+        android:layout_height="77dp"
+        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        android:layout_marginTop="250dp"
+        android:layout_marginLeft="45dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/editPosition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_marginTop="270dp"
+        android:layout_marginLeft="42dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/imageLocalisation"/>
+
+    <TextView
+        android:id="@+id/textPositionActuelle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ma position actuelle"
+        android:clickable="true"
+        android:layout_marginTop="350dp"
+        android:layout_marginLeft="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/textChoisirCarte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choisir sur la carte"
+        android:layout_marginTop="350dp"
+        android:layout_marginRight="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+
+    <TextView
+        android:id="@+id/textHeure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heure"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginTop="400dp"
+        android:layout_marginLeft="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/textDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginTop="460dp"
+        android:layout_marginLeft="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <EditText
+        android:id="@+id/editHeure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:inputType="date"
+        android:layout_marginTop="395dp"
+        android:layout_marginLeft="53dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/textHeure"/>
+
+    <EditText
+        android:id="@+id/editDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:inputType="date"
+        android:layout_marginTop="455dp"
+        android:layout_marginLeft="66dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/textDate"/>
+
+    <TextView
+        android:id="@+id/textHeureActuelle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heure actuelle"
+        android:layout_marginTop="410dp"
+        android:layout_marginLeft="200dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/textHeure"/>
+
+    <TextView
+        android:id="@+id/textDateActuelle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date actuelle"
+        android:layout_marginTop="470dp"
+        android:layout_marginLeft="213dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/textDate"/>
+
+    <ImageView
+        android:id="@+id/imageOiseau"
+        android:layout_width="135dp"
+        android:layout_height="109dp"
+        app:srcCompat="@android:drawable/ic_menu_gallery"
+        android:layout_marginBottom="90dp"
+        android:layout_marginLeft="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonModifierImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Modifier l'image"
+        android:layout_marginBottom="150dp"
+        android:layout_marginLeft="220dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonSupprimerImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Supprimer l'image"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="220dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonSignalerMaintenant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Signaler maintenant"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonSignalerPlusTard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Signaler plus tard"
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
