@@ -22,6 +22,8 @@
 		<activity android:name="pns.si3.ihm.birder.MapActivity"/>
 		<activity android:name="pns.si3.ihm.birder.ConnexionActivity"/>
 		<activity android:name="pns.si3.ihm.birder.InscriptionActivity"/>
+		<activity android:name="pns.si3.ihm.birder.SignalActivity"/>
+		<activity android:name="pns.si3.ihm.birder.InformationActivity"/>
 	</application>
 
 </manifest>
