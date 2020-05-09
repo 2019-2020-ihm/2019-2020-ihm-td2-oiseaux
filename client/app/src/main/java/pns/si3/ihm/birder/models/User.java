@@ -6,13 +6,13 @@ package pns.si3.ihm.birder.models;
  * The model of the user.
  */
 public class User {
-	public String id;
 	public String firstName;
 	public String lastName;
 	public String email;
 
-	public User(String key, String firstName, String lastName, String email) {
-		this.id = key;
+	public User() {}
+
+	public User(String firstName, String lastName, String email) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;

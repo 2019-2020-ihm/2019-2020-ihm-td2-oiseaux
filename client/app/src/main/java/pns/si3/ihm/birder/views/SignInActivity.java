@@ -1,7 +1,10 @@
 package pns.si3.ihm.birder.views;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,17 +15,30 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.models.User;
 
 public class SignInActivity extends AppCompatActivity {
 	/**
 	 * The firebase authentication instance.
 	 */
 	private FirebaseAuth auth;
+
+	/**
+	 * The firebase database instance.
+	 */
+	private FirebaseFirestore database;
 
 	/**
 	 * The email field.
@@ -41,8 +57,9 @@ public class SignInActivity extends AppCompatActivity {
 		// Set the layout.
 		setContentView(R.layout.activity_sign_in);
 
-		// Initialize the firebase authentication.
+		// Initialize firebase.
 		auth = FirebaseAuth.getInstance();
+		database = FirebaseFirestore.getInstance();
 
 		// Initialize the fields.
 		email = findViewById(R.id.edit_email);
@@ -170,12 +187,37 @@ public class SignInActivity extends AppCompatActivity {
 				public void onComplete(@NonNull Task<AuthResult> task) {
 					// Sign in success.
 					if (task.isSuccessful()) {
-						onSignInSuccess();
-					}
-
-
-					// Sign in failed.
-					else {
+						// Get current user.
+						FirebaseUser currentUser = auth.getCurrentUser();
+						if (currentUser != null) {
+							// Get current user data.
+							database
+								.collection("users")
+								.document(currentUser.getUid())
+								.get()
+								.addOnSuccessListener(
+									new OnSuccessListener<DocumentSnapshot>() {
+										@Override
+										public void onSuccess(DocumentSnapshot documentSnapshot) {
+											User user = documentSnapshot.toObject(User.class);
+											if (user != null) {
+												onSignInSuccess(user);
+											}
+										}
+									}
+								)
+								.addOnFailureListener(
+									new OnFailureListener() {
+										@Override
+										public void onFailure(@NonNull Exception e) {
+											// Sign in failed.
+											onSignInFail();
+										}
+									}
+								);
+						}
+					} else {
+						// Sign in failed.
 						onSignInFail();
 					}
 				}
@@ -185,9 +227,24 @@ public class SignInActivity extends AppCompatActivity {
 	/**
 	 * Method used when sign in succeeds.
 	 */
-	private void onSignInSuccess() {
+	private void onSignInSuccess(User user) {
 		// Reset password.
 		this.password.setText("");
+
+		// Success toast.
+		Toast.makeText(
+			SignInActivity.this,
+			"Bienvenue " + user.firstName + " " + user.lastName + " !",
+			Toast.LENGTH_SHORT
+		).show();
+
+		// Save user data to preferences.
+		SharedPreferences settings = getSharedPreferences("user", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("firstName", user.firstName);
+		editor.putString("lastName", user.lastName);
+		editor.putString("email", user.email);
+		editor.apply();
 
 		// Close the sign in activity.
 		finish();

@@ -1,5 +1,7 @@
 package pns.si3.ihm.birder.views;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -191,6 +193,7 @@ public class SignUpActivity extends AppCompatActivity {
 		// Password is empty.
 		if (passwordValue.isEmpty()) {
 			password.setError("Veuillez saisir un mot de passe.");
+			confirmPassword.setText("");
 			password.requestFocus();
 			return false;
 		}
@@ -205,7 +208,17 @@ public class SignUpActivity extends AppCompatActivity {
 		// Passwords don't match.
 		if (!passwordValue.equals(confirmPasswordValue)) {
 			confirmPassword.setError("Les mots de passe ne correspondent pas.");
+			confirmPassword.setText("");
 			confirmPassword.requestFocus();
+			return false;
+		}
+
+		// Password not long enough.
+		if (passwordValue.length() < 6) {
+			password.setError("Votre mot de passe doit comporter au moins 6 caractères.");
+			password.setText("");
+			confirmPassword.setText("");
+			password.requestFocus();
 			return false;
 		}
 
@@ -240,8 +253,7 @@ public class SignUpActivity extends AppCompatActivity {
 						FirebaseUser currentUser = auth.getCurrentUser();
 						if (currentUser != null) {
 							// Create the user.
-							User user = new User(
-								currentUser.getUid(),
+							final User user = new User(
 								firstName,
 								lastName,
 								email
@@ -249,12 +261,13 @@ public class SignUpActivity extends AppCompatActivity {
 
 							// Save the user.
 							database.collection("users")
-								.add(user)
-								.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+								.document(currentUser.getUid())
+								.set(user)
+								.addOnSuccessListener(new OnSuccessListener<Void>() {
 									@Override
-									public void onSuccess(DocumentReference documentReference) {
+									public void onSuccess(Void aVoid) {
 										// Sign up success.
-										onSignUpSuccess();
+										onSignUpSuccess(user);
 									}
 								})
 								.addOnFailureListener(new OnFailureListener() {
@@ -276,7 +289,7 @@ public class SignUpActivity extends AppCompatActivity {
 	/**
 	 * Method used when the sign up succeeds.
 	 */
-	private void onSignUpSuccess() {
+	private void onSignUpSuccess(User user) {
 		// Reset passwords.
 		password.setText("");
 		confirmPassword.setText("");
@@ -284,9 +297,17 @@ public class SignUpActivity extends AppCompatActivity {
 		// Success toast.
 		Toast.makeText(
 			SignUpActivity.this,
-			"L'inscription a été validée.",
+			"L'inscription a été validée !",
 			Toast.LENGTH_SHORT
 		).show();
+
+		// Save user data to preferences.
+		SharedPreferences settings = getSharedPreferences("user", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("firstName", user.firstName);
+		editor.putString("lastName", user.lastName);
+		editor.putString("email", user.email);
+		editor.apply();
 
 		// Close the sign up activity.
 		finish();
