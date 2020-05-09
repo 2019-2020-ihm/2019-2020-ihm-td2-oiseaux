@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder;
+package pns.si3.ihm.birder.views;
 
 import android.content.Intent;
 import android.net.Uri;

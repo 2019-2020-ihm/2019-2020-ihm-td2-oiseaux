@@ -5,74 +5,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
     <Button
-        android:id="@+id/button_return_connexion"
+        android:id="@+id/button_return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Retour"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-
     <TextView
-        android:id="@+id/textView1_connexion"
+        android:id="@+id/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Se connecter"
         android:textSize="50dp"
-        app:layout_constraintTop_toBottomOf="@+id/button_return_connexion"
+        app:layout_constraintTop_toBottomOf="@+id/button_return"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/edittext1_connexion"/>
+        app:layout_constraintBottom_toTopOf="@id/edit_email"/>
 
     <EditText
-        android:id="@+id/edittext1_connexion"
+        android:id="@+id/edit_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:hint="Identifiant"
+        android:hint="Adresse email"
+		android:inputType="textEmailAddress"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button_connexion"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
+		app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/button_submit"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <EditText
-        android:id="@+id/edittext2_connexion"
+        android:id="@+id/edit_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:hint="Mot de passe"
+		android:inputType="textPassword"
         app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <Button
-        android:id="@+id/button_connexion"
+        android:id="@+id/button_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+		android:text="Se connecter"
+		app:layout_constraintTop_toBottomOf="@id/edit_password"
+		app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edittext2_connexion"
-        android:text="Se connecter"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
-        android:id="@+id/textView2_connexion"
+        android:id="@+id/text_sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vous êtes nouveau ? Inscrivez-vous ici"
+        android:text="Vous êtes nouveau ? Inscrivez-vous ici !"
         android:textColor="#3333ff"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_connexion"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-
+		app:layout_constraintTop_toBottomOf="@id/button_submit"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

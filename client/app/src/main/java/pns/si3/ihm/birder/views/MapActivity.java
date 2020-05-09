@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder;
+package pns.si3.ihm.birder.views;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -100,7 +100,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 				startActivity(intent);
 			}break;
 			case 2:{
-				Intent intent = new Intent(MapActivity.this, ConnexionActivity.class);
+				Intent intent = new Intent(MapActivity.this, SignInActivity.class);
 				startActivity(intent);
 			}break;
 		}

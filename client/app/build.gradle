@@ -1,4 +1,8 @@
+// Android build tools plugin.
 apply plugin: 'com.android.application'
+
+// Google services plugin.
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -24,8 +28,23 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.preference:preference:1.1.0'
+
+    // Open Street Map for Android.
     implementation 'org.osmdroid:osmdroid-android:5.6.5'
+
+    // Firebase SDK for Google Analytics.
+    implementation 'com.google.firebase:firebase-analytics:17.4.1'
+
+    // Firebase SDK for Authentication.
+    implementation 'com.google.firebase:firebase-auth:19.3.1'
+
+    // Firebase SDK for Firestore Database.
+    implementation 'com.google.firebase:firebase-firestore:21.4.3'
+
+    // Java tests.
     testImplementation 'junit:junit:4.12'
+
+    // Adnroid tests.
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }
