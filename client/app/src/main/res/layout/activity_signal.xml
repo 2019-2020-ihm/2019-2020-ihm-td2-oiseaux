@@ -207,7 +207,6 @@
         android:id="@+id/buttonModifierImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Modifier l'image"
         android:layout_marginBottom="110dp"
         android:layout_marginLeft="220dp"
         app:layout_constraintBottom_toBottomOf="parent"

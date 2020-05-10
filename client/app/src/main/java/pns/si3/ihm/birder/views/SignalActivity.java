@@ -3,11 +3,11 @@ package pns.si3.ihm.birder.views;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,29 +26,34 @@ public class SignalActivity extends AppCompatActivity {
     EditText editTextHeure;
     EditText editTextDate;
     Boolean imageUpload = false;
-    private static final int PICK_IMAGE = 100;
     Uri imageUri;
+    TextView buttonPositionActuelle;
+    TextView buttonChoisirCarte;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signal);
 
-        buttonModifierImage = (Button) findViewById(R.id.buttonModifierImage);
-        buttonSupprimerImage = (Button) findViewById(R.id.buttonSupprimerImage);
-        imageOiseau = (ImageView) findViewById(R.id.imageOiseau);
-        editTextHeure = (EditText) findViewById(R.id.editHeure);
-        editTextDate = (EditText) findViewById(R.id.editDate);
-        buttonReturn = (Button) findViewById(R.id.buttonSignalReturn);
+        buttonModifierImage    = (Button)    findViewById(R.id.buttonModifierImage);
+        buttonSupprimerImage   = (Button)    findViewById(R.id.buttonSupprimerImage);
+        imageOiseau            = (ImageView) findViewById(R.id.imageOiseau);
+        editTextHeure          = (EditText)  findViewById(R.id.editHeure);
+        editTextDate           = (EditText)  findViewById(R.id.editDate);
+        buttonReturn           = (Button)    findViewById(R.id.buttonSignalReturn);
+        buttonPositionActuelle = (TextView)  findViewById(R.id.textPositionActuelle);
+        buttonChoisirCarte     = (TextView)  findViewById(R.id.textChoisirCarte);
 
-        setVisibilityButtonSupprimerImage();
         setTimeAndDateInEditText();
+
         buttonReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goBack();
             }
         });
+
+        setVisibilityButtonSupprimerImage();
         buttonSupprimerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,13 +62,30 @@ public class SignalActivity extends AppCompatActivity {
                 setVisibilityButtonSupprimerImage();
             }
         });
+
+        setTextButtonModifierImage();
         buttonModifierImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGallery();
+                Intent intent = new Intent(SignalActivity.this, CameraActivity.class);
+                startActivity(intent);
             }
         });
 
+        buttonPositionActuelle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        buttonChoisirCarte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent carte = new Intent(SignalActivity.this, GPSActivity.class);
+                startActivity(carte);
+            }
+        });
     }
 
     public void goBack() {
@@ -80,15 +102,15 @@ public class SignalActivity extends AppCompatActivity {
         else buttonSupprimerImage.setVisibility(View.VISIBLE);
     }
 
-    private void openGallery() {
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(gallery, PICK_IMAGE);
+    void setTextButtonModifierImage() {
+        if (imageUpload) buttonModifierImage.setText("Modifier l'image");
+        else buttonModifierImage.setText("Ajouter une image");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+        if (resultCode == RESULT_OK && requestCode == IPictureActivity.PICK_IMAGE){
             imageUri = data.getData();
             imageOiseau.setImageURI(imageUri);
             setImageUpload(true);
