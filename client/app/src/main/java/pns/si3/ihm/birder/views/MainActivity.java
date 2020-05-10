@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 goToSignalActivity();
             }
         });
+
     }
 
     public void goToSignalActivity() {

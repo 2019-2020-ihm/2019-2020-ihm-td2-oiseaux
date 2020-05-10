@@ -49,5 +49,6 @@
 				android:name="android.support.FILE_PROVIDER_PATHS"
 				android:resource="@xml/file_paths" />
 		</provider>
+		<activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity"/>
 	</application>
 </manifest>
