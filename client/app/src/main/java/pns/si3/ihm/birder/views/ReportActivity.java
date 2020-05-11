@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -17,11 +16,12 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-
-import java.time.LocalDate;
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import etudes.fr.demoosm.R;
@@ -58,18 +58,21 @@ public class ReportActivity extends AppCompatActivity
 	 */
 	Uri imageUri;
     ImageView image;
-	boolean imageUpload;
 	EditText editSpecies;
 	EditText editNumber;
     EditText editTime;
     EditText editDate;
 	EditText editLocation;
 
+	/**
+	 * The field values.
+	 */
 	int selectedDay;
 	int selectedMonth;
 	int selectedYear;
 	int selectedHour;
 	int selectedMinute;
+	boolean imageUpload;
 
 	/**
 	 * The activity buttons.
@@ -113,7 +116,7 @@ public class ReportActivity extends AppCompatActivity
 	private void initValues() {
 		Calendar calendar = Calendar.getInstance();
 		selectedDay = calendar.get(Calendar.DAY_OF_MONTH);
-		selectedMonth = calendar.get(Calendar.MONTH);
+		selectedMonth = calendar.get(Calendar.MONTH) + 1;
 		selectedYear = calendar.get(Calendar.YEAR);
 		selectedHour = calendar.get(Calendar.HOUR_OF_DAY);
 		selectedMinute = calendar.get(Calendar.MINUTE);
@@ -135,13 +138,7 @@ public class ReportActivity extends AppCompatActivity
 		editDate = findViewById(R.id.edit_date);
 		editDate.setOnClickListener(
 			v -> {
-				DatePickerDialog datePickerDialog = new DatePickerDialog(
-					this,
-					this,
-					selectedYear,
-					selectedMonth,
-					selectedDay
-				);
+				DatePickerDialog datePickerDialog = createDatePickerDialog();
 				datePickerDialog.show();
 			}
 		);
@@ -150,13 +147,7 @@ public class ReportActivity extends AppCompatActivity
 		editTime = findViewById(R.id.edit_time);
 		editTime.setOnClickListener(
 			v -> {
-				TimePickerDialog timePickerDialog = new TimePickerDialog(
-					this,
-					this,
-					selectedHour,
-					selectedMinute,
-					true
-				);
+				TimePickerDialog timePickerDialog = createTimePickerDialog();
 				timePickerDialog.show();
 			}
 		);
@@ -245,14 +236,11 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	public void createReport() {
-		// Get values.
-		String species = editSpecies.getText().toString();
-		int number = Integer.parseInt(editNumber.getText().toString());
+		// Init the report.
+		Report report = getReport();
 
-		// Report created.
+		// Create the report.
 		Log.i(TAG, "Create a report.");
-		String userId = authViewModel.getAuthenticationId();
-		Report report = new Report(null, userId, species, number, new Date());
 		reportViewModel
 			.createReport(report)
 			.observe(
@@ -279,10 +267,54 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	/**
+	 * Returns a report object initialized with the field values.
+	 * @return A report object initialized with the field values.
+	 */
+	private Report getReport() {
+		// Get the values.
+		String species = editSpecies.getText().toString();
+		int number = Integer.parseInt(editNumber.getText().toString());
+		String userId = authViewModel.getAuthenticationId();
+		Date date = getDate();
+
+		// Init the report.
+		return new Report(
+			null,
+			userId,
+			species,
+			number,
+			date
+		);
+	}
+
+	/**
+	 * Returns a date object initialized with the field values.
+	 * @return A date object initialized with the field values.
+	 */
+	private Date getDate() {
+		// Local date time.
+		LocalDateTime localDateTime = LocalDateTime.of(
+			selectedYear,
+			selectedMonth,
+			selectedDay,
+			selectedHour,
+			selectedMinute
+		);
+
+		// Date time with timezone.
+		return Date.from(
+			localDateTime
+				.atZone(ZoneId.systemDefault())
+				.toInstant()
+		);
+
+	}
+
+	/**
 	 * Checks if the form is valid.
 	 * @return Whether the form is valid, or not.
 	 */
-	public boolean isFormValid() {
+	private boolean isFormValid() {
 		// Get values.
 		String species = editSpecies.getText().toString();
 		String number = editNumber.getText().toString();
@@ -337,6 +369,48 @@ public class ReportActivity extends AppCompatActivity
     }
 
 	/**
+	 * Creates a date picker dialog.
+	 * @return A date picker dialog.
+	 */
+    private DatePickerDialog createDatePickerDialog() {
+    	// Create date picker dialog.
+		DatePickerDialog datePickerDialog = new DatePickerDialog(
+			this,
+			this,
+			selectedYear,
+			selectedMonth - 1,
+			selectedDay
+		);
+
+		// Get date interval.
+		Calendar calendar = new GregorianCalendar();
+		calendar.add(Calendar.MONTH, -2);
+		Date monthAgo = calendar.getTime();
+		Date today = new Date();
+
+		// Set date interval.
+		DatePicker datePicker = datePickerDialog.getDatePicker();
+		datePicker.setMinDate(monthAgo.getTime());
+		datePicker.setMaxDate(today.getTime());
+
+		return datePickerDialog;
+	}
+
+	/**
+	 * Creates a time picker dialog.
+	 * @return A time picker dialog.
+	 */
+	private TimePickerDialog createTimePickerDialog() {
+		return new TimePickerDialog(
+			this,
+			this,
+			selectedHour,
+			selectedMinute,
+			true
+		);
+	}
+
+	/**
 	 * Method triggered when the user selects a date on the date picker dialog.
 	 * @param view The current view.
 	 * @param year The selected year.
@@ -346,7 +420,7 @@ public class ReportActivity extends AppCompatActivity
 	@Override
 	public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 		selectedDay = dayOfMonth;
-		selectedMonth = month;
+		selectedMonth = month + 1;
 		selectedYear = year;
 		updateDateField();
 	}
