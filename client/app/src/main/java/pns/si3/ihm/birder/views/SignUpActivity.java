@@ -21,12 +21,12 @@ public class SignUpActivity extends AppCompatActivity {
 	private static final String TAG = "SignUpActivity";
 
 	/**
-	 * The auth view model.
+	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
 
 	/**
-	 * The form fields.
+	 * The activity fields.
 	 */
 	private EditText editFirstName;
 	private EditText editLastName;
@@ -34,11 +34,17 @@ public class SignUpActivity extends AppCompatActivity {
 	private EditText editPassword;
 	private EditText editConfirmPassword;
 
+	/**
+	 * The activity buttons.
+	 */
+	private Button returnButton;
+	private Button submitButton;
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_up);
-		initAuthViewModel();
+		initViewModel();
 		initFields();
 		initButtons();
 	}
@@ -51,10 +57,16 @@ public class SignUpActivity extends AppCompatActivity {
 		}
 	}
 
-	private void initAuthViewModel() {
+	/**
+	 * Initializes the authentication view model that holds the data.
+	 */
+	private void initViewModel() {
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 	}
 
+	/**
+	 * Initializes the activity fields.
+	 */
 	private void initFields() {
 		editFirstName = findViewById(R.id.edit_first_name);
 		editLastName = findViewById(R.id.edit_last_name);
@@ -63,15 +75,18 @@ public class SignUpActivity extends AppCompatActivity {
 		editConfirmPassword = findViewById(R.id.edit_confirm_password);
 	}
 
+	/**
+	 * Initializes the activity buttons.
+	 */
 	private void initButtons() {
 		// Return button.
-		Button returnButton = findViewById(R.id.button_return);
+		returnButton = findViewById(R.id.button_return);
 		returnButton.setOnClickListener(v -> {
 			finish();
 		});
 
 		// Submit button.
-		Button submitButton = findViewById(R.id.button_submit);
+		submitButton = findViewById(R.id.button_submit);
 		submitButton.setOnClickListener(v -> {
 			signUp();
 		});
@@ -150,7 +165,7 @@ public class SignUpActivity extends AppCompatActivity {
 	 */
 	private void createUserInDatabase(User user) {
 		Log.i(TAG, "Create user in the database.");
-		authViewModel.createUserInDatabase(user);
+		authViewModel.createUser(user);
 		authViewModel
 			.getDatabaseUser()
 			.observe(

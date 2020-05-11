@@ -22,21 +22,28 @@ public class SignInActivity extends AppCompatActivity {
 	private static final String TAG = "SignInActivity";
 
 	/**
-	 * The auth view model.
+	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
 
 	/**
-	 * The form fields.
+	 * The activity fields.
 	 */
 	private EditText editEmail;
 	private EditText editPassword;
+
+	/**
+	 * The activity buttons.
+	 */
+	private Button returnButton;
+	private Button submitButton;
+	private TextView signUpButton;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
-		initAuthViewModel();
+		initViewModel();
 		initFields();
 		initButtons();
 	}
@@ -49,30 +56,39 @@ public class SignInActivity extends AppCompatActivity {
 		}
 	}
 
-	private void initAuthViewModel() {
+	/**
+	 * Initializes the authentication view model that holds the data.
+	 */
+	private void initViewModel() {
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 	}
 
+	/**
+	 * Initializes the activity fields.
+	 */
 	private void initFields() {
 		editEmail = findViewById(R.id.edit_email);
 		editPassword = findViewById(R.id.edit_password);
 	}
 
+	/**
+	 * Initializes the activity buttons.
+	 */
 	private void initButtons() {
     	// Return button.
-		Button returnButton = findViewById(R.id.button_return);
+		returnButton = findViewById(R.id.button_return);
 		returnButton.setOnClickListener(v -> {
 			finish();
 		});
 
 		// Submit button.
-		Button submitButton = findViewById(R.id.button_submit);
+		submitButton = findViewById(R.id.button_submit);
 		submitButton.setOnClickListener(v -> {
 			signIn();
 		});
 
 		// Sign up button.
-		TextView signUpButton = findViewById(R.id.text_sign_up);
+		signUpButton = findViewById(R.id.text_sign_up);
 		signUpButton.setOnClickListener(v -> {
 			Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
 			startActivity(intent);
@@ -149,7 +165,7 @@ public class SignInActivity extends AppCompatActivity {
 	 */
 	private void getUserFromDatabase(String id) {
 		Log.i(TAG, "Get user from the database.");
-		authViewModel.getUserFromDatabase(id);
+		authViewModel.getUser(id);
 
 		// Query succeeded.
 		authViewModel
@@ -178,7 +194,7 @@ public class SignInActivity extends AppCompatActivity {
 
 		// Query failed.
 		authViewModel
-			.getDatabaseErrors()
+			.getUserErrors()
 			.observe(
 				this,
 				databaseError -> {
@@ -198,7 +214,7 @@ public class SignInActivity extends AppCompatActivity {
 						).show();
 
 						// Clear the database error.
-						authViewModel.clearDatabaseError();
+						authViewModel.clearUserError();
 					}
 				}
 			);

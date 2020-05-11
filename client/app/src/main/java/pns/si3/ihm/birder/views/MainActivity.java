@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public void goToSignalActivity() {
-        Intent intent = new Intent(this, SignalActivity.class);
+        Intent intent = new Intent(this, ReportActivity.class);
         startActivity(intent);
     }
 

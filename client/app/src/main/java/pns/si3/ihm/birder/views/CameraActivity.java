@@ -58,14 +58,14 @@ public class CameraActivity extends AppCompatActivity implements IPictureActivit
         buttonValider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signal = new Intent(CameraActivity.this, SignalActivity.class);
+                Intent signal = new Intent(CameraActivity.this, ReportActivity.class);
                 startActivityForResult(signal, IPictureActivity.PICK_IMAGE);
             }
         });
     }
 
     public void goBack() {
-        Intent intent = new Intent(this, SignalActivity.class);
+        Intent intent = new Intent(this, ReportActivity.class);
         startActivity(intent);
     }
 

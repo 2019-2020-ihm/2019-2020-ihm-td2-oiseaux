@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder.repositories;
+package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -8,7 +8,7 @@ import pns.si3.ihm.birder.models.User;
 /**
  * User repository.
  *
- * Manages all the user tasks.
+ * Manages the users in the database.
  */
 public interface UserRepository {
 	/**

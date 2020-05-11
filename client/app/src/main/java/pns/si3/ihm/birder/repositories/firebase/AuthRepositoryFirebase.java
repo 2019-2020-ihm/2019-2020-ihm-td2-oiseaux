@@ -1,12 +1,12 @@
-package pns.si3.ihm.birder.repositories;
+package pns.si3.ihm.birder.repositories.firebase;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import pns.si3.ihm.birder.models.User;
+import pns.si3.ihm.birder.repositories.interfaces.AuthRepository;
 
 /**
  * Authentication repository using Firebase.
@@ -44,6 +44,23 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	public boolean isAuthenticated() {
 		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 		return firebaseUser != null;
+	}
+
+	/**
+	 * Returns the id of the authenticated user.
+	 * @return The id of the user, if he's authenticated, null otherwise.
+	 */
+	public String getAuthenticationId() {
+		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+		return (firebaseUser != null) ? firebaseUser.getUid() : null;
+	}
+
+	/**
+	 * Signs out a user.
+	 */
+	@Override
+	public void signOut() {
+		firebaseAuth.signOut();
 	}
 
 	/**

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/buttonSignalReturn"
+        android:id="@+id/button_return"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Retour"
@@ -17,7 +17,7 @@
         />
 
     <Switch
-        android:id="@+id/switchMode"
+        android:id="@+id/switch_advanced"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mode avancé  "
@@ -28,7 +28,7 @@
         />
 
     <TextView
-        android:id="@+id/titleSignal"
+        android:id="@+id/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
@@ -39,7 +39,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textEspece"
+        android:id="@+id/text_species"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Espèce"
@@ -50,7 +50,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editEspece"
+        android:id="@+id/edit_species"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -58,11 +58,11 @@
         android:ems="10"
         android:inputType="text"
         android:hint="Pigeon"
-        app:layout_constraintLeft_toRightOf="@id/textEspece"
+        app:layout_constraintLeft_toRightOf="@id/text_species"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textNombre"
+        android:id="@+id/text_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre"
@@ -75,7 +75,7 @@
 
 
     <EditText
-        android:id="@+id/editNombre"
+        android:id="@+id/edit_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -83,7 +83,7 @@
         android:hint="3"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="115dp"
-        app:layout_constraintLeft_toRightOf="@id/textNombre"
+        app:layout_constraintLeft_toRightOf="@id/text_number"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,7 +95,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageLocalisation"
+            android:id="@+id/image_location"
             android:layout_width="65dp"
             android:layout_height="77dp"
             android:layout_marginLeft="45dp"
@@ -105,18 +105,18 @@
             app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
         <EditText
-            android:id="@+id/editPosition"
+            android:id="@+id/edit_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="42dp"
             android:layout_marginTop="30dp"
             android:ems="10"
             android:inputType="textPersonName"
-            app:layout_constraintLeft_toRightOf="@id/imageLocalisation"
+            app:layout_constraintLeft_toRightOf="@id/image_location"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textPositionActuelle"
+            android:id="@+id/text_current_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
@@ -127,7 +127,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textChoisirCarte"
+            android:id="@+id/text_choose_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
@@ -139,7 +139,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -150,7 +149,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textHeure"
+            android:id="@+id/text_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="70dp"
@@ -161,7 +160,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textDate"
+            android:id="@+id/text_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="70dp"
@@ -172,27 +171,26 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editHeure"
+            android:id="@+id/edit_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="53dp"
             android:layout_marginTop="15dp"
             android:ems="6"
             android:inputType="date"
-            app:layout_constraintLeft_toRightOf="@id/textHeure"
+            app:layout_constraintLeft_toRightOf="@id/text_time"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editDate"
+            android:id="@+id/edit_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="66dp"
             android:layout_marginTop="65dp"
             android:ems="6"
             android:inputType="date"
-            app:layout_constraintLeft_toRightOf="@id/textDate"
+            app:layout_constraintLeft_toRightOf="@id/text_date"
             app:layout_constraintTop_toTopOf="parent" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -205,7 +203,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageOiseau"
+            android:id="@+id/image_bird"
             android:layout_width="135dp"
             android:layout_height="109dp"
             android:layout_marginLeft="16dp"
@@ -214,7 +212,7 @@
             app:srcCompat="@android:drawable/ic_menu_gallery" />
 
         <Button
-            android:id="@+id/buttonModifierImage"
+            android:id="@+id/edit_image_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="168dp"
@@ -224,7 +222,7 @@
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <Button
-            android:id="@+id/buttonSupprimerImage"
+            android:id="@+id/delete_image_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="168dp"
@@ -234,24 +232,17 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/buttonSignalerMaintenant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Signaler maintenant"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+	<Button
+		android:id="@+id/button_submit"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="16dp"
+		android:text="Signaler maintenant"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.965"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/buttonSignalerPlusTard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Signaler plus tard"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

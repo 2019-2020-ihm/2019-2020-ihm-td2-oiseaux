@@ -1,14 +1,12 @@
-package pns.si3.ihm.birder.repositories;
+package pns.si3.ihm.birder.repositories.firebase;
 
-import android.util.Log;
-
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import pns.si3.ihm.birder.exceptions.UserNotFoundException;
+import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
 import pns.si3.ihm.birder.models.User;
+import pns.si3.ihm.birder.repositories.interfaces.UserRepository;
 
 /**
  * User repository using Firebase.
@@ -32,7 +30,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	private MutableLiveData<Exception> exceptionLiveData;
 
 	/**
-	 * Constructs an authentication repository.
+	 * Constructs a user repository.
 	 */
 	public UserRepositoryFirebase() {
 		firebaseFirestore = FirebaseFirestore.getInstance();
@@ -47,7 +45,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	public MutableLiveData<User> getUser(String id) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
-		// Get the user from the database.
+		// Get the user.
 		firebaseFirestore
 			.collection("users")
 			.document(id)
@@ -61,7 +59,7 @@ public class UserRepositoryFirebase implements UserRepository {
 							userLiveData.setValue(user);
 						} else {
 							// User not found.
-							exceptionLiveData.setValue(new UserNotFoundException());
+							exceptionLiveData.setValue(new DocumentNotFoundException());
 						}
 					} else {
 						// Query failed.
@@ -81,7 +79,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	public MutableLiveData<User> createUser(User user) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
-		// Create the user in the database.
+		// Create the user.
 		firebaseFirestore
 			.collection("users")
 			.document(user.id)

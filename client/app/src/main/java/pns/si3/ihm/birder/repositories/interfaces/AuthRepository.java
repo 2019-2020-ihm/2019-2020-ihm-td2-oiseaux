@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder.repositories;
+package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,6 +16,17 @@ public interface AuthRepository {
 	 * @return Whether the user is authenticated, or not.
 	 */
 	boolean isAuthenticated();
+
+	/**
+	 * Returns the id of the authenticated user.
+	 * @return The id of the user, if he's authenticated, null otherwise.
+	 */
+	String getAuthenticationId();
+
+	/**
+	 * Signs out a user.
+	 */
+	void signOut();
 
 	/**
 	 * Signs in a user with an email and password.

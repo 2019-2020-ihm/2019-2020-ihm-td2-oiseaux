@@ -62,7 +62,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     public void goBack() {
-        Intent intent = new Intent(this, SignalActivity.class);
+        Intent intent = new Intent(this, ReportActivity.class);
         startActivity(intent);
     }
 
