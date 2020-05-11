@@ -1,11 +1,19 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import pns.si3.ihm.birder.exceptions.DocumentNotCreatedException;
+import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.repositories.interfaces.ReportRepository;
 
@@ -21,47 +29,93 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	private FirebaseFirestore firebaseFirestore;
 
 	/**
+	 * The live data of the reports.
+	 */
+	private MutableLiveData<List<Report>> reportsLiveData;
+
+	/**
 	 * The live data of the report request errors.
 	 */
-	private MutableLiveData<Exception> exceptionLiveData;
+	private MutableLiveData<Exception> errorLiveData;
 
 	/**
 	 * Constructs a report repository.
 	 */
 	public ReportRepositoryFirebase() {
 		firebaseFirestore = FirebaseFirestore.getInstance();
-		exceptionLiveData = new MutableLiveData<>();
+		errorLiveData = new MutableLiveData<>();
+		reportsLiveData = new MutableLiveData<>();
+		loadReports();
 	}
 
 	/**
-	 * Gets a bird report.
-	 * @param id The id of the report.
-	 * @return The live data of the created report.
+	 * Loads the reports from the database in real time.
 	 */
-	public MutableLiveData<Report> getReport(String id) {
+	private void loadReports() {
+		firebaseFirestore
+			.collection("reports")
+			.addSnapshotListener(
+				(reportsSnapshot, error) -> {
+					if (error == null) {
+						// Query succeeded.
+						if (reportsSnapshot != null) {
+							// Reports found.
+							List<Report> reports = new ArrayList<>();
+							for (QueryDocumentSnapshot reportSnapshot : reportsSnapshot) {
+								Report report = reportSnapshot.toObject(Report.class);
+								reports.add(report);
+							}
+
+							// Update the reports live data.
+							Log.e(TAG, "UPDATED!!!!");
+							reportsLiveData.setValue(reports);
+						} else {
+							// Reports not found.
+							errorLiveData.setValue(new DocumentNotFoundException());
+						}
+					} else {
+						// Query failed.
+						errorLiveData.setValue(error);
+					}
+				}
+			);
+	}
+
+	/**
+	 * Returns the list of bird reports from the database in real time.
+	 * @return The live data of the reports.
+	 */
+	public LiveData<List<Report>> getReports() {
+		return reportsLiveData;
+	}
+
+	/**
+	 * Returns a bird report from the database in real time.
+	 * @param id The id of the report.
+	 * @return The live data of the report.
+	 */
+	public LiveData<Report> getReport(String id) {
 		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
 
 		// Get the report.
 		firebaseFirestore
-			.collection("report")
+			.collection("reports")
 			.document(id)
-			.get()
-			.addOnCompleteListener(
-				reportTask -> {
-					if (reportTask.isSuccessful()) {
+			.addSnapshotListener(
+				(reportSnapshot, error) -> {
+					if (error == null) {
 						// Query succeeded.
-						Report report = reportTask.getResult().toObject(Report.class);
+						Report report = reportSnapshot.toObject(Report.class);
 						if (report != null) {
 							// Report found.
 							reportLiveData.setValue(report);
 						} else {
 							// Report not found.
-							exceptionLiveData.setValue(reportTask.getException());
+							errorLiveData.setValue(new DocumentNotFoundException());
 						}
-
 					} else {
 						// Query failed.
-						exceptionLiveData.setValue(reportTask.getException());
+						errorLiveData.setValue(error);
 					}
 				}
 			);
@@ -74,7 +128,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param report The bird report.
 	 * @return The live data of the created report.
 	 */
-	public MutableLiveData<Report> createReport(Report report) {
+	public LiveData<Report> createReport(Report report) {
 		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
 
 		// Create the report.
@@ -92,11 +146,11 @@ public class ReportRepositoryFirebase implements ReportRepository {
 							reportLiveData.setValue(report);
 						} else {
 							// Report not created.
-							exceptionLiveData.setValue(new DocumentNotCreatedException());
+							errorLiveData.setValue(new DocumentNotCreatedException());
 						}
 					} else {
 						// Query failed.
-						exceptionLiveData.setValue(reportTask.getException());
+						errorLiveData.setValue(reportTask.getException());
 					}
 				}
 			);
@@ -108,7 +162,15 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * Returns the live data of the report request errors.
 	 * @return The live data of the report request errors.
 	 */
-	public MutableLiveData<Exception> getErrors() {
-		return exceptionLiveData;
+	public LiveData<Exception> getErrors() {
+		return errorLiveData;
 	}
+
+	/**
+	 * Clears the live data of the report request errors.
+	 * This avoid receiving the same error multiple times.
+	 */
+	public void clearErrors() {
+		errorLiveData.setValue(null);
+	};
 }

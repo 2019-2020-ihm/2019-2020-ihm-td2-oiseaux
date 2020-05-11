@@ -3,6 +3,7 @@ package pns.si3.ihm.birder.repositories.firebase;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
@@ -57,6 +58,7 @@ public class UserRepositoryFirebase implements UserRepository {
 						// Query succeeded.
 						User user = userTask.getResult().toObject(User.class);
 						if (user != null) {
+							// User found.
 							userLiveData.setValue(user);
 						} else {
 							// User not found.
@@ -86,9 +88,14 @@ public class UserRepositoryFirebase implements UserRepository {
 			.document(user.id)
 			.set(user)
 			.addOnCompleteListener(
-				aVoid -> {
-					// Query succeeded.
-					userLiveData.setValue(user);
+				userTask -> {
+					if (userTask.isSuccessful()) {
+						// Query succeeded.
+						userLiveData.setValue(user);
+					} else {
+						// Query failed.
+						errorLiveData.setValue(userTask.getException());
+					}
 				}
 			);
 
@@ -104,7 +111,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Clears the authentication errors.
+	 * Clears the live data of the user request errors.
 	 * This avoid receiving the same error multiple times.
 	 */
 	public void clearErrors() {

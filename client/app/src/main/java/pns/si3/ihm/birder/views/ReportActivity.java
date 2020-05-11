@@ -68,6 +68,16 @@ public class ReportActivity extends AppCompatActivity {
 		initViewModel();
 		initFields();
 		initButtons();
+
+		reportViewModel
+			.getReport("NkHs5ybn550CHQL5lzRb")
+			.observe(
+				this,
+				report -> {
+				if (report != null) {
+					Log.e(TAG, report.species);
+				}
+			});
     }
 
 	@Override
