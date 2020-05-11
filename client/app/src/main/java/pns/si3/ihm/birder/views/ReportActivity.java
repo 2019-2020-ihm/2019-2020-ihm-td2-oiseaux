@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
@@ -84,8 +86,8 @@ public class ReportActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 		initViewModel();
-		initValues();
 		initFields();
+		initValues();
 		initButtons();
     }
 
@@ -115,6 +117,8 @@ public class ReportActivity extends AppCompatActivity
 		selectedYear = calendar.get(Calendar.YEAR);
 		selectedHour = calendar.get(Calendar.HOUR_OF_DAY);
 		selectedMinute = calendar.get(Calendar.MINUTE);
+		updateDateField();
+		updateTimeField();
 	}
 
 	/**
@@ -203,6 +207,35 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	/**
+	 * Updates the date field with the current date values.
+	 */
+	private void updateDateField() {
+		editDate.setText(
+			String.format(
+				Locale.getDefault(),
+				"%02d/%02d/%02d",
+				selectedDay,
+				selectedMonth,
+				selectedYear
+			)
+		);
+	}
+
+	/**
+	 * Updates the time field with the current time values.
+	 */
+	private void updateTimeField() {
+		editTime.setText(
+			String.format(
+				Locale.getDefault(),
+				"%02d:%02d",
+				selectedHour,
+				selectedMinute
+			)
+		);
+	}
+
+	/**
 	 * Creates a report.
 	 */
 	public void submit() {
@@ -287,6 +320,12 @@ public class ReportActivity extends AppCompatActivity
 		return string.matches("\\d+");
 	}
 
+	/**
+	 * Method triggered when the activity receives a result.
+	 * @param requestCode The request code.
+	 * @param resultCode The result code.
+	 * @param data The result data.
+	 */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
@@ -297,18 +336,31 @@ public class ReportActivity extends AppCompatActivity
         }
     }
 
+	/**
+	 * Method triggered when the user selects a date on the date picker dialog.
+	 * @param view The current view.
+	 * @param year The selected year.
+	 * @param month The selected month (starting at zero).
+	 * @param dayOfMonth The selected day of the month.
+	 */
 	@Override
 	public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 		selectedDay = dayOfMonth;
 		selectedMonth = month;
 		selectedYear = year;
-		Log.d(TAG, selectedDay + " " + selectedMonth + " " + selectedYear);
+		updateDateField();
 	}
 
+	/**
+	 * Method triggered when the user selects a time on the time picker dialog.
+	 * @param view The current view.
+	 * @param hourOfDay The selected hour.
+	 * @param minute The selected minute.
+	 */
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		selectedHour = hourOfDay;
 		selectedMinute = minute;
-		Log.d(TAG, hourOfDay + " " + minute);
+		updateTimeField();
 	}
 }
