@@ -67,7 +67,6 @@ public class ReportRepositoryFirebase implements ReportRepository {
 							}
 
 							// Update the reports live data.
-							Log.e(TAG, "UPDATED!!!!");
 							reportsLiveData.setValue(reports);
 						} else {
 							// Reports not found.
@@ -105,9 +104,9 @@ public class ReportRepositoryFirebase implements ReportRepository {
 				(reportSnapshot, error) -> {
 					if (error == null) {
 						// Query succeeded.
-						Report report = reportSnapshot.toObject(Report.class);
-						if (report != null) {
+						if (reportSnapshot != null) {
 							// Report found.
+							Report report = reportSnapshot.toObject(Report.class);
 							reportLiveData.setValue(report);
 						} else {
 							// Report not found.
@@ -172,5 +171,5 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 */
 	public void clearErrors() {
 		errorLiveData.setValue(null);
-	};
+	}
 }

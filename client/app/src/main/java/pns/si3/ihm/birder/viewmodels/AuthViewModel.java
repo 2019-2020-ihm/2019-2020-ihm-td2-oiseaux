@@ -157,7 +157,7 @@ public class AuthViewModel extends ViewModel {
 	}
 
 	/**
-	 * Returns a user from the database.
+	 * Returns a user from the database in real time.
 	 * @param id The id of the user.
 	 */
 	public void getUser(String id) {

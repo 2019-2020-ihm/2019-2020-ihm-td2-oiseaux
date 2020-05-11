@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
@@ -40,7 +41,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Gets a user from the database.
+	 * Gets a user from the database in real time.
 	 * @param id The id of the user.
 	 * @return The live data of the user.
 	 */
@@ -51,14 +52,13 @@ public class UserRepositoryFirebase implements UserRepository {
 		firebaseFirestore
 			.collection("users")
 			.document(id)
-			.get()
-			.addOnCompleteListener(
-				userTask -> {
-					if (userTask.isSuccessful()) {
+			.addSnapshotListener(
+				(userSnapshot, error) -> {
+					if (error == null) {
 						// Query succeeded.
-						User user = userTask.getResult().toObject(User.class);
-						if (user != null) {
+						if (userSnapshot != null) {
 							// User found.
+							User user = userSnapshot.toObject(User.class);
 							userLiveData.setValue(user);
 						} else {
 							// User not found.
@@ -66,7 +66,7 @@ public class UserRepositoryFirebase implements UserRepository {
 						}
 					} else {
 						// Query failed.
-						errorLiveData.setValue(userTask.getException());
+						errorLiveData.setValue(error);
 					}
 				}
 			);
