@@ -1,5 +1,6 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,14 +28,14 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	/**
 	 * The live data of the authentication errors.
 	 */
-	private MutableLiveData<Exception> exceptionLiveData;
+	private MutableLiveData<Exception> errorLiveData;
 
 	/**
 	 * Constructs an authentication repository.
 	 */
 	public AuthRepositoryFirebase() {
 		firebaseAuth = FirebaseAuth.getInstance();
-		exceptionLiveData = new MutableLiveData<>();
+		errorLiveData = new MutableLiveData<>();
 	}
 
 	/**
@@ -56,21 +57,13 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	}
 
 	/**
-	 * Signs out a user.
-	 */
-	@Override
-	public void signOut() {
-		firebaseAuth.signOut();
-	}
-
-	/**
 	 * Signs in a user with an email and password.
 	 * @param email The email of the user.
 	 * @param password The password of the user.
 	 * @return A live data of the authenticated user.
 	 */
-	public MutableLiveData<User> signInWithEmailAndPassword(String email, String password) {
-		final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+	public LiveData<User> signInWithEmailAndPassword(String email, String password) {
+		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Sign in with Firebase Auth.
 		firebaseAuth
@@ -91,7 +84,7 @@ public class AuthRepositoryFirebase implements AuthRepository {
 						}
 					} else {
 						// Sign in failed.
-						exceptionLiveData.setValue(authTask.getException());
+						errorLiveData.setValue(authTask.getException());
 					}
 				}
 			);
@@ -105,8 +98,8 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	 * @param password The password of the user.
 	 * @return A live data of the created user.
 	 */
-	public MutableLiveData<User> createUserWithEmailAndPassword(String email, String password) {
-		final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+	public LiveData<User> createUserWithEmailAndPassword(String email, String password) {
+		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Sign up with firebase.
 		firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -126,19 +119,35 @@ public class AuthRepositoryFirebase implements AuthRepository {
 						}
 					} else {
 						// Sign up failed.
-						exceptionLiveData.setValue(task.getException());
+						errorLiveData.setValue(task.getException());
 					}
-				})
-			;
+				}
+			);
 
 		return userLiveData;
+	}
+
+	/**
+	 * Signs out a user.
+	 */
+	@Override
+	public void signOut() {
+		firebaseAuth.signOut();
 	}
 
 	/**
 	 * Returns the live data of the authentication errors.
 	 * @return The live data of the authentication errors.
 	 */
-	public MutableLiveData<Exception> getErrors() {
-		return exceptionLiveData;
+	public LiveData<Exception> getErrors() {
+		return errorLiveData;
+	};
+
+	/**
+	 * Clears the authentication errors.
+	 * This avoid receiving the same error multiple times.
+	 */
+	public void clearErrors() {
+		errorLiveData.setValue(null);
 	};
 }

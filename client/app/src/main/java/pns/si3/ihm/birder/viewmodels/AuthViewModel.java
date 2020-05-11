@@ -34,12 +34,17 @@ public class AuthViewModel extends ViewModel {
 	/**
 	 * The live data of the authentication errors.
 	 */
-	private LiveData<Exception> authenticationExceptionLiveData;
+	private LiveData<Exception> authenticationErrorsLiveData;
 
 	/**
 	 * The live data of the database user.
 	 */
 	private LiveData<User> databaseUserLiveData;
+
+	/**
+	 * The live data of the database errors.
+	 */
+	private LiveData<Exception> databaseErrorsLiveData;
 
 	/**
 	 * Constructs an authentication view model.
@@ -50,7 +55,53 @@ public class AuthViewModel extends ViewModel {
 		// Initialize the repositories.
 		authRepository = new AuthRepositoryFirebase();
 		userRepository = new UserRepositoryFirebase();
+
+		// Initialize the live data.
+		authenticatedUserLiveData = new MutableLiveData<>();
+		databaseUserLiveData = new MutableLiveData<>();
+		authenticationErrorsLiveData = authRepository.getErrors();
+		databaseErrorsLiveData = userRepository.getErrors();
 	}
+
+	/*====================================================================*/
+	/*                              LIVE DATA                             */
+	/*====================================================================*/
+
+	/**
+	 * Returns the live data of the authenticated user.
+	 * @return The live data of the authenticated user.
+	 */
+	public LiveData<User> getAuthenticatedUser() {
+		return authenticatedUserLiveData;
+	}
+
+	/**
+	 * Returns the live data of the authentication errors.
+	 * @return The live data of the authentication errors.
+	 */
+	public LiveData<Exception> getAuthenticationErrors() {
+		return authenticationErrorsLiveData;
+	}
+
+	/**
+	 * Returns the live data of the user from the database.
+	 * @return The live data of the user from the database.
+	 */
+	public LiveData<User> getDatabaseUser() {
+		return databaseUserLiveData;
+	}
+
+	/**
+	 * Returns the live data of the database errors.
+	 * @return The live data of the database errors.
+	 */
+	public LiveData<Exception> getDatabaseErrors() {
+		return databaseErrorsLiveData;
+	}
+
+	/*====================================================================*/
+	/*                               REQUESTS                             */
+	/*====================================================================*/
 
 	/**
 	 * Checks if the user is authenticated.
@@ -66,41 +117,6 @@ public class AuthViewModel extends ViewModel {
 	 */
 	public String getAuthenticationId() {
 		return authRepository.getAuthenticationId();
-	}
-
-	/**
-	 * Returns the live data of the authenticated user.
-	 * @return The live data of the authenticated user.
-	 */
-	public LiveData<User> getAuthenticatedUser() {
-		return authenticatedUserLiveData;
-	}
-
-	/**
-	 * Returns the live data of the authentication errors.
-	 * @return The live data of the authentication errors.
-	 */
-	public LiveData<Exception> getAuthenticationErrors() {
-		return authRepository.getErrors();
-	}
-
-	/**
-	 * Clears the live data of the authentication errors.
-	 * This avoid receiving the same error twice.
-	 */
-	public void clearAuthenticationError() {
-		authRepository.getErrors().setValue(null);
-	}
-
-	/**
-	 * Signs out the user.
-	 */
-	public void signOut() {
-		authRepository.signOut();
-
-		// Clear the live data.
-		authenticatedUserLiveData = new MutableLiveData<>(null);
-		databaseUserLiveData = new MutableLiveData<>(null);
 	}
 
 	/**
@@ -122,27 +138,22 @@ public class AuthViewModel extends ViewModel {
 	}
 
 	/**
-	 * Returns the live data of the user from the database.
-	 * @return The live data of the user from the database.
+	 * Signs out the user.
 	 */
-	public LiveData<User> getDatabaseUser() {
-		return databaseUserLiveData;
+	public void signOut() {
+		authRepository.signOut();
+
+		// Clear the live data.
+		authenticatedUserLiveData = new MutableLiveData<>();
+		databaseUserLiveData = new MutableLiveData<>();
 	}
 
 	/**
-	 * Returns the live data of the user errors.
-	 * @return The live data of the user errors.
-	 */
-	public LiveData<Exception> getUserErrors() {
-		return userRepository.getErrors();
-	}
-
-	/**
-	 * Clears the live data of the user errors.
+	 * Clears the authentication errors.
 	 * This avoid receiving the same error twice.
 	 */
-	public void clearUserError() {
-		userRepository.getErrors().setValue(null);
+	public void clearAuthenticationError() {
+		authRepository.clearErrors();
 	}
 
 	/**
@@ -159,5 +170,13 @@ public class AuthViewModel extends ViewModel {
 	 */
 	public void createUser(User user) {
 		databaseUserLiveData = userRepository.createUser(user);
+	}
+
+	/**
+	 * Clears the live data of the user errors.
+	 * This avoid receiving the same error twice.
+	 */
+	public void clearDatabaseErrors() {
+		userRepository.clearErrors();
 	}
 }

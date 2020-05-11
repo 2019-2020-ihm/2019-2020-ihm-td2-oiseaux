@@ -194,7 +194,7 @@ public class SignInActivity extends AppCompatActivity {
 
 		// Query failed.
 		authViewModel
-			.getUserErrors()
+			.getDatabaseErrors()
 			.observe(
 				this,
 				databaseError -> {
@@ -214,7 +214,7 @@ public class SignInActivity extends AppCompatActivity {
 						).show();
 
 						// Clear the database error.
-						authViewModel.clearUserError();
+						authViewModel.clearDatabaseErrors();
 					}
 				}
 			);

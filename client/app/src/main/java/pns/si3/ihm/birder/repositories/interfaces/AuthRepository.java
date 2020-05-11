@@ -24,17 +24,12 @@ public interface AuthRepository {
 	String getAuthenticationId();
 
 	/**
-	 * Signs out a user.
-	 */
-	void signOut();
-
-	/**
 	 * Signs in a user with an email and password.
 	 * @param email The email of the user.
 	 * @param password The password of the user.
 	 * @return A live data of the authenticated user.
 	 */
-	MutableLiveData<User> signInWithEmailAndPassword(String email, String password);
+	LiveData<User> signInWithEmailAndPassword(String email, String password);
 
 	/**
 	 * Signs up a user with an email and password.
@@ -42,11 +37,22 @@ public interface AuthRepository {
 	 * @param password The password of the user.
 	 * @return A live data of the authenticated user.
 	 */
-	MutableLiveData<User> createUserWithEmailAndPassword(String email, String password);
+	LiveData<User> createUserWithEmailAndPassword(String email, String password);
+
+	/**
+	 * Signs out a user.
+	 */
+	void signOut();
 
 	/**
 	 * Returns the live data of the authentication errors.
 	 * @return The live data of the authentication errors.
 	 */
-	MutableLiveData<Exception> getErrors();
+	LiveData<Exception> getErrors();
+
+	/**
+	 * Clears the live data of the authentication errors.
+	 * This avoid receiving the same error multiple times.
+	 */
+	void clearErrors();
 }

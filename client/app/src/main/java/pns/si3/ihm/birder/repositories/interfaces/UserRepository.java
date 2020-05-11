@@ -16,18 +16,24 @@ public interface UserRepository {
 	 * @param id The id of the user.
 	 * @return The live data of the user.
 	 */
-	MutableLiveData<User> getUser(String id);
+	LiveData<User> getUser(String id);
 
 	/**
 	 * Creates a user in the database.
 	 * @param user The user to be created.
 	 * @return The live data of the created user.
 	 */
-	MutableLiveData<User> createUser(User user);
+	LiveData<User> createUser(User user);
 
 	/**
 	 * Returns the live data of the user request errors.
 	 * @return The live data of the user request errors.
 	 */
-	MutableLiveData<Exception> getErrors();
+	LiveData<Exception> getErrors();
+
+	/**
+	 * Clears the live data of the user request errors.
+	 * This avoid receiving the same error multiple times.
+	 */
+	void clearErrors();
 }

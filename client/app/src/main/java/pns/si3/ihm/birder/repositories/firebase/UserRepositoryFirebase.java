@@ -1,5 +1,6 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,14 +28,14 @@ public class UserRepositoryFirebase implements UserRepository {
 	/**
 	 * The live data of the user request errors.
 	 */
-	private MutableLiveData<Exception> exceptionLiveData;
+	private MutableLiveData<Exception> errorLiveData;
 
 	/**
 	 * Constructs a user repository.
 	 */
 	public UserRepositoryFirebase() {
 		firebaseFirestore = FirebaseFirestore.getInstance();
-		exceptionLiveData = new MutableLiveData<>();
+		errorLiveData = new MutableLiveData<>();
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param id The id of the user.
 	 * @return The live data of the user.
 	 */
-	public MutableLiveData<User> getUser(String id) {
+	public LiveData<User> getUser(String id) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Get the user.
@@ -59,11 +60,11 @@ public class UserRepositoryFirebase implements UserRepository {
 							userLiveData.setValue(user);
 						} else {
 							// User not found.
-							exceptionLiveData.setValue(new DocumentNotFoundException());
+							errorLiveData.setValue(new DocumentNotFoundException());
 						}
 					} else {
 						// Query failed.
-						exceptionLiveData.setValue(userTask.getException());
+						errorLiveData.setValue(userTask.getException());
 					}
 				}
 			);
@@ -76,7 +77,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param user The user to be created.
 	 * @return The live data of the created user.
 	 */
-	public MutableLiveData<User> createUser(User user) {
+	public LiveData<User> createUser(User user) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Create the user.
@@ -98,7 +99,15 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * Returns the live data of the user request errors.
 	 * @return The live data of the user request errors.
 	 */
-	public MutableLiveData<Exception> getErrors() {
-		return exceptionLiveData;
+	public LiveData<Exception> getErrors() {
+		return errorLiveData;
 	}
+
+	/**
+	 * Clears the authentication errors.
+	 * This avoid receiving the same error multiple times.
+	 */
+	public void clearErrors() {
+		errorLiveData.setValue(null);
+	};
 }
