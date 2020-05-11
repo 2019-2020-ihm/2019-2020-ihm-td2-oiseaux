@@ -139,62 +139,63 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="244dp"
-        android:layout_marginRight="60dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="264dp"
+		android:layout_marginRight="60dp"
+		app:layout_constraintHorizontal_bias="0.0"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/text_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="20dp"
-            android:text="Heure"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+		<TextView
+			android:id="@+id/text_time"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="40dp"
+			android:layout_marginTop="16dp"
+			android:text="Heure"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/text_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="70dp"
-            android:text="Date"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+		<TextView
+			android:id="@+id/text_date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="40dp"
+			android:layout_marginTop="70dp"
+			android:text="Date"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/edit_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="53dp"
-            android:layout_marginTop="15dp"
-            android:ems="6"
-            android:inputType="date"
-            app:layout_constraintLeft_toRightOf="@id/text_time"
-            app:layout_constraintTop_toTopOf="parent" />
+		<EditText
+			android:id="@+id/edit_time"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="53dp"
+			android:layout_marginTop="15dp"
+			android:ems="10"
+			android:inputType="date"
+			app:layout_constraintLeft_toRightOf="@id/text_time"
+			app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/edit_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="66dp"
-            android:layout_marginTop="65dp"
-            android:ems="6"
-            android:inputType="date"
-            app:layout_constraintLeft_toRightOf="@id/text_date"
-            app:layout_constraintTop_toTopOf="parent" />
+		<EditText
+			android:id="@+id/edit_date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="66dp"
+			android:layout_marginTop="65dp"
+			android:ems="10"
+			android:inputType="date"
+			app:layout_constraintLeft_toRightOf="@id/text_date"
+			app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+	<androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"

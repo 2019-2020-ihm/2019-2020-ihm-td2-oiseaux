@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import java.util.Date;
+
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
@@ -68,16 +70,6 @@ public class ReportActivity extends AppCompatActivity {
 		initViewModel();
 		initFields();
 		initButtons();
-
-		reportViewModel
-			.getReport("NkHs5ybn550CHQL5lzRb")
-			.observe(
-				this,
-				report -> {
-				if (report != null) {
-					Log.e(TAG, report.species);
-				}
-			});
     }
 
 	@Override
@@ -170,7 +162,7 @@ public class ReportActivity extends AppCompatActivity {
 		// Report created.
 		Log.i(TAG, "Create a report.");
 		String userId = authViewModel.getAuthenticationId();
-		Report report = new Report(null, userId, species, number);
+		Report report = new Report(null, userId, species, number, new Date());
 		reportViewModel
 			.createReport(report)
 			.observe(

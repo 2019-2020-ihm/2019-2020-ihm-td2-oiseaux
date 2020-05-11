@@ -1,8 +1,6 @@
 package pns.si3.ihm.birder.models;
 
 import com.google.firebase.firestore.Exclude;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
@@ -37,19 +35,19 @@ public class Report {
 //	 * The location of the report.
 //	 */
 //	public GeoPoint location;
-//
-//	/**
-//	 * The date of the report.
-//	 */
-//	@ServerTimestamp
-//	public Date date;
+
+	/**
+	 * The date of the report.
+	 */
+	public Date date;
 
 	public Report() {}
 
-	public Report(String id, String userId, String species, int number) {
+	public Report(String id, String userId, String species, int number, Date date) {
 		this.id = id;
 		this.userId = userId;
 		this.species = species;
 		this.number = number;
+		this.date = date;
 	}
 }
