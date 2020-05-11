@@ -1,18 +1,25 @@
 package pns.si3.ihm.birder.views;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 import etudes.fr.demoosm.R;
@@ -25,7 +32,10 @@ import pns.si3.ihm.birder.viewmodels.ReportViewModel;
  *
  * Allows the user to create bird reports.
  */
-public class ReportActivity extends AppCompatActivity {
+public class ReportActivity extends AppCompatActivity
+	implements DatePickerDialog.OnDateSetListener,
+	TimePickerDialog.OnTimeSetListener
+{
 	/**
 	 * The tag for the log messages.
 	 */
@@ -53,6 +63,12 @@ public class ReportActivity extends AppCompatActivity {
     EditText editDate;
 	EditText editLocation;
 
+	int selectedDay;
+	int selectedMonth;
+	int selectedYear;
+	int selectedHour;
+	int selectedMinute;
+
 	/**
 	 * The activity buttons.
 	 */
@@ -68,6 +84,7 @@ public class ReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 		initViewModel();
+		initValues();
 		initFields();
 		initButtons();
     }
@@ -89,6 +106,18 @@ public class ReportActivity extends AppCompatActivity {
 	}
 
 	/**
+	 * Initializes the field values.
+	 */
+	private void initValues() {
+		Calendar calendar = Calendar.getInstance();
+		selectedDay = calendar.get(Calendar.DAY_OF_MONTH);
+		selectedMonth = calendar.get(Calendar.MONTH);
+		selectedYear = calendar.get(Calendar.YEAR);
+		selectedHour = calendar.get(Calendar.HOUR_OF_DAY);
+		selectedMinute = calendar.get(Calendar.MINUTE);
+	}
+
+	/**
 	 * Initializes the activity fields.
 	 */
     private void initFields() {
@@ -97,8 +126,36 @@ public class ReportActivity extends AppCompatActivity {
 		editSpecies = findViewById(R.id.edit_species);
 		editNumber = findViewById(R.id.edit_number);
 		editLocation = findViewById(R.id.edit_location);
-		editTime = findViewById(R.id.edit_time);
+
+		// Edit date field.
 		editDate = findViewById(R.id.edit_date);
+		editDate.setOnClickListener(
+			v -> {
+				DatePickerDialog datePickerDialog = new DatePickerDialog(
+					this,
+					this,
+					selectedYear,
+					selectedMonth,
+					selectedDay
+				);
+				datePickerDialog.show();
+			}
+		);
+
+		// Edit time field.
+		editTime = findViewById(R.id.edit_time);
+		editTime.setOnClickListener(
+			v -> {
+				TimePickerDialog timePickerDialog = new TimePickerDialog(
+					this,
+					this,
+					selectedHour,
+					selectedMinute,
+					true
+				);
+				timePickerDialog.show();
+			}
+		);
 	}
 
 	/**
@@ -239,4 +296,19 @@ public class ReportActivity extends AppCompatActivity {
             imageUpload = true;
         }
     }
+
+	@Override
+	public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+		selectedDay = dayOfMonth;
+		selectedMonth = month;
+		selectedYear = year;
+		Log.d(TAG, selectedDay + " " + selectedMonth + " " + selectedYear);
+	}
+
+	@Override
+	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		selectedHour = hourOfDay;
+		selectedMinute = minute;
+		Log.d(TAG, hourOfDay + " " + minute);
+	}
 }
