@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder.views;
+package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.views.AccountActivity;
+import pns.si3.ihm.birder.views.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
-import pns.si3.ihm.birder.views.notifications.NotificationActivity;
-import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case 2: //Compte (connecté) / Se connecter (déconnecté)
             {
                 if (auth.getCurrentUser() != null) {
-                    Intent intent = new Intent(MainActivity.this,AccountActivity.class);
+                    Intent intent = new Intent(MainActivity.this, AccountActivity.class);
                     startActivity(intent);
                 }
                 else {

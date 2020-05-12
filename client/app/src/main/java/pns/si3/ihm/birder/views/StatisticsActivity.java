@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.enumerations.TrophyEnum;
 import pns.si3.ihm.birder.models.Trophy;
+import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class StatisticsActivity extends AppCompatActivity {
     ArrayList<Trophy> listTrophies = new ArrayList<>();
