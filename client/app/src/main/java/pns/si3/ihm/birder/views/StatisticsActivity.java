@@ -48,6 +48,7 @@ public class StatisticsActivity extends AppCompatActivity {
         listTrophiesBloquesView.setAdapter(adapter2);
 
         Intent intent = new Intent(this, TrophyActivity.class);
+        Intent intent2 = new Intent(this, TrophyBloqueActivity.class);
 
         listTrophiesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -62,8 +63,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Trophy trophy = listTrophiesBloques.get(position);
-                intent.putExtra("trophy", trophy);
-                startActivity(intent);
+                intent2.putExtra("trophy", trophy);
+                startActivity(intent2);
             }
         });
 
