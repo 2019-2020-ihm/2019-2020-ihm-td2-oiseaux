@@ -23,7 +23,7 @@ public interface UserRepository {
 	 * @param user The user to be set.
 	 * @return The live data of the created user.
 	 */
-	LiveData<User> setUser(User user);
+	LiveData<User> insertUser(User user);
 
 	/**
 	 * Returns the live data of the user request errors.

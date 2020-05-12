@@ -88,16 +88,16 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         userId = authViewModel.getAuthenticationId();
         userViewModel.getUser(userId);
         userViewModel
-                .getUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            if (user != null) {
-                                setAllNotification(user.getAllNotificationActivate());
-                            }
-                            checkBox.setChecked(user.getAllNotificationActivate());
-                        }
-                );
+			.getSelectedUserLiveData()
+			.observe(
+				this,
+				user -> {
+					if (user != null) {
+						setAllNotification(user.getAllNotificationActivate());
+					}
+					checkBox.setChecked(user.getAllNotificationActivate());
+				}
+			);
     }
 
 
@@ -111,25 +111,25 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     void changeBooleanAllNotification(){
         userViewModel.getUser(userId);
         userViewModel
-                .getUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            if (user != null) {
-                                userViewModel
-                                        .getUserLiveData()
-                                        .observe(
-                                                this,
-                                                databaseUser -> {
-                                                    if (databaseUser != null) {
-                                                        user.setAllNotificationActivate(getAllNotification());
-                                                        userViewModel.setUser(user);
-                                                    }
-                                                }
-                                        );
-                                }
-                        }
-                );
+			.getSelectedUserLiveData()
+			.observe(
+				this,
+				user -> {
+					if (user != null) {
+						userViewModel
+							.getInsertedUserLiveData()
+							.observe(
+								this,
+								databaseUser -> {
+									if (databaseUser != null) {
+										user.setAllNotificationActivate(getAllNotification());
+										userViewModel.insertUser(user);
+									}
+								}
+							);
+					}
+				}
+			);
     }
 
 
@@ -227,16 +227,16 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         if(!notifActivate){
             userViewModel.getUser(userId);
             userViewModel
-                    .getUserLiveData()
-                    .observe(
-                            this,
-                            user -> {
-                                if (user != null) {
-                                    // TODO io
-                                    // Parcourir le tableau de string avec les id des oiseaux notifiés
-                                    }
-                                }
-                    );
+				.getSelectedUserLiveData()
+				.observe(
+					this,
+					user -> {
+						if (user != null) {
+							// TODO io
+							// Parcourir le tableau de string avec les id des oiseaux notifiés
+						}
+					}
+				);
         }
         return getAllNotification();
     }

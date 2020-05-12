@@ -20,9 +20,14 @@ public class UserViewModel extends ViewModel {
 	private UserRepository userRepository;
 
 	/**
-	 * The live data of the user.
+	 * The selected user (updated in real time).
 	 */
-	private LiveData<User> userLiveData;
+	private LiveData<User> selectedReportLiveData;
+
+	/**
+	 * The inserted user.
+	 */
+	private LiveData<User> insertedReportLiveData;
 
 	/**
 	 * The live data of the user errors.
@@ -39,7 +44,8 @@ public class UserViewModel extends ViewModel {
 		userRepository = new UserRepositoryFirebase();
 
 		// Initialize the live data.
-		userLiveData = new MutableLiveData<>();
+		selectedReportLiveData = new MutableLiveData<>();
+		insertedReportLiveData = new MutableLiveData<>();
 		userErrorsLiveData = userRepository.getErrors();
 	}
 
@@ -48,16 +54,24 @@ public class UserViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
-	 * Returns the live data of the user.
-	 * @return The live data of the user.
+	 * Returns the selected user.
+	 * @return The selected user.
 	 */
-	public LiveData<User> getUserLiveData() {
-		return userLiveData;
+	public LiveData<User> getSelectedUserLiveData() {
+		return selectedReportLiveData;
 	}
 
 	/**
-	 * Returns the live data of the user errors.
-	 * @return The live data of the user errors.
+	 * Returns the inserted user.
+	 * @return The inserted user.
+	 */
+	public LiveData<User> getInsertedUserLiveData() {
+		return insertedReportLiveData;
+	}
+
+	/**
+	 * Returns the user errors.
+	 * @return The user errors.
 	 */
 	public LiveData<Exception> getUserErrorsLiveData() {
 		return userErrorsLiveData;
@@ -68,23 +82,23 @@ public class UserViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
-	 * Gets a user from the database.
+	 * Requests a user.
 	 * @param id The id of the user.
 	 */
 	public void getUser(String id) {
-		userLiveData = userRepository.getUser(id);
+		selectedReportLiveData = userRepository.getUser(id);
 	}
 
 	/**
-	 * Sets a user in the database.
+	 * Requests the insertion of a user.
 	 * @param user The user to be created.
 	 */
-	public void setUser(User user) {
-		userLiveData = userRepository.setUser(user);
+	public void insertUser(User user) {
+		insertedReportLiveData = userRepository.insertUser(user);
 	}
 
 	/**
-	 * Clears the live data of the user errors.
+	 * Clears the user errors.
 	 * This avoid receiving the same error twice.
 	 */
 	public void clearUserErrors() {

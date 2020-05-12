@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,21 +11,40 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.adapters.ReportsAdapter;
+import pns.si3.ihm.birder.models.Report;
+import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+	/**
+	 * The tag for the log messages.
+	 */
+	private static final String TAG = "MainActivity";
 
     private FirebaseAuth auth;
     private Button button;
+
+    private ReportViewModel reportViewModel;
+
+	private RecyclerView recyclerView;
+	private ReportsAdapter reportsAdpater;
+	private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +65,45 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+		initRecyclerView();
+		initViewModels();
+		observeReports();
     }
+
+	/**
+	 * Initializes the recycler view of reports.
+	 */
+	private void initRecyclerView() {
+		// Get the recycler view.
+		recyclerView = findViewById(R.id.my_recycler_view);
+
+		// Set the adapter.
+		reportsAdpater = new ReportsAdapter();
+		recyclerView.setAdapter(reportsAdpater);
+
+		// Set the layout manager.
+		layoutManager = new LinearLayoutManager(this);
+		recyclerView.setLayoutManager(layoutManager);
+	}
+
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModels() {
+		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+	}
+
+	private void observeReports() {
+		reportViewModel
+			.getReportsLiveData()
+			.observe(
+				this,
+				reports -> {
+					// Update the reports.
+					reportsAdpater.setReports(reports);
+				}
+			);
+	}
 
     public void goToSignalActivity() {
         Intent intent = new Intent(this, ReportActivity.class);

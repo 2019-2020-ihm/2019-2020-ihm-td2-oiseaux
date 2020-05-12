@@ -1,14 +1,13 @@
 package pns.si3.ihm.birder.viewmodels;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
 import pns.si3.ihm.birder.models.Report;
-import pns.si3.ihm.birder.repositories.firebase.AuthRepositoryFirebase;
 import pns.si3.ihm.birder.repositories.firebase.ReportRepositoryFirebase;
-import pns.si3.ihm.birder.repositories.firebase.UserRepositoryFirebase;
 import pns.si3.ihm.birder.repositories.interfaces.ReportRepository;
 
 /**
@@ -23,12 +22,24 @@ public class ReportViewModel extends ViewModel {
 	private ReportRepository reportRepository;
 
 	/**
-	 * The live data of the reports.
+	 * The list of reports (updated in real time).
 	 */
 	private LiveData<List<Report>> reportsLiveData;
 
+
 	/**
-	 * The live data of the report request errors.
+	 * The selected report (updated in real time).
+	 */
+	private LiveData<Report> selectedReportLiveData;
+
+	/**
+	 * The created report.
+	 */
+	private LiveData<Report> createdReportLiveData;
+
+
+	/**
+	 * The report errors (updated in real time).
 	 */
 	private LiveData<Exception> reportErrorsLiveData;
 
@@ -43,40 +54,72 @@ public class ReportViewModel extends ViewModel {
 
 		// Initialize the live data.
 		reportsLiveData = reportRepository.getReports();
+		selectedReportLiveData = new MutableLiveData<>();
+		createdReportLiveData = new MutableLiveData<>();
 		reportErrorsLiveData = reportRepository.getErrors();
+
 	}
 
+	/*====================================================================*/
+	/*                              LIVE DATA                             */
+	/*====================================================================*/
+
 	/**
-	 * Returns the list of bird reports from the database in real time.
-	 * @return The live data of the reports.
+	 * Returns the list of reports.
+	 * @return The list of reports.
 	 */
-	public LiveData<List<Report>> getReports() {
+	public LiveData<List<Report>> getReportsLiveData() {
 		return reportsLiveData;
 	}
 
 	/**
-	 *  Returns a bird report from the database in real time.
-	 * @param id The id of the bird report.
-	 * @return The live data of the report.
+	 * Returns the selected report.
+	 * @return The selected report.
 	 */
-	public LiveData<Report> getReport(String id) {
-		return reportRepository.getReport(id);
+	public LiveData<Report> getSelectedReportLiveData() {
+		return createdReportLiveData;
 	}
 
 	/**
-	 * Creates a bird report.
-	 * @param report The bird report to be create.
-	 * @return The live data of the created report.
+	 * Returns the created report.
+	 * @return The created report.
 	 */
-	public LiveData<Report> createReport(Report report) {
-		return reportRepository.createReport(report);
+	public LiveData<Report> getCreatedReportLiveData() {
+		return createdReportLiveData;
 	}
 
 	/**
-	 * Returns the live data of the report request errors.
-	 * @return The live data of the report request errors.
+	 * Returns the report errors.
+	 * @return The report errors.
 	 */
-	public LiveData<Exception> getErrors() {
+	public LiveData<Exception> getReportErrorsLiveData() {
 		return reportErrorsLiveData;
+	}
+
+	/*====================================================================*/
+	/*                               REQUESTS                             */
+	/*====================================================================*/
+
+	/**
+	 * Requests a report.
+	 * @param id The id of the report.
+	 */
+	public void getReport(String id) {
+		selectedReportLiveData = reportRepository.getReport(id);
+	}
+
+	/**
+	 * Requests the creation of a report.
+	 */
+	public void createReport(Report report) {
+		createdReportLiveData = reportRepository.createReport(report);
+	}
+
+	/**
+	 * Clears the report errors.
+	 * This avoid receiving the same error twice.
+	 */
+	public void clearReportErrors() {
+		reportRepository.clearErrors();
 	}
 }

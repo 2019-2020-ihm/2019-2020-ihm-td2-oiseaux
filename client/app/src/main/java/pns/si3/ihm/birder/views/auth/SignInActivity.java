@@ -119,7 +119,7 @@ public class SignInActivity extends AppCompatActivity {
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
 
-		Log.i(TAG, "Sign in with email and password.");
+		// Request the sign in.
 		authViewModel.signInWithEmailAndPassword(email, password);
 
 		// Auth succeeded.
@@ -129,7 +129,6 @@ public class SignInActivity extends AppCompatActivity {
 				this,
 				authUser -> {
 					if (authUser != null) {
-						Log.i(TAG, "Auth succeeded.");
 						getUserFromDatabase(authUser.getId());
 					}
 				}
@@ -171,18 +170,16 @@ public class SignInActivity extends AppCompatActivity {
 	 * @param id The id of the user.
 	 */
 	private void getUserFromDatabase(String id) {
-		Log.i(TAG, "Get user from the database.");
+		// Request the user.
 		userViewModel.getUser(id);
 
 		// Query succeeded.
 		userViewModel
-			.getUserLiveData()
+			.getSelectedUserLiveData()
 			.observe(
 				this,
 				user -> {
 					if (user != null) {
-						Log.i(TAG, "Query succeeded.");
-
 						// Reset password.
 						editPassword.setText("");
 

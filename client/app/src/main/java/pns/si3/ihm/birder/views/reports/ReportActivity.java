@@ -225,10 +225,12 @@ public class ReportActivity
 		// Initialize the report.
 		Report report = getReport();
 
-		// Create the report.
-		Log.i(TAG, "Create a report.");
+		// Request the report creation.
+		reportViewModel.createReport(report);
+
+		// Query succeeded.
 		reportViewModel
-			.createReport(report)
+			.getCreatedReportLiveData()
 			.observe(
 				this,
 				createdReport -> {
@@ -246,9 +248,9 @@ public class ReportActivity
 				}
 			);
 
-		// Report failed.
+		// Query failed.
 		reportViewModel
-			.getErrors()
+			.getReportErrorsLiveData()
 			.observe(
 				this,
 				reportError -> {
