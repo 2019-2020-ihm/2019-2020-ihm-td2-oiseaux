@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.views.auth.SignInActivity;
+import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 	private FirebaseAuth auth;

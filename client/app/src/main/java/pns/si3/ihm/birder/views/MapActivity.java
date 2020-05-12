@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 	private MapView map;
