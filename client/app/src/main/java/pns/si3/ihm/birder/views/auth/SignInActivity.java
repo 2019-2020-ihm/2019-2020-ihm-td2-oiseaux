@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class SignInActivity extends AppCompatActivity {
 	/**
@@ -25,6 +26,11 @@ public class SignInActivity extends AppCompatActivity {
 	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
+
+	/**
+	 * The user view model.
+	 */
+	private UserViewModel userViewModel;
 
 	/**
 	 * The activity fields.
@@ -61,6 +67,7 @@ public class SignInActivity extends AppCompatActivity {
 	 */
 	private void initViewModel() {
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
 	/**
@@ -117,7 +124,7 @@ public class SignInActivity extends AppCompatActivity {
 
 		// Auth succeeded.
 		authViewModel
-			.getAuthenticatedUser()
+			.getAuthenticatedUserLiveData()
 			.observe(
 				this,
 				authUser -> {
@@ -130,7 +137,7 @@ public class SignInActivity extends AppCompatActivity {
 
 		// Auth failed.
 		authViewModel
-			.getAuthenticationErrors()
+			.getAuthenticationErrorsLiveData()
 			.observe(
 				this,
 				authError -> {
@@ -165,11 +172,11 @@ public class SignInActivity extends AppCompatActivity {
 	 */
 	private void getUserFromDatabase(String id) {
 		Log.i(TAG, "Get user from the database.");
-		authViewModel.getUser(id);
+		userViewModel.getUser(id);
 
 		// Query succeeded.
-		authViewModel
-			.getDatabaseUser()
+		userViewModel
+			.getUserLiveData()
 			.observe(
 				this,
 				databaseUser -> {
@@ -193,8 +200,8 @@ public class SignInActivity extends AppCompatActivity {
 			);
 
 		// Query failed.
-		authViewModel
-			.getDatabaseErrors()
+		userViewModel
+			.getUserErrorsLiveData()
 			.observe(
 				this,
 				databaseError -> {
@@ -214,7 +221,7 @@ public class SignInActivity extends AppCompatActivity {
 						).show();
 
 						// Clear the database error.
-						authViewModel.clearDatabaseErrors();
+						userViewModel.clearUserErrors();
 					}
 				}
 			);

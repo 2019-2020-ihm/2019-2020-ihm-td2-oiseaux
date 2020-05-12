@@ -18,12 +18,13 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
+import pns.si3.ihm.birder.views.notifications.NotificationActivity;
 import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-	private FirebaseAuth auth;
 
-    Button button;
+    private FirebaseAuth auth;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +55,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         switch(pos){
             case 0:break;
-            case 1:{
+            case 1: // Map
+                {
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
             }
             break;
-            case 2:{
+            case 2: //Compte (connecté) / Se connecter (déconnecté)
+            {
+                if (auth.getCurrentUser() != null) {
+                    Intent intent = new Intent(MainActivity.this,AccountActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                }
+            }break;
+            case 3:// Déconnexion (connecté)
+                {
 				// The user is connected.
 				if (auth.getCurrentUser() != null) {
 					// Sign out the user.
@@ -102,9 +116,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         List<String> list = new ArrayList<>();
         list.add("Menu");
         list.add("Voir Carte");
-
         // The user is connected.
         if (auth.getCurrentUser() != null) {
+            list.add("Compte");
 			list.add("Se déconnecter");
 		}
         // The user is not connected.

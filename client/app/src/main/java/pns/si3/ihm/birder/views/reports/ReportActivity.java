@@ -52,7 +52,7 @@ public class ReportActivity extends AppCompatActivity
 	private ReportViewModel reportViewModel;
 
 	/**
-	 * The auth view model.
+	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
 

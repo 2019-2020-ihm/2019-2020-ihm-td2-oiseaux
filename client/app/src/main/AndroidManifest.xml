@@ -1,55 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="etudes.fr.demoosm">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="etudes.fr.demoosm">
 
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"   />
-	<uses-permission android:name="android.permission.INTERNET"               />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"   />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"  />
-	<uses-permission android:name="android.permission.CAMERA"                 />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-	<application
-		android:allowBackup="true"
-		android:icon="@mipmap/ic_launcher"
-		android:label="@string/app_name"
-		android:roundIcon="@mipmap/ic_launcher_round"
-		android:supportsRtl="true"
-		android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
-		<meta-data
-			android:name="com.google.android.geo.API_KEY"
-			android:value="@string/google_maps_key" />
+        <activity android:name="pns.si3.ihm.birder.views.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
-		<activity android:name="pns.si3.ihm.birder.views.MainActivity">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-		<activity android:name="pns.si3.ihm.birder.views.MapActivity"         />
-		<activity android:name="pns.si3.ihm.birder.views.auth.SignInActivity"      />
-		<activity android:name="pns.si3.ihm.birder.views.auth.SignUpActivity"      />
-		<activity android:name="pns.si3.ihm.birder.views.reports.ReportActivity"      />
-		<activity android:name="pns.si3.ihm.birder.views.InformationActivity" />
-		<activity android:name="pns.si3.ihm.birder.views.StatisticsActivity"  />
-		<activity android:name="pns.si3.ihm.birder.views.TrophyActivity"      />
-		<activity android:name="pns.si3.ihm.birder.views.pictures.PictureActivity"      />
-		<activity android:name="pns.si3.ihm.birder.views.GPSActivity"         />
-		<activity android:name="pns.si3.ihm.birder.views.GpsActivity"         />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="pns.si3.ihm.birder.views.MapActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.auth.SignInActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.auth.SignUpActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.reports.ReportActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.InformationActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.StatisticsActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.TrophyActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.pictures.PictureActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.GPSActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.AccountActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.notifications.NotificationActivity" />
 
-		<provider
-			android:name="androidx.core.content.FileProvider"
-			android:authorities="pns.si3.ihm.birder.fileprovider"
-			android:exported="false"
-			android:grantUriPermissions="true">
-			<meta-data
-				android:name="android.support.FILE_PROVIDER_PATHS"
-				android:resource="@xml/file_paths" />
-		</provider>
-		<activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity"/>
-	</application>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="pns.si3.ihm.birder.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity" />
+    </application>
+
 </manifest>

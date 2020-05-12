@@ -5,26 +5,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import pns.si3.ihm.birder.models.User;
-import pns.si3.ihm.birder.repositories.interfaces.AuthRepository;
 import pns.si3.ihm.birder.repositories.firebase.AuthRepositoryFirebase;
-import pns.si3.ihm.birder.repositories.interfaces.UserRepository;
-import pns.si3.ihm.birder.repositories.firebase.UserRepositoryFirebase;
+import pns.si3.ihm.birder.repositories.interfaces.AuthRepository;
 
 /**
  * Authentication view model.
  *
- * Holds the data for the authentication views.
+ * Holds the data for the views that use the authentication.
  */
 public class AuthViewModel extends ViewModel {
 	/**
 	 * The authentication repository.
 	 */
 	private AuthRepository authRepository;
-
-	/**
-	 * The user repository.
-	 */
-	private UserRepository userRepository;
 
 	/**
 	 * The live data of the authenticated user.
@@ -37,16 +30,6 @@ public class AuthViewModel extends ViewModel {
 	private LiveData<Exception> authenticationErrorsLiveData;
 
 	/**
-	 * The live data of the database user.
-	 */
-	private LiveData<User> databaseUserLiveData;
-
-	/**
-	 * The live data of the database errors.
-	 */
-	private LiveData<Exception> databaseErrorsLiveData;
-
-	/**
 	 * Constructs an authentication view model.
 	 */
 	public AuthViewModel() {
@@ -54,13 +37,10 @@ public class AuthViewModel extends ViewModel {
 
 		// Initialize the repositories.
 		authRepository = new AuthRepositoryFirebase();
-		userRepository = new UserRepositoryFirebase();
 
 		// Initialize the live data.
 		authenticatedUserLiveData = new MutableLiveData<>();
-		databaseUserLiveData = new MutableLiveData<>();
 		authenticationErrorsLiveData = authRepository.getErrors();
-		databaseErrorsLiveData = userRepository.getErrors();
 	}
 
 	/*====================================================================*/
@@ -71,7 +51,7 @@ public class AuthViewModel extends ViewModel {
 	 * Returns the live data of the authenticated user.
 	 * @return The live data of the authenticated user.
 	 */
-	public LiveData<User> getAuthenticatedUser() {
+	public LiveData<User> getAuthenticatedUserLiveData() {
 		return authenticatedUserLiveData;
 	}
 
@@ -79,24 +59,8 @@ public class AuthViewModel extends ViewModel {
 	 * Returns the live data of the authentication errors.
 	 * @return The live data of the authentication errors.
 	 */
-	public LiveData<Exception> getAuthenticationErrors() {
+	public LiveData<Exception> getAuthenticationErrorsLiveData() {
 		return authenticationErrorsLiveData;
-	}
-
-	/**
-	 * Returns the live data of the user from the database.
-	 * @return The live data of the user from the database.
-	 */
-	public LiveData<User> getDatabaseUser() {
-		return databaseUserLiveData;
-	}
-
-	/**
-	 * Returns the live data of the database errors.
-	 * @return The live data of the database errors.
-	 */
-	public LiveData<Exception> getDatabaseErrors() {
-		return databaseErrorsLiveData;
 	}
 
 	/*====================================================================*/
@@ -145,7 +109,6 @@ public class AuthViewModel extends ViewModel {
 
 		// Clear the live data.
 		authenticatedUserLiveData = new MutableLiveData<>();
-		databaseUserLiveData = new MutableLiveData<>();
 	}
 
 	/**
@@ -154,29 +117,5 @@ public class AuthViewModel extends ViewModel {
 	 */
 	public void clearAuthenticationError() {
 		authRepository.clearErrors();
-	}
-
-	/**
-	 * Returns a user from the database in real time.
-	 * @param id The id of the user.
-	 */
-	public void getUser(String id) {
-		databaseUserLiveData = userRepository.getUser(id);
-	}
-
-	/**
-	 * Creates a user in the database.
-	 * @param user The user to be created.
-	 */
-	public void createUser(User user) {
-		databaseUserLiveData = userRepository.createUser(user);
-	}
-
-	/**
-	 * Clears the live data of the user errors.
-	 * This avoid receiving the same error twice.
-	 */
-	public void clearDatabaseErrors() {
-		userRepository.clearErrors();
 	}
 }
