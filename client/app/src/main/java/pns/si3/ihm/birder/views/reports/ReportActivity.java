@@ -27,6 +27,7 @@ import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.views.GPSActivity;
+import pns.si3.ihm.birder.views.GpsActivity;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
 
 /**
@@ -194,7 +195,7 @@ public class ReportActivity extends AppCompatActivity
 		// Choose location button.
 		chooseLocationButton = findViewById(R.id.text_choose_location);
 		chooseLocationButton.setOnClickListener(v -> {
-			Intent intent = new Intent(ReportActivity.this, GPSActivity.class);
+			Intent intent = new Intent(ReportActivity.this, GpsActivity.class);
 			startActivity(intent);
 		});
 

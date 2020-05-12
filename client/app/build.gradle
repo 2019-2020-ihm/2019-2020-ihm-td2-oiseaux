@@ -5,12 +5,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "pns.si3.ihm.birder"
-        minSdkVersion 28
-        targetSdkVersion 28
+        minSdkVersion 26
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,7 +34,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
 
     // Open Street Map for Android.
-    implementation 'org.osmdroid:osmdroid-android:6.1.6'
+    implementation 'org.osmdroid:osmdroid-android:5.6.5'
 
     // Firebase SDK for Google Analytics.
     implementation 'com.google.firebase:firebase-analytics:17.4.1'
@@ -49,10 +49,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.1.1'
 
     // Java tests.
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.12'
 
     // Adnroid tests.
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 }
