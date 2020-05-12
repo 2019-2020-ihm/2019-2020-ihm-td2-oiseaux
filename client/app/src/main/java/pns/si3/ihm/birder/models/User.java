@@ -2,6 +2,8 @@ package pns.si3.ihm.birder.models;
 
 import com.google.firebase.firestore.Exclude;
 
+import java.util.ArrayList;
+
 /**
  * User.
  */
@@ -26,6 +28,12 @@ public class User {
 	 */
 	public String email;
 
+	/**
+	 * True if the user want to be notify of all of the report
+	 * False otherwise
+	 */
+	public Boolean allNotificationActivate;
+
 	public User() {}
 
 	public User(String id, String firstName, String lastName, String email) {
@@ -33,5 +41,7 @@ public class User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
+		this.allNotificationActivate = true;
 	}
+
 }

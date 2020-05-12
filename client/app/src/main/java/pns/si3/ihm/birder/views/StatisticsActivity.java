@@ -90,7 +90,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     public void goBack() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, AccountActivity.class);
         startActivity(intent);
     }
 }

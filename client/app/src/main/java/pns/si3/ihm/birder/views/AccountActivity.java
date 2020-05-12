@@ -83,8 +83,8 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
                             "Vous avez été déconnecté !",
                             Toast.LENGTH_SHORT
                     ).show();
-
-                    setSpinner();
+                    Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
                 else {
                     Intent intent = new Intent(AccountActivity.this, SignInActivity.class);
