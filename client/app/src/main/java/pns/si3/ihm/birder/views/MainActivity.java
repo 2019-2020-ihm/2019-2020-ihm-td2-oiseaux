@@ -72,8 +72,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     startActivity(intent);
                 }
             }break;
-            case 3:// Déconnexion (connecté)
-                {
+            case 3:{
 				// The user is connected.
 				if (auth.getCurrentUser() != null) {
 					// Sign out the user.
@@ -116,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         List<String> list = new ArrayList<>();
         list.add("Menu");
         list.add("Voir Carte");
+
         // The user is connected.
         if (auth.getCurrentUser() != null) {
             list.add("Compte");
