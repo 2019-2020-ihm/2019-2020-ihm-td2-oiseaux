@@ -18,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import java.io.IOException;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 public class GPSActivity extends FragmentActivity implements OnMapReadyCallback, IGPSActivity {
 

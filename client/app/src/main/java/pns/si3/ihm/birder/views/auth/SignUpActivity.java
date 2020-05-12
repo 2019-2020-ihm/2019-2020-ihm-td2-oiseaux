@@ -1,11 +1,9 @@
-package pns.si3.ihm.birder.views;
+package pns.si3.ihm.birder.views.auth;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -13,13 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 
-public class SignInActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 	/**
 	 * The tag for the log messages.
 	 */
-	private static final String TAG = "SignInActivity";
+	private static final String TAG = "SignUpActivity";
 
 	/**
 	 * The authentication view model.
@@ -29,20 +28,22 @@ public class SignInActivity extends AppCompatActivity {
 	/**
 	 * The activity fields.
 	 */
+	private EditText editFirstName;
+	private EditText editLastName;
 	private EditText editEmail;
 	private EditText editPassword;
+	private EditText editConfirmPassword;
 
 	/**
 	 * The activity buttons.
 	 */
 	private Button returnButton;
 	private Button submitButton;
-	private TextView signUpButton;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_sign_in);
+		setContentView(R.layout.activity_sign_up);
 		initViewModel();
 		initFields();
 		initButtons();
@@ -67,15 +68,18 @@ public class SignInActivity extends AppCompatActivity {
 	 * Initializes the activity fields.
 	 */
 	private void initFields() {
+		editFirstName = findViewById(R.id.edit_first_name);
+		editLastName = findViewById(R.id.edit_last_name);
 		editEmail = findViewById(R.id.edit_email);
 		editPassword = findViewById(R.id.edit_password);
+		editConfirmPassword = findViewById(R.id.edit_confirm_password);
 	}
 
 	/**
 	 * Initializes the activity buttons.
 	 */
 	private void initButtons() {
-    	// Return button.
+		// Return button.
 		returnButton = findViewById(R.id.button_return);
 		returnButton.setOnClickListener(v -> {
 			finish();
@@ -84,36 +88,31 @@ public class SignInActivity extends AppCompatActivity {
 		// Submit button.
 		submitButton = findViewById(R.id.button_submit);
 		submitButton.setOnClickListener(v -> {
-			signIn();
-		});
-
-		// Sign up button.
-		signUpButton = findViewById(R.id.text_sign_up);
-		signUpButton.setOnClickListener(v -> {
-			Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
-			startActivity(intent);
+			signUp();
 		});
 	}
 
 	/**
-	 * Signs in the user.
+	 * Signs up the user.
 	 */
-	private void signIn() {
+	private void signUp() {
 		if (isFormValid()) {
-			signInWithEmailAndPassword();
+			createUserWithEmailAndPassword();
 		}
 	}
 
 	/**
-	 * Signs in the user with an email and password.
+	 * Creates a user with an email and password.
 	 */
-	private void signInWithEmailAndPassword() {
+	private void createUserWithEmailAndPassword() {
 		// Get values.
+		String firstName = editFirstName.getText().toString();
+		String lastName = editLastName.getText().toString();
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
 
-		Log.i(TAG, "Sign in with email and password.");
-		authViewModel.signInWithEmailAndPassword(email, password);
+		Log.i(TAG, "Create a user with email and password.");
+		authViewModel.createUserWithEmailAndPassword(email, password);
 
 		// Auth succeeded.
 		authViewModel
@@ -123,7 +122,17 @@ public class SignInActivity extends AppCompatActivity {
 				authUser -> {
 					if (authUser != null) {
 						Log.i(TAG, "Auth succeeded.");
-						getUserFromDatabase(authUser.id);
+
+						// Init the database user.
+						User user = new User(
+							authUser.id,
+							firstName,
+							lastName,
+							authUser.email
+						);
+
+						// Create the database user.
+						createUserInDatabase(user);
 					}
 				}
 			);
@@ -138,19 +147,10 @@ public class SignInActivity extends AppCompatActivity {
 						Log.e(TAG, "Auth failed.");
 						Log.e(TAG, authError.getMessage());
 
-						// Reset password.
+						// Reset passwords.
 						editPassword.setText("");
+						editConfirmPassword.setText("");
 						editPassword.requestFocus();
-
-						// Error messages.
-						editPassword.setError("Les identifiants de connexion sont incorrects.");
-
-						// Error toast.
-						Toast.makeText(
-							SignInActivity.this,
-							"La connexion a échouée.",
-							Toast.LENGTH_SHORT
-						).show();
 
 						// Clears the authentication error.
 						authViewModel.clearAuthenticationError();
@@ -160,29 +160,28 @@ public class SignInActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * Gets the user from the database.
-	 * @param id The id of the user.
+	 * Creates a user in the database.
+	 * @param user The user to be created.
 	 */
-	private void getUserFromDatabase(String id) {
-		Log.i(TAG, "Get user from the database.");
-		authViewModel.getUser(id);
-
-		// Query succeeded.
+	private void createUserInDatabase(User user) {
+		Log.i(TAG, "Create user in the database.");
+		authViewModel.createUser(user);
 		authViewModel
 			.getDatabaseUser()
 			.observe(
 				this,
 				databaseUser -> {
 					if (databaseUser != null) {
-						Log.i(TAG, "Query succeeded.");
+						Log.i(TAG, "User created.");
 
 						// Reset password.
 						editPassword.setText("");
+						editConfirmPassword.setText("");
 
 						// Success toast.
 						Toast.makeText(
 							this,
-							"Bonjour " + databaseUser.firstName + " !",
+							"Bonjour " + user.firstName + " !",
 							Toast.LENGTH_LONG
 						).show();
 
@@ -191,43 +190,33 @@ public class SignInActivity extends AppCompatActivity {
 					}
 				}
 			);
-
-		// Query failed.
-		authViewModel
-			.getDatabaseErrors()
-			.observe(
-				this,
-				databaseError -> {
-					if (databaseError != null) {
-						Log.e(TAG, "Query failed.");
-						Log.e(TAG, databaseError.getMessage());
-
-						// Reset password.
-						editPassword.setText("");
-						editPassword.requestFocus();
-
-						// Error toast.
-						Toast.makeText(
-							SignInActivity.this,
-							"Une erreur est survenue.",
-							Toast.LENGTH_SHORT
-						).show();
-
-						// Clear the database error.
-						authViewModel.clearDatabaseErrors();
-					}
-				}
-			);
 	}
 
 	/**
-	 * Checks if the form is valid.
+	 * Validates the form.
 	 * @return Whether the form is valid, or not.
 	 */
 	private boolean isFormValid() {
-		// Get values.
+		// Get form values.
+		String firstName = editFirstName.getText().toString();
+		String lastName = editLastName.getText().toString();
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
+		String confirmPassword = editConfirmPassword.getText().toString();
+
+		// First name is empty.
+		if (firstName.isEmpty()) {
+			editFirstName.setError("Veuillez saisir un prénom.");
+			editFirstName.requestFocus();
+			return false;
+		}
+
+		// Last name is empty.
+		if (lastName.isEmpty()) {
+			editLastName.setError("Veuillez saisir un nom.");
+			editLastName.requestFocus();
+			return false;
+		}
 
 		// Email is empty.
 		if (email.isEmpty()) {
@@ -246,6 +235,31 @@ public class SignInActivity extends AppCompatActivity {
 		// Password is empty.
 		if (password.isEmpty()) {
 			editPassword.setError("Veuillez saisir un mot de passe.");
+			editConfirmPassword.setText("");
+			editPassword.requestFocus();
+			return false;
+		}
+
+		// Confirm password is empty.
+		if (confirmPassword.isEmpty()) {
+			editConfirmPassword.setError("Veuillez resaisir votre mot de passe.");
+			editConfirmPassword.requestFocus();
+			return false;
+		}
+
+		// Passwords don't match.
+		if (!password.equals(confirmPassword)) {
+			editConfirmPassword.setError("Les mots de passe ne correspondent pas.");
+			editConfirmPassword.setText("");
+			editConfirmPassword.requestFocus();
+			return false;
+		}
+
+		// Password not long enough.
+		if (password.length() < 6) {
+			editPassword.setError("Votre mot de passe doit comporter au moins 6 caractères.");
+			editPassword.setText("");
+			editConfirmPassword.setText("");
 			editPassword.requestFocus();
 			return false;
 		}
