@@ -18,7 +18,7 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.views.AccountActivity;
-import pns.si3.ihm.birder.views.MainActivity;
+import pns.si3.ihm.birder.views.reports.MainActivity;
 import pns.si3.ihm.birder.views.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 

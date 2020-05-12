@@ -132,10 +132,10 @@ public class SignUpActivity extends AppCompatActivity {
 
 						// Init the database user.
 						User user = new User(
-							authUser.id,
+							authUser.getId(),
 							firstName,
 							lastName,
-							authUser.email
+							authUser.getEmail()
 						);
 
 						// Create the database user.
@@ -188,7 +188,7 @@ public class SignUpActivity extends AppCompatActivity {
 						// Success toast.
 						Toast.makeText(
 							this,
-							"Bonjour " + user.firstName + " !",
+							"Bonjour " + user.getFirstName() + " !",
 							Toast.LENGTH_LONG
 						).show();
 
