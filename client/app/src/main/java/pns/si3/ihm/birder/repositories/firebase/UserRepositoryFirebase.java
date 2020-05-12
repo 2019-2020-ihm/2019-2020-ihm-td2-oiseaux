@@ -59,7 +59,10 @@ public class UserRepositoryFirebase implements UserRepository {
 						if (userSnapshot != null) {
 							// User found.
 							User user = userSnapshot.toObject(User.class);
-							userLiveData.setValue(user);
+							if (user != null) {
+								user.setId(id);
+								userLiveData.setValue(user);
+							}
 						} else {
 							// User not found.
 							errorLiveData.setValue(new DocumentNotFoundException());
@@ -77,15 +80,15 @@ public class UserRepositoryFirebase implements UserRepository {
 	/**
 	 * Sets a user in the database.
 	 * @param user The user to be created.
-	 * @return The live data of the created user.
+	 * @return The created user.
 	 */
-	public LiveData<User> setUser(User user) {
+	public LiveData<User> insertUser(User user) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Create the user.
 		firebaseFirestore
 			.collection("users")
-			.document(user.id)
+			.document(user.getId())
 			.set(user)
 			.addOnCompleteListener(
 				userTask -> {
@@ -103,15 +106,15 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Returns the live data of the user request errors.
-	 * @return The live data of the user request errors.
+	 * Returns the user request errors.
+	 * @return The user request errors.
 	 */
 	public LiveData<Exception> getErrors() {
 		return errorLiveData;
 	}
 
 	/**
-	 * Clears the live data of the user request errors.
+	 * Clears the user request errors.
 	 * This avoid receiving the same error multiple times.
 	 */
 	public void clearErrors() {

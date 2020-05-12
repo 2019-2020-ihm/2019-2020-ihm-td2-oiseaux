@@ -2,7 +2,6 @@ package pns.si3.ihm.birder.repositories.firebase;
 
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,7 +13,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -120,7 +118,10 @@ public class ReportRepositoryFirebase implements ReportRepository {
 						if (reportSnapshot != null) {
 							// Report found.
 							Report report = reportSnapshot.toObject(Report.class);
-							reportLiveData.setValue(report);
+							if (report != null) {
+								report.setId(id);
+								reportLiveData.setValue(report);
+							}
 						} else {
 							// Report not found.
 							errorLiveData.setValue(new DocumentNotFoundException());
@@ -138,7 +139,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	/**
 	 * Creates a bird report.
 	 * @param report The bird report.
-	 * @return The live data of the created report.
+	 * @return The created report.
 	 */
 	@Override
 	public LiveData<Report> createReport(Report report) {

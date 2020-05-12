@@ -9,22 +9,28 @@ public class User {
 	/**
 	 * The unique id of the user.
 	 */
-	public String id;
+	private String id;
 
 	/**
 	 * The first name of the user.
 	 */
-	public String firstName;
+	private String firstName;
 
 	/**
 	 * The last name of the user.
 	 */
-	public String lastName;
+	private String lastName;
 
 	/**
 	 * The email of the user.
 	 */
-	public String email;
+	private String email;
+
+	/**
+	 * True if the user want to be notify of all of the report
+	 * False otherwise
+	 */
+	private Boolean allNotificationActivate;
 
 	public User() {}
 
@@ -33,5 +39,48 @@ public class User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
+		this.allNotificationActivate = true;
 	}
+
+	@Exclude
+	public String getId() {
+		return id;
+	}
+
+	@Exclude
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Boolean getAllNotificationActivate(){
+	    return allNotificationActivate;
+    }
+
+    public void setAllNotificationActivate(Boolean allNotificationActivate){
+	    this.allNotificationActivate = allNotificationActivate;
+    }
 }

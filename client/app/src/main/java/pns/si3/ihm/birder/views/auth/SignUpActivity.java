@@ -118,7 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
 
-		Log.i(TAG, "Create a user with email and password.");
+		// Request the user creation.
 		authViewModel.createUserWithEmailAndPassword(email, password);
 
 		// Auth succeeded.
@@ -128,14 +128,12 @@ public class SignUpActivity extends AppCompatActivity {
 				this,
 				authUser -> {
 					if (authUser != null) {
-						Log.i(TAG, "Auth succeeded.");
-
 						// Init the database user.
 						User user = new User(
-							authUser.id,
+							authUser.getId(),
 							firstName,
 							lastName,
-							authUser.email
+							authUser.getEmail()
 						);
 
 						// Create the database user.
@@ -171,16 +169,16 @@ public class SignUpActivity extends AppCompatActivity {
 	 * @param user The user to be created.
 	 */
 	private void createUserInDatabase(User user) {
-		Log.i(TAG, "Create user in the database.");
-		userViewModel.setUser(user);
+		// Request the creation of the user.
+		userViewModel.insertUser(user);
+
+		// Query succeeded.
 		userViewModel
-			.getUserLiveData()
+			.getInsertedUserLiveData()
 			.observe(
 				this,
 				databaseUser -> {
 					if (databaseUser != null) {
-						Log.i(TAG, "User created.");
-
 						// Reset password.
 						editPassword.setText("");
 						editConfirmPassword.setText("");
@@ -188,7 +186,7 @@ public class SignUpActivity extends AppCompatActivity {
 						// Success toast.
 						Toast.makeText(
 							this,
-							"Bonjour " + user.firstName + " !",
+							"Bonjour " + user.getFirstName() + " !",
 							Toast.LENGTH_LONG
 						).show();
 

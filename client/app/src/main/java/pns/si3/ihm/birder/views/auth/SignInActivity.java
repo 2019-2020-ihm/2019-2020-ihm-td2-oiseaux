@@ -119,7 +119,7 @@ public class SignInActivity extends AppCompatActivity {
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
 
-		Log.i(TAG, "Sign in with email and password.");
+		// Request the sign in.
 		authViewModel.signInWithEmailAndPassword(email, password);
 
 		// Auth succeeded.
@@ -129,8 +129,7 @@ public class SignInActivity extends AppCompatActivity {
 				this,
 				authUser -> {
 					if (authUser != null) {
-						Log.i(TAG, "Auth succeeded.");
-						getUserFromDatabase(authUser.id);
+						getUserFromDatabase(authUser.getId());
 					}
 				}
 			);
@@ -140,10 +139,10 @@ public class SignInActivity extends AppCompatActivity {
 			.getAuthenticationErrorsLiveData()
 			.observe(
 				this,
-				authError -> {
-					if (authError != null) {
+				error -> {
+					if (error != null) {
 						Log.e(TAG, "Auth failed.");
-						Log.e(TAG, authError.getMessage());
+						Log.e(TAG, error.getMessage());
 
 						// Reset password.
 						editPassword.setText("");
@@ -171,25 +170,23 @@ public class SignInActivity extends AppCompatActivity {
 	 * @param id The id of the user.
 	 */
 	private void getUserFromDatabase(String id) {
-		Log.i(TAG, "Get user from the database.");
+		// Request the user.
 		userViewModel.getUser(id);
 
 		// Query succeeded.
 		userViewModel
-			.getUserLiveData()
+			.getSelectedUserLiveData()
 			.observe(
 				this,
-				databaseUser -> {
-					if (databaseUser != null) {
-						Log.i(TAG, "Query succeeded.");
-
+				user -> {
+					if (user != null) {
 						// Reset password.
 						editPassword.setText("");
 
 						// Success toast.
 						Toast.makeText(
 							this,
-							"Bonjour " + databaseUser.firstName + " !",
+							"Bonjour " + user.getFirstName() + " !",
 							Toast.LENGTH_LONG
 						).show();
 
@@ -204,10 +201,10 @@ public class SignInActivity extends AppCompatActivity {
 			.getUserErrorsLiveData()
 			.observe(
 				this,
-				databaseError -> {
-					if (databaseError != null) {
+				error -> {
+					if (error != null) {
 						Log.e(TAG, "Query failed.");
-						Log.e(TAG, databaseError.getMessage());
+						Log.e(TAG, error.getMessage());
 
 						// Reset password.
 						editPassword.setText("");

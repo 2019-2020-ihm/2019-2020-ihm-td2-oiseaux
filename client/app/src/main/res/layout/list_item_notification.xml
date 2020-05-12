@@ -26,14 +26,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="right">
-            <Button
-                android:id="@+id/button_modifier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Modifier" />
+
 
             <Button
-                android:id="@+id/button_supprimer"
+                android:id="@+id/button_supprimer_notif"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"

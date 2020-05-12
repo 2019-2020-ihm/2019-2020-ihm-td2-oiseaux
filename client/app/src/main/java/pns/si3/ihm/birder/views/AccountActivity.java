@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationActivity;
+import pns.si3.ihm.birder.views.reports.MainActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -83,8 +84,8 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
                             "Vous avez été déconnecté !",
                             Toast.LENGTH_SHORT
                     ).show();
-
-                    setSpinner();
+                    Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
                 else {
                     Intent intent = new Intent(AccountActivity.this, SignInActivity.class);
