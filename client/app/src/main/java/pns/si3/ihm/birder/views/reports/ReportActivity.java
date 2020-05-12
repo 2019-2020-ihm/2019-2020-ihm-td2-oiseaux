@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,9 +35,9 @@ import pns.si3.ihm.birder.views.pictures.PictureActivity;
  *
  * Allows the user to create bird reports.
  */
-public class ReportActivity extends AppCompatActivity
-	implements DatePickerDialog.OnDateSetListener,
-	TimePickerDialog.OnTimeSetListener
+public class ReportActivity
+	extends AppCompatActivity
+	implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
 {
 	public static final int REQUEST_PICTURE = 1;
 
@@ -58,7 +59,7 @@ public class ReportActivity extends AppCompatActivity
 	/**
 	 * The activity fields.
 	 */
-    ImageView image;
+    ImageView picture;
 	EditText editSpecies;
 	EditText editNumber;
 	EditText editDate;
@@ -77,7 +78,8 @@ public class ReportActivity extends AppCompatActivity
 	/**
 	 * The image values.
 	 */
-	Uri pictureURI;
+	Uri pictureUri;
+	boolean pictureCreated;
 
 	/**
 	 * The activity buttons.
@@ -93,7 +95,7 @@ public class ReportActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-		initViewModel();
+		initViewModels();
 		initFields();
 		initValues();
 		initButtons();
@@ -108,9 +110,9 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	/**
-	 * Initializes the report view model that holds the data.
+	 * Initializes the view models that hold the data.
 	 */
-	private void initViewModel() {
+	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 	}
@@ -130,7 +132,8 @@ public class ReportActivity extends AppCompatActivity
 		updateTimeField();
 
 		// Picture values.
-		pictureURI = null;
+		pictureUri = null;
+		pictureCreated = false;
 	}
 
 	/**
@@ -138,7 +141,7 @@ public class ReportActivity extends AppCompatActivity
 	 */
     private void initFields() {
     	// Get the fields.
-		image = findViewById(R.id.image_bird);
+		picture = findViewById(R.id.image_picture);
 		editSpecies = findViewById(R.id.edit_species);
 		editNumber = findViewById(R.id.edit_number);
 		editLocation = findViewById(R.id.edit_location);
@@ -169,6 +172,7 @@ public class ReportActivity extends AppCompatActivity
     	// Return button.
 		returnButton = findViewById(R.id.button_return);
 		returnButton.setOnClickListener(v -> {
+			deleteCreatedPicture();
 			finish();
 		});
 
@@ -176,13 +180,13 @@ public class ReportActivity extends AppCompatActivity
 		editImageButton = findViewById(R.id.edit_image_button);
 		editImageButton.setOnClickListener(v -> {
 			Intent intent = new Intent(ReportActivity.this, PictureActivity.class);
-			startActivityForResult(intent, 1);
+			startActivityForResult(intent, REQUEST_PICTURE);
 		});
 
 		// Delete image button.
 		deleteImageButton = findViewById(R.id.delete_image_button);
 		deleteImageButton.setOnClickListener(v -> {
-			image.setImageResource(R.drawable.gallery);
+			resetPicture();
 		});
 
 		// Current location button.
@@ -204,8 +208,6 @@ public class ReportActivity extends AppCompatActivity
 			submit();
 		});
 	}
-
-
 
 	/**
 	 * Submits the report, if the form is valid.
@@ -231,8 +233,6 @@ public class ReportActivity extends AppCompatActivity
 				this,
 				createdReport -> {
 					if (createdReport != null) {
-						Log.e(TAG, "Report created.");
-
 						// Success toast.
 						Toast.makeText(
 							ReportActivity.this,
@@ -277,6 +277,7 @@ public class ReportActivity extends AppCompatActivity
 			userId,
 			species,
 			number,
+			pictureUri,
 			date
 		);
 	}
@@ -324,6 +325,47 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	/**
+	 * Deletes a picture file by URI.
+	 */
+	public void deletePictureFile(Uri uri) {
+		ContentResolver contentResolver = getContentResolver();
+		contentResolver.delete(uri, null, null);
+	}
+
+	/**
+	 * Deletes the picture if it has been created.
+	 */
+	private void deleteCreatedPicture() {
+		if (pictureUri != null && pictureCreated) {
+			deletePictureFile(pictureUri);
+		}
+	}
+
+	/**
+	 * Sets the picture.
+	 * @param uri The new picture URI.
+	 * @param created Whether the image has been created, or not.
+	 */
+	private void setPicture(Uri uri, boolean created) {
+		pictureUri = uri;
+		pictureCreated = created;
+		picture.setImageURI(pictureUri);
+	}
+
+	/**
+	 * Resets the picture.
+	 */
+	private void resetPicture() {
+		// Delete the selected picture if created.
+		deleteCreatedPicture();
+
+		// Reset attributes.
+		pictureUri = null;
+		pictureCreated = false;
+		picture.setImageResource(R.drawable.gallery);
+	}
+
+	/**
 	 * Method triggered when the activity receives a result.
 	 * @param requestCode The request code.
 	 * @param resultCode The result code.
@@ -335,8 +377,14 @@ public class ReportActivity extends AppCompatActivity
         if (requestCode == REQUEST_PICTURE && resultCode == RESULT_OK){
             Bundle bundle = data.getExtras();
             if (bundle != null) {
-				pictureURI = (Uri) bundle.get("pictureURI");
-				image.setImageURI(pictureURI);
+				// Reset the picture.
+				resetPicture();
+
+				// Set the new picture.
+				setPicture(
+					(Uri) bundle.get("pictureURI"),
+					(boolean) bundle.get("pictureCreated")
+				);
 			}
         }
     }
@@ -360,13 +408,13 @@ public class ReportActivity extends AppCompatActivity
 		);
 
 		// Get date interval.
-		Date monthAgo = getMinDate();
-		Date today = new Date();
+		Date minDate = getMinDate();
+		Date now = new Date();
 
 		// Set date interval.
 		DatePicker datePicker = datePickerDialog.getDatePicker();
-		datePicker.setMinDate(monthAgo.getTime());
-		datePicker.setMaxDate(today.getTime());
+		datePicker.setMinDate(minDate.getTime());
+		datePicker.setMaxDate(now.getTime());
 
 		return datePickerDialog;
 	}
@@ -403,8 +451,8 @@ public class ReportActivity extends AppCompatActivity
 	}
 
 	/**
-	 * Returns the date two months ago.
-	 * @return The date two months ago.
+	 * Returns the minimal date a user can select.
+	 * @return The minimal date a user can select.
 	 */
 	private Date getMinDate() {
 		Calendar calendar = new GregorianCalendar();
