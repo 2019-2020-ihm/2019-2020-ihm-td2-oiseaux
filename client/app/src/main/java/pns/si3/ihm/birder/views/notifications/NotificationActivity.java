@@ -93,9 +93,9 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
                         this,
                         user -> {
                             if (user != null) {
-                                setAllNotification(user.allNotificationActivate);
+                                setAllNotification(user.getAllNotificationActivate());
                             }
-                            checkBox.setChecked(user.allNotificationActivate);
+                            checkBox.setChecked(user.getAllNotificationActivate());
                         }
                 );
     }
@@ -122,7 +122,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
                                                 this,
                                                 databaseUser -> {
                                                     if (databaseUser != null) {
-                                                        user.allNotificationActivate = getAllNotification();
+                                                        user.setAllNotificationActivate(getAllNotification());
                                                         userViewModel.setUser(user);
                                                     }
                                                 }
