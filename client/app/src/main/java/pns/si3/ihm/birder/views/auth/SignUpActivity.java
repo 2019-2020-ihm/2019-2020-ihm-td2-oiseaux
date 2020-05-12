@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class SignUpActivity extends AppCompatActivity {
 	/**
@@ -24,6 +25,11 @@ public class SignUpActivity extends AppCompatActivity {
 	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
+
+	/**
+	 * The user view model.
+	 */
+	private UserViewModel userViewModel;
 
 	/**
 	 * The activity fields.
@@ -62,6 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
 	 */
 	private void initViewModel() {
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
 	/**
@@ -116,7 +123,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 		// Auth succeeded.
 		authViewModel
-			.getAuthenticatedUser()
+			.getAuthenticatedUserLiveData()
 			.observe(
 				this,
 				authUser -> {
@@ -139,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 		// Auth failed.
 		authViewModel
-			.getAuthenticationErrors()
+			.getAuthenticationErrorsLiveData()
 			.observe(
 				this,
 				authError -> {
@@ -165,9 +172,9 @@ public class SignUpActivity extends AppCompatActivity {
 	 */
 	private void createUserInDatabase(User user) {
 		Log.i(TAG, "Create user in the database.");
-		authViewModel.createUser(user);
-		authViewModel
-			.getDatabaseUser()
+		userViewModel.setUser(user);
+		userViewModel
+			.getUserLiveData()
 			.observe(
 				this,
 				databaseUser -> {

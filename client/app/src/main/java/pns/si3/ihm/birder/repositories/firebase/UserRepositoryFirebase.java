@@ -75,11 +75,11 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Creates a user in the database.
+	 * Sets a user in the database.
 	 * @param user The user to be created.
 	 * @return The live data of the created user.
 	 */
-	public LiveData<User> createUser(User user) {
+	public LiveData<User> setUser(User user) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
 		// Create the user.

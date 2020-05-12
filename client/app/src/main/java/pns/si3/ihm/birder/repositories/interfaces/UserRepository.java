@@ -19,11 +19,11 @@ public interface UserRepository {
 	LiveData<User> getUser(String id);
 
 	/**
-	 * Creates a user in the database.
-	 * @param user The user to be created.
+	 * Sets a user in the database.
+	 * @param user The user to be set.
 	 * @return The live data of the created user.
 	 */
-	LiveData<User> createUser(User user);
+	LiveData<User> setUser(User user);
 
 	/**
 	 * Returns the live data of the user request errors.
