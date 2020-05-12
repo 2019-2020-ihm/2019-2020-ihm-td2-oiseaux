@@ -3,89 +3,106 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+	android:background="#DADADA">
 
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		android:background="#5FC1E8">
 
-    <Button
-        android:id="@+id/button_return"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retour"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+		<Button
+			android:id="@+id/button_return"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
+			android:layout_marginTop="15dp"
+			android:background="@drawable/buttonstyle"
+			android:text="Retour"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
-    <Switch
-        android:id="@+id/switch_advanced"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mode avancé  "
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+		<Switch
+			android:id="@+id/switch_advanced"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Mode avancé  "
+			android:layout_marginTop="25dp"
+			android:layout_marginRight="20dp"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			/>
 
-    <TextView
-        android:id="@+id/text_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="Signaler un oiseau"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+		<TextView
+			android:id="@+id/text_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Signaler un oiseau"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			android:layout_marginTop="70dp"
+			android:paddingBottom="20dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/text_species"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Espèce"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_marginTop="120dp"
-        android:layout_marginLeft="40dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/edit_species"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="115dp"
-        android:ems="10"
-        android:inputType="text"
-        android:hint="Pigeon"
-        app:layout_constraintLeft_toRightOf="@id/text_species"
-        app:layout_constraintTop_toTopOf="parent" />
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_constraintTop_toBottomOf="@+id/header"
+		app:layout_constraintLeft_toLeftOf="parent" >
 
-    <TextView
-        android:id="@+id/text_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nombre"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_marginTop="170dp"
-        android:layout_marginLeft="40dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+		<TextView
+			android:id="@+id/text_species"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Espèce"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			android:layout_marginTop="30dp"
+			android:layout_marginLeft="40dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
+		<EditText
+			android:id="@+id/edit_species"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="40dp"
+			android:layout_marginTop="25dp"
+			android:ems="10"
+			android:inputType="text"
+			android:hint="Pigeon"
+			app:layout_constraintLeft_toRightOf="@id/text_species"
+			app:layout_constraintTop_toTopOf="parent" />
 
+		<TextView
+			android:id="@+id/text_number"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Nombre"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			android:layout_marginTop="80dp"
+			android:layout_marginLeft="40dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/edit_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:hint="3"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="165dp"
-        app:layout_constraintLeft_toRightOf="@id/text_number"
-        app:layout_constraintTop_toTopOf="parent" />
+		<EditText
+			android:id="@+id/edit_number"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:ems="10"
+			android:inputType="number"
+			android:hint="3"
+			android:layout_marginLeft="32dp"
+			android:layout_marginTop="75dp"
+			app:layout_constraintLeft_toRightOf="@id/text_number"
+			app:layout_constraintTop_toTopOf="parent" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
@@ -110,9 +127,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="108dp"
-			android:layout_marginRight="40dp"
+			android:layout_marginRight="52dp"
 			android:clickable="true"
 			android:text="Choisir sur la carte"
+			android:textColor="#4055CC"
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
@@ -134,12 +152,14 @@
 			android:layout_marginTop="108dp"
 			android:clickable="true"
 			android:text="Ma position actuelle"
+			android:textColor="#4055CC"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/layoutDateHeure"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="352dp"
@@ -196,46 +216,57 @@
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
-	<Button
-		android:id="@+id/edit_image_button"
-		android:layout_width="wrap_content"
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/layoutImage"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginLeft="224dp"
-		android:layout_marginBottom="176dp"
-		android:text="Ajouter une image"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent" />
-
-	<Button
-		android:id="@+id/delete_image_button"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="224dp"
-		android:layout_marginBottom="136dp"
-		android:text="Supprimer l'image"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent" />
-
-	<ImageView
-		android:id="@+id/image_bird"
-		android:layout_width="135dp"
-		android:layout_height="109dp"
-		android:layout_marginLeft="40dp"
-		android:layout_marginBottom="128dp"
-		app:layout_constraintBottom_toBottomOf="parent"
+		android:layout_marginTop="8dp"
 		app:layout_constraintLeft_toLeftOf="parent"
-		app:srcCompat="@drawable/gallery" />
+		app:layout_constraintTop_toBottomOf="@id/layoutDateHeure">
+
+		<Button
+			android:id="@+id/edit_image_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="188dp"
+			android:background="@drawable/buttonstyle"
+			android:drawableStart="@android:drawable/ic_input_add"
+			android:text="Ajouter une image  "
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<Button
+			android:id="@+id/delete_image_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="188dp"
+			android:background="@drawable/buttonstyle"
+			android:drawableStart="@android:drawable/ic_delete"
+			android:text="Supprimer l'image  "
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent" />
+
+		<ImageView
+			android:id="@+id/image_bird"
+			android:layout_width="135dp"
+			android:layout_height="109dp"
+			android:layout_marginLeft="40dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:srcCompat="@drawable/gallery" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<Button
 		android:id="@+id/button_submit"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="40dp"
-		android:text="Signaler maintenant"
-		app:layout_constraintBottom_toBottomOf="parent"
+		android:layout_marginTop="20dp"
+		android:background="@drawable/buttonstyle"
+		android:text="  Signaler maintenant  "
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.497"
 		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/layoutImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
