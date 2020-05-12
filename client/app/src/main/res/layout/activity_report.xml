@@ -130,7 +130,7 @@
 			android:layout_marginRight="52dp"
 			android:clickable="true"
 			android:text="Choisir sur la carte"
-			android:textColor="#4055CC"
+			android:textColor="#3333ff"
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
@@ -152,7 +152,7 @@
 			android:layout_marginTop="108dp"
 			android:clickable="true"
 			android:text="Ma position actuelle"
-			android:textColor="#4055CC"
+			android:textColor="#3333ff"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
