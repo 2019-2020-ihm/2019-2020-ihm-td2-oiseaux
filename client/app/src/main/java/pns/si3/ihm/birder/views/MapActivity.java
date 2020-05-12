@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -27,6 +30,8 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+	private FirebaseAuth auth;
 	private MapView map;
 
 	@Override
@@ -37,6 +42,9 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 		Configuration.getInstance().load(   getApplicationContext(),
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
 		setContentView(R.layout.activity_map);
+
+		// Initialize firebase.
+		auth = FirebaseAuth.getInstance();
 
 		setSpinner();
 
@@ -78,31 +86,48 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 
 	}
 
-	public void setSpinner(){
-		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);
-		spinner.setOnItemSelectedListener(this);
-		List<String> list = new ArrayList<String>();
-		list.add("Voir Carte");
-		list.add("Dernières signalisations");
-		list.add("Se connecter");
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, list);
-		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(dataAdapter);
-	}
-
-
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		switch(position){
 			case 0:break;
-			case 1:{
+			case 1: //Dernières signalisations
+				{
 				Intent intent = new Intent(MapActivity.this, MainActivity.class);
 				startActivity(intent);
 			}break;
-			case 2:{
-				Intent intent = new Intent(MapActivity.this, SignInActivity.class);
-				startActivity(intent);
+			case 2: //Compte (connecté) / Se connecter (déconnecté)
+			{
+				if (auth.getCurrentUser() != null) {
+					Intent intent = new Intent(MapActivity.this,AccountActivity.class);
+					startActivity(intent);
+				}
+				else {
+					Intent intent = new Intent(MapActivity.this, SignInActivity.class);
+					startActivity(intent);
+				}
+			}break;
+			case 3:// Déconnexion (connecté)
+			{
+				// The user is connected.
+				if (auth.getCurrentUser() != null) {
+					// Sign out the user.
+					auth.signOut();
+
+					// Success toast.
+					Toast.makeText(
+							MapActivity.this,
+							"Vous avez été déconnecté !",
+							Toast.LENGTH_SHORT
+					).show();
+
+					setSpinner();
+				}
+				// The user is not connected.
+				else {
+					// Navigate to sign in.
+					Intent intent = new Intent(MapActivity.this, SignInActivity.class);
+					startActivity(intent);
+				}
 			}break;
 		}
 	}
@@ -110,5 +135,25 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 
+	}
+	public void setSpinner(){
+		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);
+		spinner.setOnItemSelectedListener(this);
+		List<String> list = new ArrayList<String>();
+		list.add("Menu");
+		list.add("Dernières signalisations");
+		// The user is connected.
+		if (auth.getCurrentUser() != null) {
+			list.add("Compte");
+			list.add("Se déconnecter");
+		}
+		// The user is not connected.
+		else {
+			list.add("Se connecter");
+		}
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(dataAdapter);
 	}
 }
