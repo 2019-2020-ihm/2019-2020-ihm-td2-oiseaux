@@ -28,8 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.osmdroid.util.GeoPoint;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
@@ -122,7 +120,6 @@ public class ReportActivity
 		initFields();
 		initValues();
 		initButtons();
-		initLocation();
     }
 
 	@Override
@@ -216,6 +213,7 @@ public class ReportActivity
 		// Current location button.
 		currentLocationButton = findViewById(R.id.text_current_location);
 		currentLocationButton.setOnClickListener(v -> {
+			setLocation();
 			try {
 				editLocation.setText(getPlaceName(userLocation));
 			} catch (IOException e) {
@@ -227,7 +225,7 @@ public class ReportActivity
 		chooseLocationButton = findViewById(R.id.text_choose_location);
 		chooseLocationButton.setOnClickListener(v -> {
 			Intent intent = new Intent(ReportActivity.this, GpsActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_POSITION);
 		});
 
 		// Submit button.
@@ -240,7 +238,7 @@ public class ReportActivity
 	/**
 	 * Initializes the attribute userLocation
 	 */
-	private void initLocation() {
+	private void setLocation() {
 		String fournisseur = null;
 		if (locationManager == null) {
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);

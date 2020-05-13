@@ -28,8 +28,6 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,8 +48,6 @@ public class GpsActivity extends AppCompatActivity {
     private String fournisseur;
     private LocationListener locationListener;
 
-    public GpsActivity() {}
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -61,8 +57,15 @@ public class GpsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gps);
 
         // Return button
-        Button returnButton = findViewById(R.id.buttonGPSReturn);
+        Button returnButton = findViewById(R.id.buttonGPSCancel);
         returnButton.setOnClickListener(v -> {
+            arreterLocalisation();
+            finish();
+        });
+
+        // Valid button
+        Button validButton = findViewById(R.id.buttonGPSValid);
+        validButton.setOnClickListener(v -> {
             try {
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<Address> addresses = geocoder.getFromLocation(userLocation.getLatitude(), userLocation.getLongitude(), 1);
@@ -77,7 +80,6 @@ public class GpsActivity extends AppCompatActivity {
             returnReportActivity.putExtra("location", userLocation);
             setResult(RESULT_OK, returnReportActivity);
             finish();
-            //startActivityForResult(returnReportActivity, 2);
         });
 
         mapView = findViewById(R.id.map);
@@ -86,13 +88,6 @@ public class GpsActivity extends AppCompatActivity {
         mapView.setClickable(true);
         mapController = (MapController) mapView.getController();
         mapController.setZoom(13);
-
-        mapView.setOnClickListener(v -> {
-            MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), mapView);
-            mLocationOverlay.enableMyLocation();
-            mapView.setMultiTouchControls(true);
-            mapView.getOverlays().add(mLocationOverlay);
-        });
 
         MapEventsReceiver mReceive = new MapEventsReceiver() {
             @Override
@@ -105,7 +100,7 @@ public class GpsActivity extends AppCompatActivity {
                 userLocation.setLongitude(p.getLongitude());
                 addIcon(userLocation);
 
-                return false;
+                return true;
             }
 
             @Override

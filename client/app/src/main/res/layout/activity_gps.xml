@@ -6,31 +6,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/buttonGPSReturn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retour"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView_map"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonGPSReturn"
-        android:text="Choisir la position gps" />
+        android:background="#5FC1E8"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/buttonGPSCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Annuler"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonGPSValid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valider"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lieu de la signalisation"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:paddingBottom="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGPSCancel"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
-        app:layout_constraintTop_toBottomOf="@id/textView_map"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
