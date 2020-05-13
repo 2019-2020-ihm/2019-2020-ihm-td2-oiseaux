@@ -61,55 +61,61 @@ public class InformationActivity extends AppCompatActivity {
 		initViewModels();
         initButtons();
         initFields();
-
-		Intent intent = getIntent();
-		String id = intent.getStringExtra("id");
-        loadReport(id);
-
-		shareSignal = findViewById(R.id.buttonSignalShare);
-		shareSignal.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				String shareBody = "L'oiseau d'espèce \"" + report.getSpecies() + "\" a été observé!";
-				Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-				sharingIntent.setType("text/plain");
-				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "oiseau");
-				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-				startActivity(Intent.createChooser(sharingIntent, "Partager via"));
-			}
-		});
+        loadReport();
     }
 
-    private void initButtons(){
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModels() {
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+	}
+
+	/**
+	 * Initializes the activity buttons.
+	 */
+	private void initButtons(){
         buttonInfoRetour = findViewById(R.id.buttonInfoRetour);
         buttonInfoRetour.setOnClickListener(v -> {
 			Intent intent = new Intent(InformationActivity.this, MainActivity.class);
 			startActivity(intent);
 		});
-    }
 
-    private void initFields(){
-        imageInfo = (ImageView) findViewById(R.id.imageInfo);
-        textInfoEspece = (TextView) findViewById(R.id.textInfoEspece);
-        textInfoNumber = (TextView) findViewById(R.id.textInfoNombre);
-        textInfoDate = (TextView) findViewById(R.id.textInfoDate);
-        textInfoAuteur = (TextView) findViewById(R.id.textInfoAuteur);
-        textInfoName = (TextView) findViewById(R.id.textInfoNom);
-    }
-
-    /**
-     * Initializes the view models that hold the data.
-     */
-    private void initViewModels() {
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+		shareSignal = findViewById(R.id.buttonSignalShare);
+		shareSignal.setOnClickListener(v -> {
+			if (report != null) {
+				String shareBody = "L'oiseau d'espèce \"" + report.getSpecies() + "\" a été observé!";
+				Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "oiseau");
+				sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+				startActivity(Intent.createChooser(sharingIntent, "Partager via"));
+			}
+		});
     }
 
 	/**
-	 * Loads the report from the database.
-	 * @param id The id of the report.
+	 * Initializes the activity fields.
 	 */
-	private void loadReport(String id) {
+	private void initFields(){
+        imageInfo = findViewById(R.id.imageInfo);
+        textInfoEspece = findViewById(R.id.textInfoEspece);
+        textInfoNumber = findViewById(R.id.textInfoNombre);
+        textInfoDate = findViewById(R.id.textInfoDate);
+        textInfoAuteur = findViewById(R.id.textInfoAuteur);
+        textInfoName = findViewById(R.id.textInfoNom);
+    }
+
+	/**
+	 * Loads the report.
+	 */
+	private void loadReport() {
+		// Get the report id.
+		Intent intent = getIntent();
+		String id = intent.getStringExtra("id");
+
+		// Get the report.
     	reportViewModel.getReport(id);
 		reportViewModel
 			.getSelectedReportLiveData()
@@ -117,6 +123,7 @@ public class InformationActivity extends AppCompatActivity {
 				this,
 				selectedReport -> {
 					if (selectedReport != null) {
+						// Update the report.
 						report = selectedReport;
 						updateReport();
 						loadPicture();
