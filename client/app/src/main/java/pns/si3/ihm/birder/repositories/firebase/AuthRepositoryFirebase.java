@@ -1,5 +1,7 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 

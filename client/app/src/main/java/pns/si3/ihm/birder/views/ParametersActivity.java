@@ -1,6 +1,7 @@
 package pns.si3.ihm.birder.views;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,6 +14,11 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 
 public class ParametersActivity extends AppCompatActivity {
+	/**
+	 * The tag for the log messages.
+	 */
+	private static final String TAG = "ParametersActivity";
+
     /**
      * The authentication view model.
      */
@@ -112,6 +118,15 @@ public class ParametersActivity extends AppCompatActivity {
 			return false;
 		}
 
+		// Password not long enough.
+		if (password.length() < 6) {
+			editPassword.setError("Votre mot de passe doit comporter au moins 6 caractères.");
+			editPassword.setText("");
+			editConfirmPassword.setText("");
+			editPassword.requestFocus();
+			return false;
+		}
+
         return true;
     }
 
@@ -141,6 +156,9 @@ public class ParametersActivity extends AppCompatActivity {
 							"Votre mot de passe a bien été modifié.",
 							Toast.LENGTH_SHORT
 						).show();
+
+						// Close the activity.
+						finish();
 					}
 				}
 			);
@@ -151,6 +169,10 @@ public class ParametersActivity extends AppCompatActivity {
 				this,
 				error -> {
 					if (error != null){
+						Log.e(TAG, "Password change failed");
+						Log.e(TAG, error.getMessage());
+
+						// Error toast.
 						Toast.makeText(
 							this,
 							"Le mot de passe n'a pas pu être modifié !",
