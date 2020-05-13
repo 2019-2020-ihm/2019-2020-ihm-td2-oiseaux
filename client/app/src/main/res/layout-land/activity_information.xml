@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Information sur la signalisation"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -42,7 +42,8 @@
         android:id="@+id/imageInfo"
         android:layout_width="198dp"
         android:layout_height="127dp"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="92dp"
+        app:layout_constraintHorizontal_bias="0.03"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +53,8 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="304dp"
+        android:layout_marginLeft="256dp"
+        android:layout_marginTop="128dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -62,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="Espèce :"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,7 +75,7 @@
             android:layout_marginLeft="50dp"
             android:layout_marginTop="40dp"
             android:text="Nom scientifique :"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -84,7 +86,7 @@
             android:layout_marginLeft="50dp"
             android:layout_marginTop="80dp"
             android:text="Nombre :"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -96,7 +98,7 @@
             android:layout_marginLeft="50dp"
             android:layout_marginTop="120dp"
             android:text="Heure/Date :"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -107,7 +109,7 @@
             android:layout_marginLeft="50dp"
             android:layout_marginTop="160dp"
             android:text="Par :"
-            android:textSize="24sp"
+            android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,11 +120,12 @@
         android:id="@+id/imageInfoMap"
         android:layout_width="241dp"
         android:layout_height="124dp"
+        android:layout_marginTop="252dp"
         android:background="#000000"
-        app:srcCompat="@android:drawable/ic_dialog_map"
-        android:layout_marginTop="520dp"
+        app:layout_constraintHorizontal_bias="0.032"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_dialog_map" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

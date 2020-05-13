@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Information sur la signalisation"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -40,9 +40,10 @@
 
     <ImageView
         android:id="@+id/imageInfo"
-        android:layout_width="198dp"
-        android:layout_height="127dp"
-        android:layout_marginTop="140dp"
+        android:layout_width="394dp"
+        android:layout_height="270dp"
+        android:layout_marginTop="128dp"
+        app:layout_constraintHorizontal_bias="0.074"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +53,8 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="304dp"
+        android:layout_marginLeft="556dp"
+        android:layout_marginTop="256dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -62,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="Espèce :"
-            android:textSize="24sp"
+            android:textSize="36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -71,9 +73,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="60dp"
             android:text="Nom scientifique :"
-            android:textSize="24sp"
+            android:textSize="36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,9 +84,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="120dp"
             android:text="Nombre :"
-            android:textSize="24sp"
+            android:textSize="36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -94,9 +96,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="120dp"
+            android:layout_marginTop="180dp"
             android:text="Heure/Date :"
-            android:textSize="24sp"
+            android:textSize="36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,9 +107,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="240dp"
             android:text="Par :"
-            android:textSize="24sp"
+            android:textSize="36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -116,13 +118,14 @@
 
     <ImageView
         android:id="@+id/imageInfoMap"
-        android:layout_width="241dp"
-        android:layout_height="124dp"
+        android:layout_width="419dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="436dp"
         android:background="#000000"
-        app:srcCompat="@android:drawable/ic_dialog_map"
-        android:layout_marginTop="520dp"
+        app:layout_constraintHorizontal_bias="0.076"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_dialog_map" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
