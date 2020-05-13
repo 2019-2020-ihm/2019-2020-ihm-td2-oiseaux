@@ -28,7 +28,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	private FirebaseFirestore firebaseFirestore;
 
 	/**
-	 * The live data of the user request errors.
+	 * The user errors (updated in real time).
 	 */
 	private MutableLiveData<Exception> errorLiveData;
 
@@ -78,9 +78,9 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Sets a user in the database.
+	 * Inserts a user.
 	 * @param user The user to be created.
-	 * @return The created user.
+	 * @return The inserted user.
 	 */
 	public LiveData<User> insertUser(User user) {
 		MutableLiveData<User> userLiveData = new MutableLiveData<>();
@@ -106,16 +106,16 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
-	 * Returns the user request errors.
-	 * @return The user request errors.
+	 * Returns the user errors (updated in real time).
+	 * @return The user errors (updated in real time).
 	 */
 	public LiveData<Exception> getErrors() {
 		return errorLiveData;
 	}
 
 	/**
-	 * Clears the user request errors.
-	 * This avoid receiving the same error multiple times.
+	 * Clears the user errors.
+	 * This avoids receiving the same error multiple times.
 	 */
 	public void clearErrors() {
 		errorLiveData.setValue(null);

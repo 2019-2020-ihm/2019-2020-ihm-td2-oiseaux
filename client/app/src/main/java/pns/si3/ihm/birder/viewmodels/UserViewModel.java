@@ -30,7 +30,7 @@ public class UserViewModel extends ViewModel {
 	private LiveData<User> insertedReportLiveData;
 
 	/**
-	 * The live data of the user errors.
+	 * The user errors.
 	 */
 	private LiveData<Exception> userErrorsLiveData;
 
@@ -54,8 +54,8 @@ public class UserViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
-	 * Returns the selected user.
-	 * @return The selected user.
+	 * Returns the selected user (updated in real time).
+	 * @return The selected user (updated in real time).
 	 */
 	public LiveData<User> getSelectedUserLiveData() {
 		return selectedReportLiveData;
@@ -99,7 +99,7 @@ public class UserViewModel extends ViewModel {
 
 	/**
 	 * Clears the user errors.
-	 * This avoid receiving the same error twice.
+	 * This avoids receiving the same error twice.
 	 */
 	public void clearUserErrors() {
 		userRepository.clearErrors();

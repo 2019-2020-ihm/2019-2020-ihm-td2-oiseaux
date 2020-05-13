@@ -26,7 +26,7 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	private FirebaseAuth firebaseAuth;
 
 	/**
-	 * The live data of the authentication errors.
+	 * The authentication errors (updated in real time).
 	 */
 	private MutableLiveData<Exception> errorLiveData;
 
@@ -136,15 +136,15 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	}
 
 	/**
-	 * Returns the live data of the authentication errors.
-	 * @return The live data of the authentication errors.
+	 * Returns the authentication errors (updated in real time).
+	 * @return The authentication errors (updated in real time).
 	 */
 	public LiveData<Exception> getErrors() {
 		return errorLiveData;
 	};
 
 	/**
-	 * Clears the live data of the authentication errors.
+	 * Clears the authentication errors.
 	 * This avoid receiving the same error multiple times.
 	 */
 	public void clearErrors() {

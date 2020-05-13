@@ -13,34 +13,34 @@ import pns.si3.ihm.birder.models.Report;
  */
 public interface ReportRepository {
 	/**
-	 * Returns the list of bird reports from the database in real time.
-	 * @return The live data of the reports.
+	 * Returns the list of reports (updated in real time).
+	 * @return The list of reports (updated in real time).
 	 */
 	LiveData<List<Report>> getReports();
 
 	/**
-	 * Returns a bird report from the database in real time.
+	 * Returns a report (updated in real time).
 	 * @param id The id of the report.
-	 * @return The live data of the report.
+	 * @return The report (updated in real time).
 	 */
 	LiveData<Report> getReport(String id);
 
 	/**
 	 * Creates a bird report.
 	 * @param report The bird report.
-	 * @return The live data of the created report.
+	 * @return The created report.
 	 */
 	LiveData<Report> createReport(Report report);
 
 	/**
-	 * Returns the live data of the report request errors.
-	 * @return The live data of the report request errors.
+	 * Returns the report errors.
+	 * @return The report errors.
 	 */
 	LiveData<Exception> getErrors();
 
 	/**
-	 * Clears the live data of the report request errors.
-	 * This avoid receiving the same error multiple times.
+	 * Clears the report errors (updated in real time).
+	 * This avoids receiving the same error multiple times.
 	 */
 	void clearErrors();
 }

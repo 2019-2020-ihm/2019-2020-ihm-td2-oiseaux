@@ -20,12 +20,12 @@ public class AuthViewModel extends ViewModel {
 	private AuthRepository authRepository;
 
 	/**
-	 * The live data of the authenticated user.
+	 * The authenticated user.
 	 */
 	private LiveData<User> authenticatedUserLiveData;
 
 	/**
-	 * The live data of the authentication errors.
+	 * The authentication errors (updated in real time).
 	 */
 	private LiveData<Exception> authenticationErrorsLiveData;
 
@@ -48,16 +48,16 @@ public class AuthViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
-	 * Returns the live data of the authenticated user.
-	 * @return The live data of the authenticated user.
+	 * Returns the authenticated user.
+	 * @return The authenticated user.
 	 */
 	public LiveData<User> getAuthenticatedUserLiveData() {
 		return authenticatedUserLiveData;
 	}
 
 	/**
-	 * Returns the live data of the authentication errors.
-	 * @return The live data of the authentication errors.
+	 * Returns the authentication errors (updated in real time).
+	 * @return The authentication errors (updated in real time).
 	 */
 	public LiveData<Exception> getAuthenticationErrorsLiveData() {
 		return authenticationErrorsLiveData;
@@ -113,7 +113,7 @@ public class AuthViewModel extends ViewModel {
 
 	/**
 	 * Clears the authentication errors.
-	 * This avoid receiving the same error twice.
+	 * This avoids receiving the same error twice.
 	 */
 	public void clearAuthenticationError() {
 		authRepository.clearErrors();

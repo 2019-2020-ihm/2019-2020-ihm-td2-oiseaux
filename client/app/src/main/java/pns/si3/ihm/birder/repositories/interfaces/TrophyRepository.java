@@ -27,7 +27,7 @@ public interface TrophyRepository {
 
     /**
      * Clears the live data of the trophy request errors.
-     * This avoid receiving the same error multiple times.
+     * This avoids receiving the same error multiple times.
      */
     void clearErrors();
 }

@@ -65,16 +65,16 @@ public class ReportViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
-	 * Returns the list of reports.
-	 * @return The list of reports.
+	 * Returns the list of reports (updated in real time).
+	 * @return The list of reports (updated in real time).
 	 */
 	public LiveData<List<Report>> getReportsLiveData() {
 		return reportsLiveData;
 	}
 
 	/**
-	 * Returns the selected report.
-	 * @return The selected report.
+	 * Returns the selected report (updated in real time).
+	 * @return The selected report (updated in real time).
 	 */
 	public LiveData<Report> getSelectedReportLiveData() {
 		return createdReportLiveData;
@@ -89,8 +89,8 @@ public class ReportViewModel extends ViewModel {
 	}
 
 	/**
-	 * Returns the report errors.
-	 * @return The report errors.
+	 * Returns the report errors (updated in real time).
+	 * @return The report errors (updated in real time).
 	 */
 	public LiveData<Exception> getReportErrorsLiveData() {
 		return reportErrorsLiveData;
@@ -117,7 +117,7 @@ public class ReportViewModel extends ViewModel {
 
 	/**
 	 * Clears the report errors.
-	 * This avoid receiving the same error twice.
+	 * This avoids receiving the same error twice.
 	 */
 	public void clearReportErrors() {
 		reportRepository.clearErrors();
