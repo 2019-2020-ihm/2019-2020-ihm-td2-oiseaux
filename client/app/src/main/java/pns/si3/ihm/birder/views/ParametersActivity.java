@@ -1,7 +1,6 @@
 package pns.si3.ihm.birder.views;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider;
 import etudes.fr.demoosm.R;
 
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
-import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class ParametersActivity extends AppCompatActivity {
     /**
@@ -37,15 +35,22 @@ public class ParametersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameters);
 		initViewModel();
+		initFields();
 		initButtons();
     }
 
+	/**
+	 * Initializes the activity fields.
+	 */
+	private void initFields() {
+		editPassword = findViewById(R.id.editText_parameters_mdp);
+		editConfirmPassword = findViewById(R.id.editText_parameters_confirm_mdp);
+	}
 
-    private void initButtons(){
-        editPassword = findViewById(R.id.editText_parameters_mdp);
-        editConfirmPassword = findViewById(R.id.editText_parameters_confirm_mdp);
-
-
+	/**
+	 * Initializes the activity buttons.
+	 */
+	private void initButtons(){
         // Return button.
         buttonReturn = findViewById(R.id.button_param);
         buttonReturn.setOnClickListener(v -> {
@@ -54,11 +59,8 @@ public class ParametersActivity extends AppCompatActivity {
 
         // Submit button.
 		buttonChangePassword = findViewById(R.id.button_parameters_confirm);
-		buttonChangePassword.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				submit();
-			}
+		buttonChangePassword.setOnClickListener(v -> {
+			submit();
 		});
     }
 
@@ -73,45 +75,8 @@ public class ParametersActivity extends AppCompatActivity {
 	 * Submit the password change, if the form is valid.
 	 */
 	private void submit() {
-		if (isFormValid()){
-			// Update the password.
-			String password = editPassword.getText().toString();
-			authViewModel.updatePassword(password);
-
-			// Request succeeded.
-			authViewModel.getPasswordUpdatedLiveData()
-				.observe(
-					this,
-					passwordChanged -> {
-						if (passwordChanged) {
-							// Reset password.
-							editPassword.setText("");
-							editConfirmPassword.setText("");
-
-							// Success toast.
-							Toast.makeText(
-								this,
-								"Votre mot de passe a bien été modifié.",
-								Toast.LENGTH_SHORT
-							).show();
-						}
-					}
-				);
-
-			// Request failed.
-			authViewModel.getAuthenticationErrorsLiveData()
-				.observe(
-					this,
-					error -> {
-						if (error != null){
-							Toast.makeText(
-								this,
-								"Le mot de passe n'a pas pu être modifié !",
-								Toast.LENGTH_SHORT
-							).show();
-						}
-					}
-				);
+		if (isFormValid()) {
+			updatePassword();
 		}
 	}
 
@@ -150,4 +115,49 @@ public class ParametersActivity extends AppCompatActivity {
         return true;
     }
 
+	/**
+	 * Updates the user password.
+	 */
+	private void updatePassword() {
+		// Get the password.
+		String password = editPassword.getText().toString();
+
+		// Update the password.
+		authViewModel.updatePassword(password);
+
+		// Request succeeded.
+		authViewModel.getPasswordUpdatedLiveData()
+			.observe(
+				this,
+				passwordChanged -> {
+					if (passwordChanged) {
+						// Reset password.
+						editPassword.setText("");
+						editConfirmPassword.setText("");
+
+						// Success toast.
+						Toast.makeText(
+							this,
+							"Votre mot de passe a bien été modifié.",
+							Toast.LENGTH_SHORT
+						).show();
+					}
+				}
+			);
+
+		// Request failed.
+		authViewModel.getAuthenticationErrorsLiveData()
+			.observe(
+				this,
+				error -> {
+					if (error != null){
+						Toast.makeText(
+							this,
+							"Le mot de passe n'a pas pu être modifié !",
+							Toast.LENGTH_SHORT
+						).show();
+					}
+				}
+			);
+	}
 }
