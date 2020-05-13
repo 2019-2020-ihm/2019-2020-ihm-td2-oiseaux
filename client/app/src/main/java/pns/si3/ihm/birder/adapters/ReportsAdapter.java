@@ -83,8 +83,8 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 
 		// Elapsed time.
 		TextView dateText = viewHolder.dateText;
-		String timeAgo = getElapsedTime(report.getDate());
-		dateText.setText(timeAgo);
+		String elapsedTime = getElapsedTime(report.getDate());
+		dateText.setText(elapsedTime);
 		Button button = viewHolder.selectButton;
 	}
 

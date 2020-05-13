@@ -76,6 +76,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 							List<Report> reports = new ArrayList<>();
 							for (QueryDocumentSnapshot reportSnapshot : reportsSnapshot) {
 								Report report = reportSnapshot.toObject(Report.class);
+								report.setId(reportSnapshot.getId());
 								reports.add(report);
 							}
 
