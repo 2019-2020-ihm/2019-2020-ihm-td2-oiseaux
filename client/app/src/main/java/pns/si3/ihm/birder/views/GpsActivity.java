@@ -10,18 +10,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
@@ -29,11 +24,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.MapEventsOverlay;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -42,7 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.views.reports.ReportActivity;
@@ -57,7 +49,6 @@ public class GpsActivity extends AppCompatActivity {
     private LocationManager locationManager = null;
     private String fournisseur;
     private LocationListener locationListener;
-    private GeoPoint p;
 
     public GpsActivity() {}
 
@@ -96,18 +87,11 @@ public class GpsActivity extends AppCompatActivity {
         mapController = (MapController) mapView.getController();
         mapController.setZoom(13);
 
-        mapView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<OverlayItem> items = new ArrayList<>();
-                OverlayItem report = new OverlayItem("Signalisation", "Lieu de la signalisation", new GeoPoint(v.getY(), v.getX()));
-                items.add(report);
-
-                MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), mapView);
-                mLocationOverlay.enableMyLocation();
-                mapView.setMultiTouchControls(true);
-                mapView.getOverlays().add(mLocationOverlay);
-            }
+        mapView.setOnClickListener(v -> {
+            MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), mapView);
+            mLocationOverlay.enableMyLocation();
+            mapView.setMultiTouchControls(true);
+            mapView.getOverlays().add(mLocationOverlay);
         });
 
         MapEventsReceiver mReceive = new MapEventsReceiver() {
@@ -231,10 +215,6 @@ public class GpsActivity extends AppCompatActivity {
         mOverlay.setFocusItemsOnTap(true);
 
         mapView.getOverlays().add(mOverlay);
-    }
-
-    public Location getLocation() {
-        return this.userLocation;
     }
 
     private void arreterLocalisation() {
