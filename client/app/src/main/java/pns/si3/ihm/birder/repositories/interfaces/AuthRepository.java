@@ -45,14 +45,14 @@ public interface AuthRepository {
 	void signOut();
 
 	/**
-	 * Returns the live data of the authentication errors.
-	 * @return The live data of the authentication errors.
+	 * Returns the authentication errors (updated in real time).
+	 * @return The authentication errors (updated in real time).
 	 */
 	LiveData<Exception> getErrors();
 
 	/**
-	 * Clears the live data of the authentication errors.
-	 * This avoid receiving the same error multiple times.
+	 * Clears the authentication errors.
+	 * This avoids receiving the same error multiple times.
 	 */
 	void clearErrors();
 }

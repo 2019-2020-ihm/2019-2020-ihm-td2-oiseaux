@@ -12,28 +12,28 @@ import pns.si3.ihm.birder.models.User;
  */
 public interface UserRepository {
 	/**
-	 * Get a user from the database.
+	 * Returns a user (updated in real time).
 	 * @param id The id of the user.
-	 * @return The live data of the user.
+	 * @return The user (updated in real time).
 	 */
 	LiveData<User> getUser(String id);
 
 	/**
-	 * Sets a user in the database.
-	 * @param user The user to be set.
-	 * @return The live data of the created user.
+	 * Inserts a user.
+	 * @param user The user to be inserted.
+	 * @return The inserted user.
 	 */
 	LiveData<User> insertUser(User user);
 
 	/**
-	 * Returns the live data of the user request errors.
-	 * @return The live data of the user request errors.
+	 * Returns the user errors (updated in real time).
+	 * @return The user errors (updated in real time).
 	 */
 	LiveData<Exception> getErrors();
 
 	/**
 	 * Clears the live data of the user request errors.
-	 * This avoid receiving the same error multiple times.
+	 * This avoids receiving the same error multiple times.
 	 */
 	void clearErrors();
 }

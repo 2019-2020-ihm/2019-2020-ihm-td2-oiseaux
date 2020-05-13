@@ -9,6 +9,7 @@ import androidx.lifecycle.Transformations;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -39,12 +40,12 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	private FirebaseStorage firebaseStorage;
 
 	/**
-	 * The live data of the reports.
+	 * The list of reports (updated in real time).
 	 */
 	private MutableLiveData<List<Report>> reportsLiveData;
 
 	/**
-	 * The live data of the report request errors.
+	 * The report errors (updated in real time).
 	 */
 	private MutableLiveData<Exception> errorLiveData;
 
@@ -60,11 +61,12 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
-	 * Loads the reports from the database in real time.
+	 * Loads the reports (updated in real time).
 	 */
 	private void loadReports() {
 		firebaseFirestore
 			.collection("reports")
+			.orderBy("date", Query.Direction.DESCENDING)
 			.addSnapshotListener(
 				(reportsSnapshot, error) -> {
 					if (error == null) {
@@ -92,17 +94,17 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
-	 * Returns the list of bird reports from the database in real time.
-	 * @return The live data of the reports.
+	 * Returns the list of reports (updated in real time).
+	 * @return The list of reports (updated in real time).
 	 */
 	public LiveData<List<Report>> getReports() {
 		return reportsLiveData;
 	}
 
 	/**
-	 * Returns a bird report from the database in real time.
+	 * Returns a report (updated in real time).
 	 * @param id The id of the report.
-	 * @return The live data of the report.
+	 * @return The report (updated in real time).
 	 */
 	public LiveData<Report> getReport(String id) {
 		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
@@ -137,7 +139,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
-	 * Creates a bird report.
+	 * Creates a report.
 	 * @param report The bird report.
 	 * @return The created report.
 	 */
@@ -167,8 +169,8 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
-	 * Stores a bird report.
-	 * @param report The bird report.
+	 * Stores a report.
+	 * @param report The report to be stored.
 	 * @return The created report.
 	 */
 	private LiveData<Report> storeReport(Report report) {
@@ -233,16 +235,16 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
-	 * Returns the report request errors.
-	 * @return The report request errors.
+	 * Returns the report errors (updated in real time).
+	 * @return The report errors (updated in real time).
 	 */
 	public LiveData<Exception> getErrors() {
 		return errorLiveData;
 	}
 
 	/**
-	 * Clears the report request errors.
-	 * This avoid receiving the same error multiple times.
+	 * Clears the report errors.
+	 * This avoids receiving the same error multiple times.
 	 */
 	public void clearErrors() {
 		errorLiveData.setValue(null);

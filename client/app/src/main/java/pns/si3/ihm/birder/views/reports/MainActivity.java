@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private ReportViewModel reportViewModel;
 
 	private RecyclerView recyclerView;
-	private ReportsAdapter reportsAdpater;
+	private ReportsAdapter reportsAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 
     @Override
@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		recyclerView = findViewById(R.id.my_recycler_view);
 
 		// Set the adapter.
-		reportsAdpater = new ReportsAdapter();
-		recyclerView.setAdapter(reportsAdpater);
+		reportsAdapter = new ReportsAdapter();
+		recyclerView.setAdapter(reportsAdapter);
 
 		// Set the layout manager.
 		layoutManager = new LinearLayoutManager(this);
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 				this,
 				reports -> {
 					// Update the reports.
-					reportsAdpater.setReports(reports);
+					reportsAdapter.setReports(reports);
 				}
 			);
 	}

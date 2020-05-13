@@ -104,7 +104,7 @@ public class TrophyRepositoryFirebase {
 
     /**
      * Clears the live data of the user request errors.
-     * This avoid receiving the same error multiple times.
+     * This avoids receiving the same error multiple times.
      */
     public void clearErrors() {
         errorLiveData.setValue(null);
