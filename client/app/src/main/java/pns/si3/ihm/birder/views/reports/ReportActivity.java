@@ -252,6 +252,10 @@ public class ReportActivity
 	 * Initializes the attribute userLocation
 	 */
 	private void setLocation() {
+		boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+		if (!permissionGranted)
+			ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+
 		String fournisseur = null;
 		if (locationManager == null) {
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -274,9 +278,7 @@ public class ReportActivity
 
 		if (fournisseur != null) {
 			// Check if permission already granted
-			boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-			if (!permissionGranted)
-				ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+
 
 			LocationListener locationListener = new LocationListener() {
 				@Override
