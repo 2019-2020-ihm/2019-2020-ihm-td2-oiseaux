@@ -32,8 +32,6 @@ public class ParametersActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private String userId;
     private String userEmail;
-    private String firstName;
-    private String lastName;
 
     private String password;
     private String confirmPassword;
@@ -103,19 +101,6 @@ public class ParametersActivity extends AppCompatActivity {
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userId = authViewModel.getAuthenticationId();
-        userViewModel.getUser(userId);
-        userViewModel
-                .getSelectedUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            if (user != null) {
-                                userEmail = user.getEmail();
-                                firstName = user.getFirstName();
-                                lastName = user.getLastName();
-                            }
-                        }
-                );
     }
 
     /**
@@ -142,90 +127,35 @@ public class ParametersActivity extends AppCompatActivity {
      * @return Whether the password is valid, or not.
      */
     private void tryChangePassword() {
-        String mdp = editPassword.getText().toString();
-        Log.i("Params", "password = " + mdp);
-        authViewModel.signInWithEmailAndPassword(userEmail, mdp);
-        Log.i("Params", "in try");
-
-        // Auth succeeded.
-        authViewModel
-                .getAuthenticatedUserLiveData()
+        authViewModel.updatePassword(password);
+        authViewModel.getPasswordUpdatedLiveData()
                 .observe(
                         this,
-                        authUser -> {
-                            if (authUser != null) {
-                                Log.i("Params", "Auth succeed donc mdp identique à l'ancier");
-                                // Reset password.
-                                editPassword.setText("");
-                                editConfirmPassword.setText("");
-
-                                // Error messages.
-                                editPassword.setError("Veuillez saisir un mot de passe différent de l'ancien.");
-
-                                // Error toast.
+                        value -> {
+                            if(value){
+                                // Success toast.
                                 Toast.makeText(
-                                        ParametersActivity.this,
-                                        "Le mot de passe saisie est identique à l'ancien.",
-                                        Toast.LENGTH_SHORT
+                                        this,
+                                        "Votre mot de passe a bien été changé !",
+                                        Toast.LENGTH_LONG
                                 ).show();
                             }
                         }
                 );
-
-        // Auth failed.
-        authViewModel
-                .getAuthenticationErrorsLiveData()
+        authViewModel.getAuthenticationErrorsLiveData()
                 .observe(
                         this,
                         error -> {
-                            if (error != null) {
-                                Log.i("Params", "Auth failed donc on peut changer le mdp");
-                                // Reset password.
-                                editPassword.setText("");
-                                editConfirmPassword.setText("");
-                                changeUserWithEmailAndPassword(password);
-
-                            }
-                        }
-                );
-
-
-
-    }
-
-    /**
-     * Change the password of a user.
-     */
-    private void changeUserWithEmailAndPassword(String password) {
-        Log.i("Params", "Start the change");
-        // TODO
-        //Ici changer le mdp de l'utilisateur
-    }
-
-    /**
-     * Change a user in the database.
-     * @param user The user to be changed.
-     */
-    private void createUserInDatabase(User user) {
-        userViewModel.insertUser(user);
-        userViewModel
-                .getInsertedUserLiveData()
-                .observe(
-                        this,
-                        databaseUser -> {
-                            if (databaseUser != null) {
-                                // Success toast.
+                            if(error != null){
                                 Toast.makeText(
-                                        ParametersActivity.this,
-                                        "Le mot de passe a bien été modifié.",
-                                        Toast.LENGTH_SHORT
+                                        this,
+                                        "Le mot de passe n'a pas pu être changé.",
+                                        Toast.LENGTH_LONG
                                 ).show();
-
-                                // Close the activity.
-                                //finish();
                             }
                         }
                 );
     }
+
 
 }

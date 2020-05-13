@@ -32,6 +32,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
@@ -351,7 +354,7 @@ public class ReportActivity
                                         user -> {
                                             if (user != null) {
                                             	if (user.getAllNotificationActivate() != null) {
-													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
+													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies(), report.getPicturePath());
 												}
                                             }
                                         }
@@ -640,17 +643,18 @@ public class ReportActivity
 		updateTimeField();
 	}
 
-    public void sendNotification(Boolean notificationActivated, String nameBird){
+    public void sendNotification(Boolean notificationActivated, String nameBird, String picturePath){
 		if(notificationActivated)
-			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird);
+			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird, picturePath);
 	}
 
-    public void sendNotificationChannel(String channelId, int priority, String nameBird){
+    public void sendNotificationChannel(String channelId, int priority, String nameBird, String picturePath){
         Bitmap bitmap = null;
         try {
             if(android.os.Build.VERSION.SDK_INT >= 28) {
                 ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), pictureUri);
                 bitmap = ImageDecoder.decodeBitmap(source);
+
                 }
         }
         catch (Exception e) {
