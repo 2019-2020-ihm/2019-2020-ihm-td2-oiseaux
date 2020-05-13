@@ -84,7 +84,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 							map.setMultiTouchControls(true);
 
 							mapController = map.getController();
-							mapController.setZoom(18);
+							mapController.setZoom(8);
 							GeoPoint startPoint = new GeoPoint(43.65020, 7.00517);
 							mapController.setCenter(startPoint);
 							ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations

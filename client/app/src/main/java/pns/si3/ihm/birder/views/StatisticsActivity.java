@@ -86,7 +86,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Trophy trophy4 = new Trophy("100PhotosTrophe", TrophyEnum.CENTPHOTOS);
         listTrophies.add(trophy1);
         listTrophies.add(trophy2);
-        listTrophies.add(trophy3);
+        listTrophiesBloques.add(trophy3);
         listTrophiesBloques.add(trophy4);
 
     }
