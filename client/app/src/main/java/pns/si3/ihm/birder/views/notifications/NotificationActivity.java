@@ -27,7 +27,7 @@ import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
-import pns.si3.ihm.birder.views.MapActivity;
+import pns.si3.ihm.birder.views.reports.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 

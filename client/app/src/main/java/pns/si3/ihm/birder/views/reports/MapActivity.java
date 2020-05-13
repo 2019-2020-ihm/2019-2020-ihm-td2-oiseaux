@@ -1,4 +1,4 @@
-package pns.si3.ihm.birder.views;
+package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -10,7 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -24,67 +27,108 @@ import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Random;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.adapters.ReportsAdapter;
+import pns.si3.ihm.birder.models.Report;
+import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.views.AccountActivity;
+import pns.si3.ihm.birder.views.InformationActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
-import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
 	private FirebaseAuth auth;
 	private MapView map;
+	private ReportViewModel reportViewModel;
+	private ReportsAdapter reportsAdapter;
+	private List<Report> reports;
+	IMapController mapController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		IMapController mapController;
-
 		super.onCreate(savedInstanceState);
+		auth = FirebaseAuth.getInstance();
+
 		Configuration.getInstance().load(   getApplicationContext(),
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
 		setContentView(R.layout.activity_map);
 
-		// Initialize firebase.
-		auth = FirebaseAuth.getInstance();
-
 		setSpinner();
+		init();
+		initViewModels();
+		observeReports();
 
-		map = findViewById(R.id.map);
-		map.setTileSource(TileSourceFactory.MAPNIK);
-		map.setBuiltInZoomControls(true);
-		map.setMultiTouchControls(true);
+	}
 
-		mapController = map.getController();
-		mapController.setZoom(18);
-		GeoPoint startPoint = new GeoPoint(43.65020, 7.00517);
-		mapController.setCenter(startPoint);
+	/**
+	 * Initializes reports.
+	 */
+	private void init() {
+		reportsAdapter = new ReportsAdapter();
+	}
 
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModels() {
+		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+	}
 
-		ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
-		OverlayItem home = new OverlayItem("Mouette", "", new GeoPoint(43.65020,7.00517));
-		Drawable m = home.getMarker(0);
+	private void observeReports() {
+		reportViewModel
+				.getReportsLiveData()
+				.observe(
+						this,
+						reports -> {
+							map = findViewById(R.id.map);
+							map.setTileSource(TileSourceFactory.MAPNIK);
+							map.setBuiltInZoomControls(true);
+							map.setMultiTouchControls(true);
 
-		items.add(home); // Lat/Lon decimal degrees
-		items.add(new OverlayItem("Merle", "", new GeoPoint(43.64950,7.00517))); // Lat/Lon decimal degrees
+							mapController = map.getController();
+							mapController.setZoom(18);
+							GeoPoint startPoint = new GeoPoint(43.65020, 7.00517);
+							mapController.setCenter(startPoint);
+							ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
+							double i = 0 ;
+							int n = 45 + (int)(Math.random() * ((50 - 45) + 1));
+							int n2 = 6 + (int)(Math.random() * ((8 - 6) + 1));
+							// Update the reports.
+							for(Report report : reports){
+								items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(n + i ,n2 + i)));
+								//the Place icons on the map with a click listener
+								i = Math.random() ;
+								n = 45 + (int)(Math.random() * ((50 - 45) + 1));
+								n2 = 6 + (int)(Math.random() * ((8 - 6) + 1));
+							}
+							ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
+									new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+										@Override
+										public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+											//do something
+											return true;
+										}
 
-		//the Place icons on the map with a click listener
-		ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
-				new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-					@Override
-					public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-						//do something
-						return true;
-					}
-					@Override
-					public boolean onItemLongPress(final int index, final OverlayItem item) {
-						return false;
-					}
-				});
+										@Override
+										public boolean onItemLongPress(final int index, final OverlayItem item) {
+											Intent intent = new Intent(getApplicationContext(),InformationActivity.class);
+											intent.putExtra("id",reports.get(index).getId());
+											startActivity(intent);
+											return false;
+										}
+									});
 
-
-		mOverlay.setFocusItemsOnTap(true);
-		map.getOverlays().add(mOverlay);
-
+							System.out.println(mOverlay.size());
+							mOverlay.setFocusItemsOnTap(true);
+							map.getOverlays().add(mOverlay);
+						}
+				);
 	}
 
 	@Override
@@ -99,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 			case 2: //Compte (connecté) / Se connecter (déconnecté)
 			{
 				if (auth.getCurrentUser() != null) {
-					Intent intent = new Intent(MapActivity.this,AccountActivity.class);
+					Intent intent = new Intent(MapActivity.this, AccountActivity.class);
 					startActivity(intent);
 				}
 				else {
@@ -137,6 +181,8 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	public void onNothingSelected(AdapterView<?> parent) {
 
 	}
+
+
 	public void setSpinner(){
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);
 		spinner.setOnItemSelectedListener(this);

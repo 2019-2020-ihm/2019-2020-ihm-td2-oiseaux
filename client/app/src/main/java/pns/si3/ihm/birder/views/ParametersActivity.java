@@ -25,6 +25,7 @@ import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
+import pns.si3.ihm.birder.views.reports.MapActivity;
 
 public class ParametersActivity extends AppCompatActivity {
 
