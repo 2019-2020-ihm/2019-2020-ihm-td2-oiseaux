@@ -228,11 +228,7 @@ public class ReportActivity
 		currentLocationButton = findViewById(R.id.text_current_location);
 		currentLocationButton.setOnClickListener(v -> {
 			setLocation();
-			try {
-				editLocation.setText(GpsActivity.getPlaceName(userLocation, this));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			editLocation.setText(GpsActivity.getPlaceName(userLocation, this));
 		});
 
 		// Choose location button.
@@ -511,14 +507,7 @@ public class ReportActivity
         	Bundle bundle = data.getExtras();
         	if (bundle != null) {
         		Location location = (Location) bundle.get("location");
-        		if (location != null) {
-					try {
-						editLocation.setText(GpsActivity.getPlaceName(location, this));
-					} catch (IOException e) {
-						e.printStackTrace();
-						Log.e("GPS", "Erreur lors de la récupération de l'adresse");
-					}
-				}
+        		editLocation.setText(GpsActivity.getPlaceName(location, this));
 			}
 		}
     }
