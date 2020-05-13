@@ -29,6 +29,7 @@ public class InformationActivity extends AppCompatActivity {
 	 * The activity buttons.
 	 */
     private Button buttonInfoRetour;
+    private Button shareSignal;
 
 
 	/**
@@ -67,6 +68,19 @@ public class InformationActivity extends AppCompatActivity {
 		Intent intent = getIntent();
 		String id = intent.getStringExtra("id");
         loadReport(id);
+
+		shareSignal = findViewById(R.id.buttonSignalShare);
+		shareSignal.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				String shareBody = "L'oiseau d'espèce \"" + report.getSpecies() + "\" a été observé!";
+				Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "oiseau");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+				startActivity(Intent.createChooser(sharingIntent, "Partager via"));
+			}
+		});
     }
 
     private void initButtons(){
