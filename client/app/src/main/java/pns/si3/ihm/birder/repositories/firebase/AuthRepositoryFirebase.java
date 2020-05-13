@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import pns.si3.ihm.birder.exceptions.UserNotAuthenticatedException;
 import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.repositories.interfaces.AuthRepository;
 
@@ -54,6 +55,42 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	public String getAuthenticationId() {
 		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 		return (firebaseUser != null) ? firebaseUser.getUid() : null;
+	}
+
+	/**
+	 * Updates the password of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 * @return Whether the password has been updated, or not.
+	 */
+	public LiveData<Boolean> updatePassword(String newPassword) {
+		MutableLiveData<Boolean> passwordUpdatedLiveData = new MutableLiveData<>();
+
+		// The user is authenticated.
+		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+		if (firebaseUser != null) {
+			// Update the password.
+			firebaseUser
+				.updatePassword(newPassword)
+				.addOnCompleteListener(
+					authTask -> {
+						if (authTask.isSuccessful()) {
+							// Password updated.
+							passwordUpdatedLiveData.setValue(true);
+						} else {
+							// Password not updated.
+							passwordUpdatedLiveData.setValue(false);
+							errorLiveData.setValue(authTask.getException());
+						}
+					}
+				);
+
+		} else {
+			// User not authenticated.
+			passwordUpdatedLiveData.setValue(false);
+			errorLiveData.setValue(new UserNotAuthenticatedException());
+		}
+
+		return passwordUpdatedLiveData;
 	}
 
 	/**

@@ -24,6 +24,13 @@ public interface AuthRepository {
 	String getAuthenticationId();
 
 	/**
+	 * Updates the password of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 * @return Whether the password has been updated, or not.
+	 */
+	LiveData<Boolean> updatePassword(String newPassword);
+
+	/**
 	 * Signs in a user with an email and password.
 	 * @param email The email of the user.
 	 * @param password The password of the user.

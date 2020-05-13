@@ -25,6 +25,11 @@ public class AuthViewModel extends ViewModel {
 	private LiveData<User> authenticatedUserLiveData;
 
 	/**
+	 * Whether the password of the user, has been updated or not.
+	 */
+	private LiveData<Boolean> passwordUpdatedLiveData;
+
+	/**
 	 * The authentication errors (updated in real time).
 	 */
 	private LiveData<Exception> authenticationErrorsLiveData;
@@ -40,6 +45,7 @@ public class AuthViewModel extends ViewModel {
 
 		// Initialize the live data.
 		authenticatedUserLiveData = new MutableLiveData<>();
+		passwordUpdatedLiveData = new MutableLiveData<>();
 		authenticationErrorsLiveData = authRepository.getErrors();
 	}
 
@@ -53,6 +59,14 @@ public class AuthViewModel extends ViewModel {
 	 */
 	public LiveData<User> getAuthenticatedUserLiveData() {
 		return authenticatedUserLiveData;
+	}
+
+	/**
+	 * Returns whether the password of the user, has been updated or not.
+	 * @return Whether the password of the user, has been updated or not.
+	 */
+	public LiveData<Boolean> getPasswordUpdatedLiveData() {
+		return passwordUpdatedLiveData;
 	}
 
 	/**
@@ -81,6 +95,14 @@ public class AuthViewModel extends ViewModel {
 	 */
 	public String getAuthenticationId() {
 		return authRepository.getAuthenticationId();
+	}
+
+	/**
+	 * Updates the password of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 */
+	public void updatePassword(String newPassword) {
+		passwordUpdatedLiveData = authRepository.updatePassword(newPassword);
 	}
 
 	/**
