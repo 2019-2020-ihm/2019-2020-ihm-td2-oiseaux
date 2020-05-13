@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
 
+import java.io.File;
 import java.util.List;
 
 import pns.si3.ihm.birder.models.Report;
@@ -26,11 +27,18 @@ public interface ReportRepository {
 	LiveData<Report> getReport(String id);
 
 	/**
-	 * Creates a bird report.
-	 * @param report The bird report.
+	 * Creates a report.
+	 * @param report The report to be created.
 	 * @return The created report.
 	 */
 	LiveData<Report> createReport(Report report);
+
+	/**
+	 * Loads a report picture.
+	 * @param report The report to process.
+	 * @return The file of the report picture.
+	 */
+	LiveData<File> loadPicture(Report report);
 
 	/**
 	 * Returns the report errors.

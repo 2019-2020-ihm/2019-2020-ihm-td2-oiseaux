@@ -1,7 +1,9 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import android.app.Activity;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
+import android.os.Environment;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,6 +16,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -205,6 +209,15 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
+	 * Get the path of the report picture.
+	 * @param name The name of the report picture.
+	 * @return The path of the report picture.
+	 */
+	private String getPicturePath(String name) {
+		return "reports/images/" + name;
+	}
+
+	/**
 	 * Stores a report picture.
 	 * @param name The name of the report picture.
 	 * @param uri The URI of the report picture.
@@ -214,7 +227,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 		MutableLiveData<String> picturePathLiveData = new MutableLiveData<>();
 
 		// Get the picture path.
-		String picturePath = "reports/images/" + name;
+		String picturePath = getPicturePath(name);
 
 		// Store the picture.
 		StorageReference reference = firebaseStorage.getReference(picturePath);
@@ -233,6 +246,45 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			);
 
 		return picturePathLiveData;
+	}
+
+	/**
+	 * Load the report picture.
+	 * @param report The report to process.
+	 * @return The file of the report picture.
+	 */
+	public LiveData<File> loadPicture(Report report) {
+		MutableLiveData<File> pictureLiveData = new MutableLiveData<>();
+		String pictureName = report.getPictureName();
+
+		if (pictureName != null) {
+			try {
+				// Create temp file.
+				File picture = File.createTempFile(pictureName, "jpg");
+
+				// Load picture.
+				String picturePath = getPicturePath(pictureName);
+				StorageReference reference = firebaseStorage.getReference(picturePath);
+				reference
+					.getFile(picture)
+					.addOnCompleteListener(
+						downloadTask -> {
+							if (downloadTask.isSuccessful()) {
+								// Download succeeded.
+								pictureLiveData.setValue(picture);
+							} else {
+								// Download failed.
+								errorLiveData.setValue(downloadTask.getException());
+							}
+						}
+					);
+			} catch(Exception error) {
+				// File not created.
+				errorLiveData.setValue(error);
+			}
+		}
+
+		return pictureLiveData;
 	}
 
 	/**
