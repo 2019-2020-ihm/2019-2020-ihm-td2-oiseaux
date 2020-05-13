@@ -1,7 +1,6 @@
 package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.view.View;
@@ -10,8 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -27,18 +24,13 @@ import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
-import pns.si3.ihm.birder.views.InformationActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {

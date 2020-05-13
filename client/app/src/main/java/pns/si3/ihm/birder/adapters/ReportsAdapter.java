@@ -10,10 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -26,10 +22,8 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
-import pns.si3.ihm.birder.views.InformationActivity;
+import pns.si3.ihm.birder.views.reports.InformationActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
-import pns.si3.ihm.birder.views.reports.ReportActivity;
-import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 
 /**
  * Reports adapter.
