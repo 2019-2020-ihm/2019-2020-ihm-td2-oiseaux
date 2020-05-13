@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="Vos statistiques"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -44,7 +44,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header">
 
@@ -61,8 +61,7 @@
             android:id="@+id/textStatNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginLeft="384dp"
             android:text="Nombre total d'oiseaux recensés :"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +72,7 @@
         android:id="@+id/unlocked"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content">
 
@@ -101,7 +100,7 @@
         android:id="@+id/locked"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="180dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content">
 
