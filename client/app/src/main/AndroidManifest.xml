@@ -39,7 +39,7 @@
         <activity android:name="pns.si3.ihm.birder.views.TrophyActivity" />
         <activity android:name="pns.si3.ihm.birder.views.TrophyBloqueActivity" />
         <activity android:name="pns.si3.ihm.birder.views.pictures.PictureActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.GPSActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.GpsActivity" />
         <activity android:name="pns.si3.ihm.birder.views.AccountActivity" />
         <activity android:name="pns.si3.ihm.birder.views.notifications.NotificationActivity" />
 

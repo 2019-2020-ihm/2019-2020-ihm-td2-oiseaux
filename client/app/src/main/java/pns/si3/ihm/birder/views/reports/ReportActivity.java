@@ -1,9 +1,18 @@
 package pns.si3.ihm.birder.views.reports;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,20 +25,26 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.osmdroid.util.GeoPoint;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
-import pns.si3.ihm.birder.views.GPSActivity;
 import pns.si3.ihm.birder.views.GpsActivity;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
+
+import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
 
 /**
  * Report activity.
@@ -41,6 +56,7 @@ public class ReportActivity
 	implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
 {
 	public static final int REQUEST_PICTURE = 1;
+	public static final int REQUEST_POSITION = 2;
 
 	/**
 	 * The tag for the log messages.
@@ -77,6 +93,12 @@ public class ReportActivity
 	int selectedMinute;
 
 	/**
+	 * Fields needed to get the current user's position
+	 */
+	private Location userLocation;
+	private LocationManager locationManager = null;
+
+	/**
 	 * The image values.
 	 */
 	Uri pictureUri;
@@ -100,6 +122,7 @@ public class ReportActivity
 		initFields();
 		initValues();
 		initButtons();
+		initLocation();
     }
 
 	@Override
@@ -193,7 +216,11 @@ public class ReportActivity
 		// Current location button.
 		currentLocationButton = findViewById(R.id.text_current_location);
 		currentLocationButton.setOnClickListener(v -> {
-			// TO-DO
+			try {
+				editLocation.setText(getPlaceName(userLocation));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		});
 
 		// Choose location button.
@@ -208,6 +235,72 @@ public class ReportActivity
 		submitButton.setOnClickListener(v -> {
 			submit();
 		});
+	}
+
+	/**
+	 * Initializes the attribute userLocation
+	 */
+	private void initLocation() {
+		String fournisseur = null;
+		if (locationManager == null) {
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			Criteria criteres = new Criteria();
+			// la précision  : (ACCURACY_FINE pour une haute précision ou ACCURACY_COARSE pour une moins bonne précision)
+			criteres.setAccuracy(Criteria.ACCURACY_COARSE);
+			// l'altitude
+			criteres.setAltitudeRequired(false);
+			// la direction
+			criteres.setBearingRequired(false);
+			// la vitesse
+			criteres.setSpeedRequired(false);
+			// un potentiel coût
+			criteres.setCostAllowed(false);
+			// la consommation d'énergie demandée
+			criteres.setPowerRequirement(Criteria.POWER_MEDIUM);
+
+			fournisseur = locationManager.getBestProvider(criteres, true);
+		}
+
+		if (fournisseur != null) {
+			// Check if permission already granted
+			boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+			if (!permissionGranted)
+				ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+
+			LocationListener locationListener = new LocationListener() {
+				@Override
+				public void onLocationChanged(Location location) {
+					userLocation = location;
+				}
+
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+
+				}
+
+				@Override
+				public void onProviderEnabled(String provider) {
+
+				}
+
+				@Override
+				public void onProviderDisabled(String provider) {
+
+				}
+			};
+
+			// On configure la mise à jour automatique : immédiate et en permanence
+			locationManager.requestLocationUpdates(fournisseur, 0, 0, locationListener);
+			do {
+				userLocation = locationManager.getLastKnownLocation(fournisseur);
+			} while (userLocation == null);
+
+			locationListener.onLocationChanged(userLocation);
+
+			if (locationManager != null) {
+				locationManager.removeUpdates(locationListener);
+			}
+		}
 	}
 
 	/**
@@ -377,6 +470,7 @@ public class ReportActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("GPS", "onActivityResult");
         if (requestCode == REQUEST_PICTURE && resultCode == RESULT_OK){
             Bundle bundle = data.getExtras();
             if (bundle != null) {
@@ -389,8 +483,30 @@ public class ReportActivity
 					(boolean) bundle.get("pictureCreated")
 				);
 			}
-        }
+        } else if (requestCode == REQUEST_POSITION && resultCode == RESULT_OK) {
+        	Bundle bundle = data.getExtras();
+        	if (bundle != null) {
+        		Location location = (Location) bundle.get("location");
+        		if (location != null) {
+					try {
+						editLocation.setText(getPlaceName(location));
+					} catch (IOException e) {
+						e.printStackTrace();
+						Log.e("GPS", "Erreur lors de la récupération de l'adresse");
+					}
+				}
+			}
+		}
     }
+
+	/**
+	 * Method to get the name of the place of the report
+	 */
+	private String getPlaceName(Location location) throws IOException {
+		Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+		List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+		return addresses.get(0).getLocality();
+	}
 
 	/*====================================================================*/
 	/*                            DATE AND TIME                           */
