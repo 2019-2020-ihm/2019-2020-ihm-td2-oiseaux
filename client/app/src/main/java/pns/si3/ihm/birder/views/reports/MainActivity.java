@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		recyclerView = findViewById(R.id.my_recycler_view);
 
 		// Set the adapter.
-		reportsAdpater = new ReportsAdapter();
+		reportsAdpater = new ReportsAdapter(this);
 		recyclerView.setAdapter(reportsAdpater);
 
 		// Set the layout manager.

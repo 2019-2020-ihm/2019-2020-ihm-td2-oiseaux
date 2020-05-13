@@ -9,6 +9,7 @@ import androidx.lifecycle.Transformations;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -65,6 +66,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	private void loadReports() {
 		firebaseFirestore
 			.collection("reports")
+			.orderBy("date", Query.Direction.DESCENDING)
 			.addSnapshotListener(
 				(reportsSnapshot, error) -> {
 					if (error == null) {
