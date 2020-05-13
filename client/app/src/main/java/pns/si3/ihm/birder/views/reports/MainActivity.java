@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		recyclerView = findViewById(R.id.reports_reycler_view);
 
 		// Set the adapter.
-		reportsAdapter = new ReportsAdapter(getApplicationContext());
+		reportsAdapter = new ReportsAdapter(this);
 		recyclerView.setAdapter(reportsAdapter);
 
 		// Set the layout manager.
@@ -89,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 */
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+	}
+
+	/**
+	 * Returns the report view model.
+	 * @return The report view model.
+	 */
+	public ReportViewModel getReportViewModel() {
+		return reportViewModel;
 	}
 
 	private void observeReports() {

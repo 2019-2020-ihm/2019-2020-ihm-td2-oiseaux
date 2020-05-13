@@ -40,9 +40,9 @@ public class Report {
 	private Uri pictureUri;
 
 	/**
-	 * The name of the report picture.
+	 * The path of the report picture.
 	 */
-	private String pictureName;
+	private String picturePath;
 
 	/**
 	 * The date of the report.
@@ -67,7 +67,7 @@ public class Report {
 		this.species = species;
 		this.number = number;
 		this.pictureUri = pictureUri;
-		this.pictureName = null;
+		this.picturePath = null;
 		this.date = date;
 	}
 
@@ -115,12 +115,12 @@ public class Report {
 		this.pictureUri = pictureUri;
 	}
 
-	public String getPictureName() {
-		return pictureName;
+	public String getPicturePath() {
+		return picturePath;
 	}
 
-	public void setPictureName(String pictureName) {
-		this.pictureName = pictureName;
+	public void setPicturePath(String picturePath) {
+		this.picturePath = picturePath;
 	}
 
 	public Date getDate() {

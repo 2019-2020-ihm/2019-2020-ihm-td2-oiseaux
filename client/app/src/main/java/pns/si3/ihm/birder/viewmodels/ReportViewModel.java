@@ -39,12 +39,6 @@ public class ReportViewModel extends ViewModel {
 	private LiveData<Report> createdReportLiveData;
 
 	/**
-	 * The selected report picture.
-	 */
-	private LiveData<File> selectedPictureLiveData;
-
-
-	/**
 	 * The report errors (updated in real time).
 	 */
 	private LiveData<Exception> reportErrorsLiveData;
@@ -62,9 +56,7 @@ public class ReportViewModel extends ViewModel {
 		reportsLiveData = reportRepository.getReports();
 		selectedReportLiveData = new MutableLiveData<>();
 		createdReportLiveData = new MutableLiveData<>();
-		selectedPictureLiveData = new MutableLiveData<>();
 		reportErrorsLiveData = reportRepository.getErrors();
-
 	}
 
 	/*====================================================================*/
@@ -96,14 +88,6 @@ public class ReportViewModel extends ViewModel {
 	}
 
 	/**
-	 * Returns the report picture.
-	 * @return The report picture.
-	 */
-	public LiveData<File> getSelectedPictureLiveData() {
-		return selectedPictureLiveData;
-	}
-
-	/**
 	 * Returns the report errors (updated in real time).
 	 * @return The report errors (updated in real time).
 	 */
@@ -129,14 +113,6 @@ public class ReportViewModel extends ViewModel {
 	 */
 	public void createReport(Report report) {
 		createdReportLiveData = reportRepository.createReport(report);
-	}
-
-	/**
-	 * Request the download of a report picture.
-	 * @param report The report to process.
-	 */
-	public void loadPicture(Report report) {
-		selectedPictureLiveData = reportRepository.loadPicture(report);
 	}
 
 	/**

@@ -34,13 +34,6 @@ public interface ReportRepository {
 	LiveData<Report> createReport(Report report);
 
 	/**
-	 * Loads a report picture.
-	 * @param report The report to process.
-	 * @return The file of the report picture.
-	 */
-	LiveData<File> loadPicture(Report report);
-
-	/**
 	 * Returns the report errors.
 	 * @return The report errors.
 	 */

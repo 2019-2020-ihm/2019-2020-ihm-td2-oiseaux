@@ -3,14 +3,18 @@ package pns.si3.ihm.birder.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +23,7 @@ import java.util.List;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.views.InformationActivity;
-import pns.si3.ihm.birder.views.reports.ReportActivity;
+import pns.si3.ihm.birder.views.reports.MainActivity;
 
 /**
  * Reports adapter.
@@ -27,17 +31,20 @@ import pns.si3.ihm.birder.views.reports.ReportActivity;
  * Manages a list of reports inside a recycler view.
  */
 public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportViewHolder> {
-
-	private Context context;
 	/**
 	 * The list of reports.
 	 */
 	private List<Report> reports;
 
 	/**
+	 * The reports activity.
+	 */
+	private MainActivity context;
+
+	/**
 	 * Constructs a reports adapter.
 	 */
-	public ReportsAdapter(Context context) {
+	public ReportsAdapter(MainActivity context) {
 		this.reports = new ArrayList<>();
 		this.context = context;
 	}
@@ -82,12 +89,24 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 		// Get the report in the list.
 		Report report = reports.get(position);
 
+		// Picture.
+		String picturePath = report.getPicturePath();
+		if (picturePath != null) {
+			FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+			StorageReference pictureReference = firebaseStorage.getReference(picturePath);
+			ImageView imagePicture = viewHolder.imagePicture;
+			Glide
+				.with(context)
+				.load(pictureReference)
+				.into(imagePicture);
+		}
+
 		// Species.
-		TextView titleText = viewHolder.titleText;
+		TextView titleText = viewHolder.textSpecies;
 		titleText.setText(report.getSpecies());
 
 		// Elapsed time.
-		TextView dateText = viewHolder.dateText;
+		TextView dateText = viewHolder.textDate;
 		String elapsedTime = getElapsedTime(report.getDate());
 		dateText.setText(elapsedTime);
 		Button button = viewHolder.selectButton;
@@ -112,14 +131,16 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 	}
 
 	static class ReportViewHolder extends RecyclerView.ViewHolder {
-		private TextView titleText;
-		private TextView dateText;
+		private TextView textSpecies;
+		private TextView textDate;
+		private ImageView imagePicture;
 		private Button selectButton;
 
 		ReportViewHolder(View itemView) {
 			super(itemView);
-			titleText = itemView.findViewById(R.id.text_title);
-			dateText = itemView.findViewById(R.id.text_date);
+			imagePicture = itemView.findViewById(R.id.image_picture);
+			textSpecies = itemView.findViewById(R.id.text_title);
+			textDate = itemView.findViewById(R.id.text_date);
 			selectButton = itemView.findViewById(R.id.button_select);
 		}
 

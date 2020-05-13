@@ -163,7 +163,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 				storePicture(pictureName, pictureUri),
 				picturePath -> {
 					// Store the report.
-					report.setPictureName(pictureName);
+					report.setPicturePath(picturePath);
 					return storeReport(report);
 				}
 			);
@@ -246,45 +246,6 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			);
 
 		return picturePathLiveData;
-	}
-
-	/**
-	 * Load the report picture.
-	 * @param report The report to process.
-	 * @return The file of the report picture.
-	 */
-	public LiveData<File> loadPicture(Report report) {
-		MutableLiveData<File> pictureLiveData = new MutableLiveData<>();
-		String pictureName = report.getPictureName();
-
-		if (pictureName != null) {
-			try {
-				// Create temp file.
-				File picture = File.createTempFile(pictureName, "jpg");
-
-				// Load picture.
-				String picturePath = getPicturePath(pictureName);
-				StorageReference reference = firebaseStorage.getReference(picturePath);
-				reference
-					.getFile(picture)
-					.addOnCompleteListener(
-						downloadTask -> {
-							if (downloadTask.isSuccessful()) {
-								// Download succeeded.
-								pictureLiveData.setValue(picture);
-							} else {
-								// Download failed.
-								errorLiveData.setValue(downloadTask.getException());
-							}
-						}
-					);
-			} catch(Exception error) {
-				// File not created.
-				errorLiveData.setValue(error);
-			}
-		}
-
-		return pictureLiveData;
 	}
 
 	/**

@@ -354,7 +354,9 @@ public class ReportActivity
                                         this,
                                         user -> {
                                             if (user != null) {
-                                                sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
+                                            	if (user.getAllNotificationActivate() != null) {
+													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
+												}
                                             }
                                         }
                                 );
