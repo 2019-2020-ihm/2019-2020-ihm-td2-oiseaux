@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -26,7 +28,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
+
 
 import java.io.IOException;
 import java.util.Date;
@@ -39,10 +43,13 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.GpsActivity;
+import pns.si3.ihm.birder.views.notifications.NotificationApp;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
 
 import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
+import static pns.si3.ihm.birder.views.notifications.NotificationApp.CHANNEL_ID;
 
 /**
  * Report activity.
@@ -50,11 +57,12 @@ import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
  * Allows the user to create bird reports.
  */
 public class ReportActivity
-	extends AppCompatActivity
-	implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
+		extends AppCompatActivity
+		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
 {
 	public static final int REQUEST_PICTURE = 1;
 	public static final int REQUEST_POSITION = 2;
+	private int notificationId = 0;
 
 	/**
 	 * The tag for the log messages.
@@ -70,6 +78,11 @@ public class ReportActivity
 	 * The authentication view model.
 	 */
 	private AuthViewModel authViewModel;
+
+    /**
+     * The user view model.
+     */
+    private UserViewModel userViewModel;
 
 	/**
 	 * The activity fields.
@@ -136,6 +149,7 @@ public class ReportActivity
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
 	/**
@@ -189,8 +203,8 @@ public class ReportActivity
 	/**
 	 * Initializes the activity buttons.
 	 */
-    private void initButtons() {
-    	// Return button.
+	private void initButtons() {
+		// Return button.
 		returnButton = findViewById(R.id.button_return);
 		returnButton.setOnClickListener(v -> {
 			deleteCreatedPicture();
@@ -313,7 +327,7 @@ public class ReportActivity
 	/**
 	 * Creates the report.
 	 */
-	public void createReport() {
+    public void createReport() {
 		// Initialize the report.
 		Report report = getReport();
 
@@ -333,7 +347,17 @@ public class ReportActivity
 							"Votre signalement a été envoyé.",
 							Toast.LENGTH_SHORT
 						).show();
-
+                        userViewModel.getUser(createdReport.getUserId());
+                        userViewModel
+                                .getSelectedUserLiveData()
+                                .observe(
+                                        this,
+                                        user -> {
+                                            if (user != null) {
+                                                sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
+                                            }
+                                        }
+                                );
 						// Close the activity.
 						finish();
 					}
@@ -624,4 +648,31 @@ public class ReportActivity
 		selectedMinute = minute;
 		updateTimeField();
 	}
+
+    public void sendNotification(Boolean notificationActivated, String nameBird){
+		if(notificationActivated)
+			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird);
+	}
+
+    public void sendNotificationChannel(String channelId, int priority, String nameBird){
+        Bitmap bitmap = null;
+        try {
+            if(android.os.Build.VERSION.SDK_INT >= 28) {
+                ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), pictureUri);
+                bitmap = ImageDecoder.decodeBitmap(source);
+                }
+        }
+        catch (Exception e) {
+            bitmap = null;
+        }
+		NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
+				.setSmallIcon(R.drawable.bird)
+				.setLargeIcon(bitmap)
+				.setContentTitle("Nouveau signalement")
+				.setContentText("L'oiseau " + nameBird.toLowerCase() +" vient d\'être signalé !")
+				.setTimeoutAfter(3600000)
+				.setPriority(priority);
+		NotificationApp.getNotificationManager().notify(++notificationId, notification.build());
+	}
+
 }

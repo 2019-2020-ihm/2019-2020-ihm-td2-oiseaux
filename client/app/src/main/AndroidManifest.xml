@@ -42,6 +42,7 @@
         <activity android:name="pns.si3.ihm.birder.views.GpsActivity" />
         <activity android:name="pns.si3.ihm.birder.views.AccountActivity" />
         <activity android:name="pns.si3.ihm.birder.views.notifications.NotificationActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.ParametersActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -28,20 +28,20 @@ import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 import pns.si3.ihm.birder.views.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
-import static pns.si3.ihm.birder.views.notifications.NotificationApp.CHANNEL_ID;
+
 
 public class NotificationActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     private ListView listView;
     private CheckBox checkBox;
     private ImageView imageView;
-     ArrayList<NotificationItem> notifications;
+    ArrayList<NotificationItem> notifications;
     private FirebaseAuth auth;
     private Boolean allNotification = true;
     private UserViewModel userViewModel;
     private AuthViewModel authViewModel;
     private String userId;
-    private int notificationId = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +57,6 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
             public void onClick(View v) {
                 setAllNotification(!getAllNotification());
                 changeBooleanAllNotification();
-                if(checkBox.isChecked()){
-                    sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, "merle_noir");
-                }
             }});
 
 
@@ -249,18 +246,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     }
 
 
-    public void sendNotificationChannel(String channelId, int priority, String nameBird){
-        int drawableId = getResources().getIdentifier(nameBird, "drawable", getPackageName());
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
-                .setSmallIcon(R.drawable.bird)
-                .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), drawableId))
-                .setContentTitle("Nouveau signalement")
-                .setContentText("L'oiseau " + nameBird +" vient d\'être signalé !")
-                .setTimeoutAfter(3600000)
-                .setPriority(priority);
-        NotificationApp.getNotificationManager().notify(++notificationId, notification.build());
 
-    }
 
 
 }

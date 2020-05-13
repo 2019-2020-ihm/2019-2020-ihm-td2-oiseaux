@@ -1,15 +1,15 @@
 package pns.si3.ihm.birder.adapters;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -18,6 +18,8 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
+import pns.si3.ihm.birder.views.InformationActivity;
+import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 /**
  * Reports adapter.
@@ -25,6 +27,8 @@ import pns.si3.ihm.birder.models.Report;
  * Manages a list of reports inside a recycler view.
  */
 public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportViewHolder> {
+
+	private Context context;
 	/**
 	 * The list of reports.
 	 */
@@ -33,8 +37,9 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 	/**
 	 * Constructs a reports adapter.
 	 */
-	public ReportsAdapter() {
+	public ReportsAdapter(Context context) {
 		this.reports = new ArrayList<>();
+		this.context = context;
 	}
 
 	/**
@@ -54,9 +59,9 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 	private String getElapsedTime(Date date) {
 		Date now = new Date();
 		return DateUtils.getRelativeTimeSpanString(
-			date.getTime(),
-			now.getTime(),
-			DateUtils.MINUTE_IN_MILLIS
+				date.getTime(),
+				now.getTime(),
+				DateUtils.MINUTE_IN_MILLIS
 		).toString();
 	}
 
@@ -86,6 +91,15 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 		String elapsedTime = getElapsedTime(report.getDate());
 		dateText.setText(elapsedTime);
 		Button button = viewHolder.selectButton;
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(context, InformationActivity.class);
+				intent.putExtra("id", report.getId());
+				context.startActivity(intent);
+			}
+		});
+
 	}
 
 	/**
@@ -108,5 +122,6 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 			dateText = itemView.findViewById(R.id.text_date);
 			selectButton = itemView.findViewById(R.id.button_select);
 		}
+
 	}
 }

@@ -22,8 +22,9 @@ import java.util.List;
 
 public class AccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    Button buttonNotification;
-    Button buttonStat;
+    private Button buttonNotification;
+    private Button buttonStat;
+    private Button buttonParams;
     private FirebaseAuth auth;
 
     @Override
@@ -33,6 +34,7 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
 
         buttonNotification =  (Button) findViewById(R.id.button_gestion_notification);
         buttonStat = (Button) findViewById(R.id.button_stats);
+        buttonParams = (Button) findViewById(R.id.button_parametre_compte);
         auth = FirebaseAuth.getInstance();
         setSpinner();
 
@@ -52,7 +54,13 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
             }
         });
 
-        // Faire le bouton paramètre du compte
+        buttonParams.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AccountActivity.this, ParametersActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }

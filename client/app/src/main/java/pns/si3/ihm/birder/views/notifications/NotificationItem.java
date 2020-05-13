@@ -1,10 +1,5 @@
 package pns.si3.ihm.birder.views.notifications;
 
-import android.view.View;
-import android.widget.Button;
-
-import etudes.fr.demoosm.R;
-
 public class NotificationItem {
 
     private String notificationNameBird;

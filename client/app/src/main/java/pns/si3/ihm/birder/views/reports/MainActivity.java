@@ -18,15 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
-import pns.si3.ihm.birder.models.Report;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
-import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
@@ -37,38 +33,40 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 */
 	private static final String TAG = "MainActivity";
 
-    private FirebaseAuth auth;
-    private Button button;
+	private FirebaseAuth auth;
+	private Button button;
 
-    private ReportViewModel reportViewModel;
+	private ReportViewModel reportViewModel;
 
 	private RecyclerView recyclerView;
 	private ReportsAdapter reportsAdapter;
 	private RecyclerView.LayoutManager layoutManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        // Set the layout.
-        setContentView(R.layout.activity_main);
+		// Set the layout.
+		setContentView(R.layout.activity_main);
 
-        // Initialize firebase.
+		// Initialize firebase.
 		auth = FirebaseAuth.getInstance();
 
 		setSpinner();
-        button = findViewById(R.id.buttonMain);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToSignalActivity();
-            }
-        });
+		button = findViewById(R.id.buttonMain);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				goToSignalActivity();
+			}
+		});
 
 		initRecyclerView();
 		initViewModels();
 		observeReports();
-    }
+
+
+	}
 
 	/**
 	 * Initializes the recycler view of reports.
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		recyclerView = findViewById(R.id.reports_reycler_view);
 
 		// Set the adapter.
-		reportsAdapter = new ReportsAdapter();
+		reportsAdapter = new ReportsAdapter(getApplicationContext());
 		recyclerView.setAdapter(reportsAdapter);
 
 		// Set the layout manager.
@@ -105,32 +103,32 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 			);
 	}
 
-    public void goToSignalActivity() {
-        Intent intent = new Intent(this, ReportActivity.class);
-        startActivity(intent);
-    }
+	public void goToSignalActivity() {
+		Intent intent = new Intent(this, ReportActivity.class);
+		startActivity(intent);
+	}
 
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        switch(pos){
-            case 0:break;
-            case 1: // Map
-                {
-                Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                startActivity(intent);
-            }
-            break;
-            case 2: //Compte (connecté) / Se connecter (déconnecté)
-            {
-                if (auth.getCurrentUser() != null) {
-                    Intent intent = new Intent(MainActivity.this, AccountActivity.class);
-                    startActivity(intent);
-                }
-                else {
-                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                }
-            }break;
-            case 3:{
+	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+		switch(pos){
+			case 0:break;
+			case 1: // Map
+			{
+				Intent intent = new Intent(MainActivity.this, MapActivity.class);
+				startActivity(intent);
+			}
+			break;
+			case 2: //Compte (connecté) / Se connecter (déconnecté)
+			{
+				if (auth.getCurrentUser() != null) {
+					Intent intent = new Intent(MainActivity.this, AccountActivity.class);
+					startActivity(intent);
+				}
+				else {
+					Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+					startActivity(intent);
+				}
+			}break;
+			case 3:{
 				// The user is connected.
 				if (auth.getCurrentUser() != null) {
 					// Sign out the user.
@@ -138,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 					// Success toast.
 					Toast.makeText(
-						MainActivity.this,
-						"Vous avez été déconnecté !",
-						Toast.LENGTH_SHORT
+							MainActivity.this,
+							"Vous avez été déconnecté !",
+							Toast.LENGTH_SHORT
 					).show();
 
 					setSpinner();
@@ -151,14 +149,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 					Intent intent = new Intent(MainActivity.this, SignInActivity.class);
 					startActivity(intent);
 				}
-            }break;
-        }
-    }
+			}break;
+		}
+	}
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
 
-    }
+	}
 
 	@Override
 	protected void onRestart() {
@@ -167,27 +165,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	}
 
 	public void setSpinner(){
-        final Spinner spinner = findViewById(R.id.spinner_main);
-        spinner.setAdapter(null);
-        spinner.setOnItemSelectedListener(this);
-        List<String> list = new ArrayList<>();
-        list.add("Menu");
-        list.add("Voir Carte");
+		final Spinner spinner = findViewById(R.id.spinner_main);
+		spinner.setAdapter(null);
+		spinner.setOnItemSelectedListener(this);
+		List<String> list = new ArrayList<>();
+		list.add("Menu");
+		list.add("Voir Carte");
 
-        // The user is connected.
-        if (auth.getCurrentUser() != null) {
-            list.add("Compte");
+		// The user is connected.
+		if (auth.getCurrentUser() != null) {
+			list.add("Compte");
 			list.add("Se déconnecter");
 		}
-        // The user is not connected.
-        else {
+		// The user is not connected.
+		else {
 			list.add("Se connecter");
 		}
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-    }
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+				android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(dataAdapter);
+	}
+
 
 }
