@@ -215,7 +215,7 @@ public class ReportActivity
 		currentLocationButton.setOnClickListener(v -> {
 			setLocation();
 			try {
-				editLocation.setText(getPlaceName(userLocation));
+				editLocation.setText(GpsActivity.getPlaceName(userLocation, this));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -487,7 +487,7 @@ public class ReportActivity
         		Location location = (Location) bundle.get("location");
         		if (location != null) {
 					try {
-						editLocation.setText(getPlaceName(location));
+						editLocation.setText(GpsActivity.getPlaceName(location, this));
 					} catch (IOException e) {
 						e.printStackTrace();
 						Log.e("GPS", "Erreur lors de la récupération de l'adresse");
@@ -496,15 +496,6 @@ public class ReportActivity
 			}
 		}
     }
-
-	/**
-	 * Method to get the name of the place of the report
-	 */
-	private String getPlaceName(Location location) throws IOException {
-		Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-		List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-		return addresses.get(0).getLocality();
-	}
 
 	/*====================================================================*/
 	/*                            DATE AND TIME                           */

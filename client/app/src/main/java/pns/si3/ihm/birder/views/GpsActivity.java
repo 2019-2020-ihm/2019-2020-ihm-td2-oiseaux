@@ -190,7 +190,12 @@ public class GpsActivity extends AppCompatActivity {
      */
     void addIcon(Location location) {
         ArrayList<OverlayItem> items = new ArrayList<>();
-        OverlayItem report = new OverlayItem("Signalisation", "Lieu de la signalisation", new GeoPoint(location.getLatitude(), location.getLongitude()));
+        OverlayItem report;
+        try {
+            report = new OverlayItem("Signalisation", getPlaceName(location, this), new GeoPoint(location.getLatitude(), location.getLongitude()));
+        } catch (IOException e) {
+            report = new OverlayItem("Signalisation", "Lieu inconnu", new GeoPoint(location.getLatitude(), location.getLongitude()));
+        }
         items.add(report);
 
         ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<>(this, items,
@@ -217,5 +222,14 @@ public class GpsActivity extends AppCompatActivity {
             locationManager.removeUpdates(locationListener);
             locationListener = null;
         }
+    }
+
+    /**
+     * Method to get the name of the place of the report
+     */
+    public static String getPlaceName(Location location, Context context) throws IOException {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        return addresses.get(0).getLocality();
     }
 }
