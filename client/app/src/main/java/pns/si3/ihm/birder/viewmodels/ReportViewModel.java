@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.File;
 import java.util.List;
 
 import pns.si3.ihm.birder.models.Report;
@@ -37,6 +38,11 @@ public class ReportViewModel extends ViewModel {
 	 */
 	private LiveData<Report> createdReportLiveData;
 
+	/**
+	 * The selected report picture.
+	 */
+	private LiveData<File> selectedPictureLiveData;
+
 
 	/**
 	 * The report errors (updated in real time).
@@ -56,6 +62,7 @@ public class ReportViewModel extends ViewModel {
 		reportsLiveData = reportRepository.getReports();
 		selectedReportLiveData = new MutableLiveData<>();
 		createdReportLiveData = new MutableLiveData<>();
+		selectedPictureLiveData = new MutableLiveData<>();
 		reportErrorsLiveData = reportRepository.getErrors();
 
 	}
@@ -77,7 +84,7 @@ public class ReportViewModel extends ViewModel {
 	 * @return The selected report (updated in real time).
 	 */
 	public LiveData<Report> getSelectedReportLiveData() {
-		return createdReportLiveData;
+		return selectedReportLiveData;
 	}
 
 	/**
@@ -86,6 +93,14 @@ public class ReportViewModel extends ViewModel {
 	 */
 	public LiveData<Report> getCreatedReportLiveData() {
 		return createdReportLiveData;
+	}
+
+	/**
+	 * Returns the report picture.
+	 * @return The report picture.
+	 */
+	public LiveData<File> getSelectedPictureLiveData() {
+		return selectedPictureLiveData;
 	}
 
 	/**
@@ -110,9 +125,18 @@ public class ReportViewModel extends ViewModel {
 
 	/**
 	 * Requests the creation of a report.
+	 * @param report The report to be created.
 	 */
 	public void createReport(Report report) {
 		createdReportLiveData = reportRepository.createReport(report);
+	}
+
+	/**
+	 * Request the download of a report picture.
+	 * @param report The report to process.
+	 */
+	public void loadPicture(Report report) {
+		selectedPictureLiveData = reportRepository.loadPicture(report);
 	}
 
 	/**
