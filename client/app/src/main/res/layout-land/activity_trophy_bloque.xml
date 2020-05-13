@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="Information sur le trophée"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -43,7 +43,6 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header">
 
@@ -53,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Trophée"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -63,7 +62,7 @@
             android:layout_width="169dp"
             android:layout_height="176dp"
             app:srcCompat="@android:drawable/star_big_off"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="70dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -73,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description"
-            android:layout_marginTop="300dp"
+            android:layout_marginTop="270dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
