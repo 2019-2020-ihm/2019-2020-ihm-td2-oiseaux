@@ -3,6 +3,7 @@ package pns.si3.ihm.birder.views.notifications;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,6 +58,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
             public void onClick(View v) {
                 setAllNotification(!getAllNotification());
                 changeBooleanAllNotification();
+                Log.i("Notif", "Notif bool = " + getAllNotification());
             }});
 
 
@@ -91,6 +93,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 				user -> {
 					if (user != null) {
 						setAllNotification(user.getAllNotificationActivate());
+                        Log.i("Notif", "User init = " + user.getAllNotificationActivate());
 					}
 					checkBox.setChecked(user.getAllNotificationActivate());
 				}
@@ -113,14 +116,15 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 				this,
 				user -> {
 					if (user != null) {
+                        userViewModel.insertUser(user);
 						userViewModel
 							.getInsertedUserLiveData()
 							.observe(
 								this,
 								databaseUser -> {
 									if (databaseUser != null) {
-										user.setAllNotificationActivate(getAllNotification());
-										userViewModel.insertUser(user);
+										databaseUser.setAllNotificationActivate(getAllNotification());
+										userViewModel.insertUser(databaseUser);
 									}
 								}
 							);

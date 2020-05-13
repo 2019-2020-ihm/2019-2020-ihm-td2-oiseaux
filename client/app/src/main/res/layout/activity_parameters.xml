@@ -4,37 +4,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DADADA"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
+     <Button
+         android:id="@+id/button_param"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintLeft_toLeftOf="parent"
+         android:layout_marginTop="15dp"
+         android:layout_marginLeft="20dp"
+         android:text="Retour"/>
+
+    <TextView
+        android:id="@+id/tv_param"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#5FC1E8"
+        android:text="Paramètres du compte"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:paddingBottom="20dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_param"/>
 
-        <Spinner
-            android:id="@+id/spinner_parameters"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Paramètres du compte"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:paddingBottom="20dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner_parameters"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView_parameters_mdp"
@@ -45,7 +39,7 @@
         android:layout_height="wrap_content"
         android:text="Nouveau mot de passe"
         app:layout_constraintBottom_toBottomOf="@id/editText_parameters_mdp"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/tv_param"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 

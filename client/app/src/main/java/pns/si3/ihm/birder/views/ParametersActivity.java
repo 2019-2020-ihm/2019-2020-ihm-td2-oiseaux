@@ -26,7 +26,7 @@ import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 
-public class ParametersActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ParametersActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private String userId;
@@ -36,6 +36,8 @@ public class ParametersActivity extends AppCompatActivity implements AdapterView
 
     private String password;
     private String confirmPassword;
+
+    private Button buttonReturn;
 
     /**
      * The authentication view model.
@@ -83,7 +85,14 @@ public class ParametersActivity extends AppCompatActivity implements AdapterView
         editPassword = (EditText) findViewById(R.id.editText_parameters_mdp);
         editConfirmPassword = (EditText) findViewById(R.id.editText_parameters_confirm_mdp);
         buttonChangePassword = (Button) findViewById(R.id.button_parameters_confirm);
-        setSpinner();
+        buttonReturn = (Button) findViewById(R.id.button_param);
+        buttonReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ParametersActivity.this, AccountActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -218,83 +227,4 @@ public class ParametersActivity extends AppCompatActivity implements AdapterView
                 );
     }
 
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch(position){
-            case 0:break;
-            case 1: // Liste signalisation
-            {
-                Intent intent = new Intent(ParametersActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-            break;
-            case 2: // Map
-            {
-                Intent intent = new Intent(ParametersActivity.this, MapActivity.class);
-                startActivity(intent);
-            }break;
-            case 3: //Compte (connecté) / Se connecter (déconnecté)
-            {
-                if (auth.getCurrentUser() != null) {
-                    Intent intent = new Intent(ParametersActivity.this,AccountActivity.class);
-                    startActivity(intent);
-                }
-                else {
-                    Intent intent = new Intent(ParametersActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                }
-            }break;
-            case 4:// Déconnexion (connecté)
-            {
-                // The user is connected.
-                if (auth.getCurrentUser() != null) {
-                    // Sign out the user.
-                    auth.signOut();
-
-                    // Success toast.
-                    Toast.makeText(
-                            ParametersActivity.this,
-                            "Vous avez été déconnecté !",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    Intent intent = new Intent(ParametersActivity.this, MainActivity.class);
-                    startActivity(intent);
-                }
-                // The user is not connected.
-                else {
-                    // Navigate to sign in.
-                    Intent intent = new Intent(ParametersActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                }
-            }break;
-        }
-    }
-
-    public void setSpinner(){
-        final Spinner spinner = findViewById(R.id.spinner_parameters);
-        spinner.setAdapter(null);
-        spinner.setOnItemSelectedListener(this);
-        List<String> list = new ArrayList<>();
-        list.add("Menu");
-        list.add("Dernières signalisations");
-        list.add("Voir Carte");
-        // The user is connected.
-        if (auth.getCurrentUser() != null) {
-            list.add("Compte");
-            list.add("Se déconnecter");
-        }
-        // The user is not connected.
-        else {
-            list.add("Se connecter");
-        }
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
 }
