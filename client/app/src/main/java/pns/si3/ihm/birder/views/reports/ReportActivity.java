@@ -35,6 +35,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
@@ -230,8 +232,14 @@ public class ReportActivity
 		// Current location button.
 		currentLocationButton = findViewById(R.id.text_current_location);
 		currentLocationButton.setOnClickListener(v -> {
-			setLocation();
-			editLocation.setText(GpsActivity.getPlaceName(userLocation, this));
+			// Check if permission already granted
+			boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+			if (!permissionGranted)
+				ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+			else {
+				setLocation();
+				editLocation.setText(GpsActivity.getPlaceName(userLocation, this));
+			}
 		});
 
 		// Choose location button.
@@ -252,6 +260,7 @@ public class ReportActivity
 	 * Initializes the attribute userLocation
 	 */
 	private void setLocation() {
+		// Check if permission already granted
 		boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 		if (!permissionGranted)
 			ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
@@ -277,10 +286,7 @@ public class ReportActivity
 		}
 
 		if (fournisseur != null) {
-			// Check if permission already granted
-
-
-			LocationListener locationListener = new LocationListener() {
+            LocationListener locationListener = new LocationListener() {
 				@Override
 				public void onLocationChanged(Location location) {
 					userLocation = location;
@@ -314,6 +320,16 @@ public class ReportActivity
 				locationManager.removeUpdates(locationListener);
 			}
 		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		// Check if permission already granted
+		boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+		if (!permissionGranted)
+			ActivityCompat.requestPermissions(ReportActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+		else
+			setLocation();
 	}
 
 	/**

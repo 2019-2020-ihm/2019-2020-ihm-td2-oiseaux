@@ -66,14 +66,6 @@ public class GpsActivity extends AppCompatActivity {
         // Valid button
         Button validButton = findViewById(R.id.buttonGPSValid);
         validButton.setOnClickListener(v -> {
-            try {
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                List<Address> addresses = geocoder.getFromLocation(userLocation.getLatitude(), userLocation.getLongitude(), 1);
-                Log.d("GPS", addresses.get(0).getLocality());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             arreterLocalisation();
 
             Intent returnReportActivity = new Intent(GpsActivity.this, ReportActivity.class);
@@ -111,12 +103,18 @@ public class GpsActivity extends AppCompatActivity {
         MapEventsOverlay overlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
         mapView.getOverlays().add(overlayEvents);
 
-        initialiserLocalisation();
+        // Check if permission already granted
+        boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (!permissionGranted)
+            ActivityCompat.requestPermissions(GpsActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+        else {
+            initialiserLocalisation();
 
-        GeoPoint currentLocation = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
-        mapController.setCenter(currentLocation);
+            GeoPoint currentLocation = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+            mapController.setCenter(currentLocation);
 
-        addIcon(userLocation); // Places an icon on 'location'
+            addIcon(userLocation); // Places an icon on 'location'
+        }
     }
 
     /**
@@ -142,12 +140,12 @@ public class GpsActivity extends AppCompatActivity {
             fournisseur = locationManager.getBestProvider(criteres, true);
         }
 
-        if (fournisseur != null) {
-            // Check if permission already granted
-            boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            if (!permissionGranted)
-                ActivityCompat.requestPermissions(GpsActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+        // Check if permission already granted
+        boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (!permissionGranted)
+            ActivityCompat.requestPermissions(GpsActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
 
+        if (fournisseur != null) {
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
@@ -211,6 +209,22 @@ public class GpsActivity extends AppCompatActivity {
         mOverlay.setFocusItemsOnTap(true);
 
         mapView.getOverlays().add(mOverlay);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // Check if permission already granted
+        boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (!permissionGranted)
+            ActivityCompat.requestPermissions(GpsActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+        else {
+            initialiserLocalisation();
+
+            GeoPoint currentLocation = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+            mapController.setCenter(currentLocation);
+
+            addIcon(userLocation); // Places an icon on 'location'
+        }
     }
 
     private void arreterLocalisation() {
