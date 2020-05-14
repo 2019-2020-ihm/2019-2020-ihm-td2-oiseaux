@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +22,9 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
+import pns.si3.ihm.birder.repositories.interfaces.SpeciesRepository;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	private Button button;
 
 	private ReportViewModel reportViewModel;
+	private SpeciesViewModel speciesViewModel;
 
 	private RecyclerView recyclerView;
 	private ReportsAdapter reportsAdapter;
@@ -63,7 +67,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		initViewModels();
 		observeReports();
 
+		speciesViewModel.getSpecies("1cf7a900-9462-11ea-b54b-dfdd6bca3d2a");
+		speciesViewModel
+			.getSelectedSpeciesLiveData()
+			.observe(
+				this,
+				species -> {
+					if (species != null) {
+						Log.e(TAG, species.getFrenchCommonName());
+						Log.e(TAG, "" + species.getPortugueseCommonName());
+					}
+				}
+			);
 
+		speciesViewModel
+			.getSpeciesErrorsLiveData()
+			.observe(
+				this,
+				error -> {
+					if (error != null) {
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
 	}
 
 	/**
@@ -87,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 */
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
 	/**

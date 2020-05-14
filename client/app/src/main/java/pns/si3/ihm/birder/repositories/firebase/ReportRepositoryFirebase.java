@@ -1,9 +1,7 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
-import android.app.Activity;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
-import android.os.Environment;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,8 +14,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

@@ -34,13 +34,13 @@ public interface ReportRepository {
 	LiveData<Report> createReport(Report report);
 
 	/**
-	 * Returns the report errors.
-	 * @return The report errors.
+	 * Returns the report errors (updated in real time).
+	 * @return The report errors (updated in real time).
 	 */
 	LiveData<Exception> getErrors();
 
 	/**
-	 * Clears the report errors (updated in real time).
+	 * Clears the report errors.
 	 * This avoids receiving the same error multiple times.
 	 */
 	void clearErrors();

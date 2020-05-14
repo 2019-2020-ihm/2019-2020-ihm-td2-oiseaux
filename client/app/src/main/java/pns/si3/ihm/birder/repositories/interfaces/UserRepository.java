@@ -32,7 +32,7 @@ public interface UserRepository {
 	LiveData<Exception> getErrors();
 
 	/**
-	 * Clears the live data of the user request errors.
+	 * Clears the user errors.
 	 * This avoids receiving the same error multiple times.
 	 */
 	void clearErrors();
