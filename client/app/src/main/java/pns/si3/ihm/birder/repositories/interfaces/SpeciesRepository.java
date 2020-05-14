@@ -13,6 +13,13 @@ import pns.si3.ihm.birder.models.Species;
  */
 public interface SpeciesRepository {
 	/**
+	 * Searches for species based on a text query.
+	 * @param text The text query.
+	 * @return The list of ids of the found species.
+	 */
+	LiveData<List<Species>> searchSpecies(String text);
+
+	/**
 	 * Returns a species.
 	 * @param id The id of the species.
 	 * @return The selected species.

@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
+
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.repositories.firebase.SpeciesRepositoryFirebase;
 import pns.si3.ihm.birder.repositories.interfaces.SpeciesRepository;
@@ -25,6 +27,11 @@ public class SpeciesViewModel extends ViewModel {
 	private LiveData<Species> selectedReportLiveData;
 
 	/**
+	 * The searched species.
+	 */
+	private LiveData<List<Species>> searchedReportLiveData;
+
+	/**
 	 * The species errors (updated in real time).
 	 */
 	private LiveData<Exception> speciesErrorsLiveData;
@@ -40,6 +47,7 @@ public class SpeciesViewModel extends ViewModel {
 
 		// Initialize the live data.
 		selectedReportLiveData = new MutableLiveData<>();
+		searchedReportLiveData = new MutableLiveData<>();
 		speciesErrorsLiveData = speciesRepository.getErrors();
 	}
 
@@ -53,6 +61,14 @@ public class SpeciesViewModel extends ViewModel {
 	 */
 	public LiveData<Species> getSelectedSpeciesLiveData() {
 		return selectedReportLiveData;
+	}
+
+	/**
+	 * Returns the searched species.
+	 * @return The searched species.
+	 */
+	public LiveData<List<Species>> getSearchedSpeciesLiveData() {
+		return searchedReportLiveData;
 	}
 
 	/**
@@ -73,6 +89,14 @@ public class SpeciesViewModel extends ViewModel {
 	 */
 	public void getSpecies(String id) {
 		selectedReportLiveData = speciesRepository.getSpecies(id);
+	}
+
+	/**
+	 * Searches for species based on a text query.
+	 * @param text The text query.
+	 */
+	public void searchSpecies(String text) {
+		searchedReportLiveData = speciesRepository.searchSpecies(text);
 	}
 
 	/**

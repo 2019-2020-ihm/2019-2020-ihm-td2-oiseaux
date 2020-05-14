@@ -53,6 +53,9 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
+    // Algolia library for database searches.
+    implementation 'com.algolia:algoliasearch-android:3.27.0'
+
     // Java tests.
     testImplementation 'junit:junit:4.13'
 
