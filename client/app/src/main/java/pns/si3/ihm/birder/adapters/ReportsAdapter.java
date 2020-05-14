@@ -24,6 +24,7 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.views.reports.InformationActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
+import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 /**
  * Reports adapter.
@@ -113,21 +114,15 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 		TextView dateText = viewHolder.textDate;
 		String elapsedTime = getElapsedTime(report.getDate());
 		dateText.setText(elapsedTime);
+
+		// On button selected.
 		Button button = viewHolder.selectButton;
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(context, InformationActivity.class);
-				intent.putExtra("id", report.getId());
-				context.startActivity(intent);
-			}
+		button.setOnClickListener(v -> {
+			Intent intent = new Intent(context, InformationActivity.class);
+			intent.putExtra("id", report.getId());
+			context.startActivity(intent);
 		});
 
-	}
-
-
-	public List<Report> getReports(){
-		return this.reports;
 	}
 
 	/**

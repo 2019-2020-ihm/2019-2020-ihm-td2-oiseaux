@@ -80,6 +80,16 @@
 			app:layout_constraintLeft_toRightOf="@id/text_species"
 			app:layout_constraintTop_toTopOf="parent" />
 
+		<ImageView
+			android:id="@+id/imageView_report_search"
+			android:layout_width="20dp"
+			android:layout_height="20dp"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintLeft_toRightOf="@+id/edit_species"
+			app:layout_constraintBottom_toBottomOf="@id/edit_species"
+			app:layout_constraintTop_toTopOf="@+id/edit_species"
+			android:src="@drawable/icon_search"/>
+
 		<TextView
 			android:id="@+id/text_number"
 			android:layout_width="wrap_content"
@@ -172,7 +182,7 @@
 			android:id="@+id/text_date"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="44dp"
+			android:layout_marginLeft="60dp"
 			android:layout_marginTop="16dp"
 			android:text="Date"
 			android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -183,7 +193,7 @@
 			android:id="@+id/text_time"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="44dp"
+			android:layout_marginLeft="60dp"
 			android:layout_marginTop="72dp"
 			android:text="Heure"
 			android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -253,7 +263,7 @@
 			android:id="@+id/image_picture"
 			android:layout_width="135dp"
 			android:layout_height="109dp"
-			android:layout_marginLeft="40dp"
+			android:layout_marginLeft="60dp"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:srcCompat="@drawable/gallery" />

@@ -21,6 +21,7 @@ public class SpeciesViewModel extends ViewModel {
 	 */
 	private SpeciesRepository speciesRepository;
 
+
 	/**
 	 * The selected species.
 	 */

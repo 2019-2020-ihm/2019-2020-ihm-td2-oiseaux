@@ -18,6 +18,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -46,9 +47,12 @@ import java.util.Locale;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
+import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
+import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.GpsActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationApp;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
@@ -67,6 +71,7 @@ public class ReportActivity
 {
 	public static final int REQUEST_PICTURE = 1;
 	public static final int REQUEST_POSITION = 2;
+	public static final int REQUEST_SPECIES = 3;
 	private int notificationId = 0;
 
 	/**
@@ -90,14 +95,19 @@ public class ReportActivity
     private UserViewModel userViewModel;
 
 	/**
+	 * The species view model.
+	 */
+	private SpeciesViewModel speciesViewModel;
+
+	/**
 	 * The activity fields.
 	 */
     ImageView picture;
-	EditText editSpecies;
 	EditText editNumber;
 	EditText editDate;
     EditText editTime;
 	EditText editLocation;
+	TextView textViewSpecies;
 
 	/**
 	 * The date and time values.
@@ -129,6 +139,8 @@ public class ReportActivity
 	TextView currentLocationButton;
 	TextView chooseLocationButton;
 	Button submitButton;
+	ImageView searchImage;
+	ImageView cancelImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +167,7 @@ public class ReportActivity
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
 	/**
@@ -182,7 +195,7 @@ public class ReportActivity
     private void initFields() {
     	// Get the fields.
 		picture = findViewById(R.id.image_picture);
-		editSpecies = findViewById(R.id.edit_species);
+		textViewSpecies = findViewById(R.id.text_speciesName);
 		editNumber = findViewById(R.id.edit_number);
 		editLocation = findViewById(R.id.edit_location);
 
@@ -254,6 +267,22 @@ public class ReportActivity
 		submitButton.setOnClickListener(v -> {
 			submit();
 		});
+
+		// Search button.
+		searchImage = findViewById(R.id.imageView_report_search);
+		searchImage.setOnClickListener(v -> {
+			search();
+		});
+
+        cancelImage = findViewById(R.id.imageView_report_cancel);
+        cancelImage.setVisibility(ImageView.INVISIBLE);
+        cancelImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelImage.setVisibility(ImageView.INVISIBLE);
+                textViewSpecies.setText("Inconnue");
+            }
+        });
 	}
 
 	/**
@@ -342,6 +371,13 @@ public class ReportActivity
 	}
 
 	/**
+	 * Search a species.
+	 */
+	public void search(){
+		startActivityForResult(new Intent(ReportActivity.this, ChoiceSpeciesActivity.class), REQUEST_SPECIES);
+	}
+
+	/**
 	 * Creates the report.
 	 */
     public void createReport() {
@@ -372,7 +408,7 @@ public class ReportActivity
                                         user -> {
                                             if (user != null) {
                                             	if (user.getAllNotificationActivate() != null) {
-													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies(), report.getPicturePath());
+													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
 												}
                                             }
                                         }
@@ -403,7 +439,7 @@ public class ReportActivity
 	 */
 	private Report getReport() {
 		// Get the values.
-		String species = editSpecies.getText().toString();
+		String species = textViewSpecies.getText().toString();
 		int number = Integer.parseInt(editNumber.getText().toString());
 		String userId = authViewModel.getAuthenticationId();
 		Date date = getSelectedDate();
@@ -425,13 +461,12 @@ public class ReportActivity
 	 */
 	private boolean isFormValid() {
 		// Get values.
-		String species = editSpecies.getText().toString();
+		String species = textViewSpecies.getText().toString();
 		String number = editNumber.getText().toString();
 
 		// Species is empty.
 		if (species.isEmpty()) {
-			editSpecies.setError("Veuillez saisir une espèce.");
-			editSpecies.requestFocus();
+			textViewSpecies.setError("Veuillez choisir une espèce.");
 			return false;
 		}
 
@@ -529,6 +564,13 @@ public class ReportActivity
         	if (bundle != null) {
         		Location location = (Location) bundle.get("location");
         		editLocation.setText(GpsActivity.getPlaceName(location, this));
+			}
+		} else if (requestCode == REQUEST_SPECIES && resultCode == RESULT_OK){
+        	Bundle bundle = data.getExtras();
+        	if(bundle != null){
+				String speciesChoosed = (String) bundle.get("name");
+                cancelImage.setVisibility(ImageView.VISIBLE);
+				textViewSpecies.setText(speciesChoosed);
 			}
 		}
     }
@@ -661,12 +703,16 @@ public class ReportActivity
 		updateTimeField();
 	}
 
-    public void sendNotification(Boolean notificationActivated, String nameBird, String picturePath){
+	/*====================================================================*/
+	/*                            NOTIFICATIONS                           */
+	/*====================================================================*/
+
+    public void sendNotification(Boolean notificationActivated, String nameBird){
 		if(notificationActivated)
-			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird, picturePath);
+			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird);
 	}
 
-    public void sendNotificationChannel(String channelId, int priority, String nameBird, String picturePath){
+    public void sendNotificationChannel(String channelId, int priority, String nameBird){
         Bitmap bitmap = null;
         try {
             if(android.os.Build.VERSION.SDK_INT >= 28) {

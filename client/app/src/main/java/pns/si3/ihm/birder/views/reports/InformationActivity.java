@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,10 +19,18 @@ import java.text.SimpleDateFormat;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
+import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class InformationActivity extends AppCompatActivity {
+
+	/**
+	 * The tag of the log messages.
+	 */
+	static final String TAG = "InformationActivity";
+
 	/**
 	 * The activity buttons.
 	 */
@@ -50,6 +59,11 @@ public class InformationActivity extends AppCompatActivity {
     private UserViewModel userViewModel;
 
 	/**
+	 * The species view model.
+	 */
+	private SpeciesViewModel speciesViewModel;
+
+	/**
 	 * The selected report.
 	 */
 	private Report report;
@@ -70,6 +84,7 @@ public class InformationActivity extends AppCompatActivity {
 	private void initViewModels() {
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
 	/**
@@ -142,6 +157,21 @@ public class InformationActivity extends AppCompatActivity {
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm, dd-MM-yyyy ");
 		String date = formatter.format(report.getDate());
 		textInfoDate.setText("Date : " + date);
+		Log.e(TAG, "Ici");
+		speciesViewModel.searchSpecies(report.getSpecies());
+		speciesViewModel
+				.getSearchedSpeciesLiveData()
+				.observe(
+						this,
+						foundSpecies -> {
+							if (foundSpecies != null) {
+								for (Species species : foundSpecies) {
+									Log.e(TAG, species.getFrenchCommonName());
+									textInfoName.setText("Nom scientifique : " + species.getFrenchCommonName());
+								}
+							}
+						}
+				);
 	}
 
 	/**
@@ -175,5 +205,7 @@ public class InformationActivity extends AppCompatActivity {
 				.into(imageInfo);
 		}
 	}
+
+
 
 }
