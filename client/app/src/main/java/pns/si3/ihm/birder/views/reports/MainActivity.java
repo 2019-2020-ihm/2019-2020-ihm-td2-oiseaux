@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	private Button button;
 
 	private ReportViewModel reportViewModel;
-	private SpeciesViewModel speciesViewModel;
 
 	private RecyclerView recyclerView;
 	private ReportsAdapter reportsAdapter;
@@ -66,30 +65,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		initRecyclerView();
 		initViewModels();
 		observeReports();
-
-		speciesViewModel.getSpecies("1cf7a900-9462-11ea-b54b-dfdd6bca3d2a");
-		speciesViewModel
-			.getSelectedSpeciesLiveData()
-			.observe(
-				this,
-				species -> {
-					if (species != null) {
-						Log.e(TAG, species.getFrenchCommonName());
-						Log.e(TAG, "" + species.getPortugueseCommonName());
-					}
-				}
-			);
-
-		speciesViewModel
-			.getSpeciesErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
-						Log.e(TAG, error.getMessage());
-					}
-				}
-			);
 	}
 
 	/**
@@ -113,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 */
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
-		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
 	/**
