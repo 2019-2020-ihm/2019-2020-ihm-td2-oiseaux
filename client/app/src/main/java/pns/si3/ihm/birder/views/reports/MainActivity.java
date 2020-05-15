@@ -23,6 +23,7 @@ import java.util.List;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.repositories.interfaces.SpeciesRepository;
+import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
@@ -34,11 +35,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 */
 	private static final String TAG = "MainActivity";
 
-	private FirebaseAuth auth;
-	private Button button;
-
+	/**
+	 * The report view model.
+	 */
 	private ReportViewModel reportViewModel;
 
+	/**
+	 * The authentication view model.
+	 */
+	private AuthViewModel authViewModel;
+
+	/**
+	 * The activity buttons.
+	 */
+	private Button button;
+
+	/**
+	 * The report recycler view.
+	 */
 	private RecyclerView recyclerView;
 	private ReportsAdapter reportsAdapter;
 	private RecyclerView.LayoutManager layoutManager;
@@ -46,25 +60,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// Set the layout.
 		setContentView(R.layout.activity_main);
-
-		// Initialize firebase.
-		auth = FirebaseAuth.getInstance();
-
-		setSpinner();
-		button = findViewById(R.id.buttonMain);
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				goToSignalActivity();
-			}
-		});
-
-		initRecyclerView();
 		initViewModels();
+		initRecyclerView();
 		observeReports();
+		initButtons();
+	}
+
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModels() {
+		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 	}
 
 	/**
@@ -84,35 +92,46 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	}
 
 	/**
-	 * Initializes the view models that hold the data.
+	 * Observes the reports (in real time).
 	 */
-	private void initViewModels() {
-		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
-	}
-
-	/**
-	 * Returns the report view model.
-	 * @return The report view model.
-	 */
-	public ReportViewModel getReportViewModel() {
-		return reportViewModel;
-	}
-
 	private void observeReports() {
+		// Query succeeded.
 		reportViewModel
 			.getReportsLiveData()
 			.observe(
 				this,
 				reports -> {
-					// Update the reports.
-					reportsAdapter.setReports(reports);
+					if (reports != null) {
+						// Update the recycler view.
+						reportsAdapter.setReports(reports);
+					}
+				}
+			);
+
+		// Query failed.
+		reportViewModel
+			.getReportErrorsLiveData()
+			.observe(
+				this,
+				error -> {
+					if (error != null) {
+						// Log the error.
+						Log.e(TAG, error.getMessage());
+					}
 				}
 			);
 	}
 
-	public void goToSignalActivity() {
-		Intent intent = new Intent(this, ReportActivity.class);
-		startActivity(intent);
+	/**
+	 * Initializes the activity buttons.
+	 */
+	private void initButtons() {
+		setSpinner();
+		button = findViewById(R.id.buttonMain);
+		button.setOnClickListener(v -> {
+			Intent intent = new Intent(this, ReportActivity.class);
+			startActivity(intent);
+		});
 	}
 
 	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -126,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 			break;
 			case 2: //Compte (connecté) / Se connecter (déconnecté)
 			{
-				if (auth.getCurrentUser() != null) {
+				if (authViewModel.isAuthenticated()) {
 					Intent intent = new Intent(MainActivity.this, AccountActivity.class);
 					startActivity(intent);
 				}
@@ -137,9 +156,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 			}break;
 			case 3:{
 				// The user is connected.
-				if (auth.getCurrentUser() != null) {
+				if (authViewModel.isAuthenticated()) {
 					// Sign out the user.
-					auth.signOut();
+					authViewModel.signOut();
 
 					// Success toast.
 					Toast.makeText(
@@ -180,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		list.add("Voir Carte");
 
 		// The user is connected.
-		if (auth.getCurrentUser() != null) {
+		if (authViewModel.isAuthenticated()) {
 			list.add("Compte");
 			list.add("Se déconnecter");
 		}
