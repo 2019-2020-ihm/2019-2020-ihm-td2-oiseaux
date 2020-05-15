@@ -157,21 +157,36 @@ public class InformationActivity extends AppCompatActivity {
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm, dd-MM-yyyy ");
 		String date = formatter.format(report.getDate());
 		textInfoDate.setText("Date : " + date);
-		Log.e(TAG, "Ici");
+
+		// Search the species on the database (based on user input).
 		speciesViewModel.searchSpecies(report.getSpecies());
+
+		// Query succeeded.
 		speciesViewModel
-				.getSearchedSpeciesLiveData()
-				.observe(
-						this,
-						foundSpecies -> {
-							if (foundSpecies != null) {
-								for (Species species : foundSpecies) {
-									Log.e(TAG, species.getFrenchCommonName());
-									textInfoName.setText("Nom scientifique : " + species.getName());
-								}
-							}
-						}
-				);
+			.getSearchedSpeciesLiveData()
+			.observe(
+				this,
+				foundSpecies -> {
+					// Species found.
+					if (foundSpecies != null && foundSpecies.size() > 0) {
+						Species bestMatch = foundSpecies.get(0);
+						textInfoName.setText("Nom scientifique : " + bestMatch.getName());
+					}
+				}
+			);
+
+		// Query failed.
+		speciesViewModel
+			.getSpeciesErrorsLiveData()
+			.observe(
+				this,
+				error -> {
+					if (error != null) {
+						// Log the error.
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
 	}
 
 	/**
