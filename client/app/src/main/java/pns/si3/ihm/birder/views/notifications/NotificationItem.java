@@ -3,25 +3,13 @@ package pns.si3.ihm.birder.views.notifications;
 public class NotificationItem {
 
     private String notificationNameBird;
-    private String birdId;
-    private int imageResourceId;
 
-    public NotificationItem(String notificationNameBird, String birdId, int imageResourceId){
+    public NotificationItem(String notificationNameBird){
         this.notificationNameBird = notificationNameBird;
-        this.birdId = birdId;
-        this.imageResourceId = imageResourceId;
-    }
-
-    public String getBirdId() {
-        return birdId;
     }
 
     public String getNotificationNameBird() {
         return notificationNameBird;
-    }
-
-    public int getImageResourceId() {
-        return imageResourceId;
     }
 
 }

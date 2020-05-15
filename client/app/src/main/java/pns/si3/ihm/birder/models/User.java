@@ -2,6 +2,8 @@ package pns.si3.ihm.birder.models;
 
 import com.google.firebase.firestore.Exclude;
 
+import java.util.ArrayList;
+
 /**
  * User.
  */
@@ -32,6 +34,8 @@ public class User {
 	 */
 	private Boolean allNotificationActivate;
 
+	private ArrayList<String> speciesNotifications;
+
 	public User() {}
 
 	public User(String id, String firstName, String lastName, String email) {
@@ -40,6 +44,7 @@ public class User {
 		this.lastName = lastName;
 		this.email = email;
 		this.allNotificationActivate = true;
+		this.speciesNotifications = new ArrayList<>();
 	}
 
 	@Exclude
@@ -80,7 +85,20 @@ public class User {
 	    return allNotificationActivate;
     }
 
+
     public void setAllNotificationActivate(Boolean allNotificationActivate){
 	    this.allNotificationActivate = allNotificationActivate;
     }
+
+	public ArrayList<String> getSpeciesNotifications() {
+		return speciesNotifications;
+	}
+
+	public void setSpeciesNotifications(ArrayList<String> speciesNotifications) {
+		this.speciesNotifications = speciesNotifications;
+	}
+
+	public void deleteItemToSpeciesNotifications(String speciesName){
+		this.speciesNotifications.remove(speciesName);
+	}
 }

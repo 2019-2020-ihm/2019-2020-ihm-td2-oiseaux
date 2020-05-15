@@ -1,7 +1,7 @@
 package pns.si3.ihm.birder.views.notifications;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,35 +13,39 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
+import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 import pns.si3.ihm.birder.views.reports.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
-
 
 public class NotificationActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     private ListView listView;
     private CheckBox checkBox;
     private ImageView imageView;
-    ArrayList<NotificationItem> notifications;
     private FirebaseAuth auth;
     private Boolean allNotification = true;
     private UserViewModel userViewModel;
     private AuthViewModel authViewModel;
+    private SpeciesViewModel speciesViewModel;
     private String userId;
+    public static final int REQUEST_SPECIES = 1;
+    ArrayAdapter<String> adapter;
 
 
     @Override
@@ -51,27 +55,34 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
         init();
         initViewModel();
-        initListOfNotification();
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAllNotification(!getAllNotification());
-                changeBooleanAllNotification();
-                Log.i("Notif", "Notif bool = " + getAllNotification());
-            }});
-
-
+        setListAndCheckBoxInInit();
+        checkBox.setOnClickListener(v -> {
+            setAllNotification(!getAllNotification());
+            changeBooleanAllNotification();
+            Log.i("Notif", "Notif bool = " + getAllNotification());
+        });
         imageView.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 //TODO io
-                 //Implémenter l'ajout d'une notification
-                 //Récupérer l'oiseau en affichant une liste avec les oiseaux ?
-                 //Mettre à jour la liste des oiseaux notifiés
+                 startActivityForResult(new Intent(NotificationActivity.this, ChoiceSpeciesActivity.class), REQUEST_SPECIES);
              }});
-
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SPECIES && resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            if(bundle != null){
+                String speciesChoosed = (String) bundle.get("name");
+                addItemNotificationForUser(speciesChoosed);
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+
 
     void init(){
         auth = FirebaseAuth.getInstance();
@@ -79,33 +90,41 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         imageView = (ImageView) findViewById(R.id.imageview_add_notification);
         checkBox = (CheckBox) findViewById(R.id.checkbox_all_notif);
         setSpinner();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(!listView.getItemAtPosition(position).toString().isEmpty()){
+                    dialogBoxDelete(listView.getItemAtPosition(position).toString());
+                }
+            }
+        });
     }
 
     private void initViewModel(){
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
         userId = authViewModel.getAuthenticationId();
-        userViewModel.getUser(userId);
-        userViewModel
-			.getSelectedUserLiveData()
-			.observe(
-				this,
-				user -> {
-					if (user != null) {
-						setAllNotification(user.getAllNotificationActivate());
-                        Log.i("Notif", "User init = " + user.getAllNotificationActivate());
-					}
-					checkBox.setChecked(user.getAllNotificationActivate());
-				}
-			);
     }
 
 
-    void initListOfNotification(){
-        notifications = new ArrayList<NotificationItem>();
-        notifications.add(new NotificationItem("Merle noir", "0",R.drawable.merle_noir));
-        NotificationAdapter notificationAdapter = new NotificationAdapter(getApplicationContext(), notifications,  NotificationActivity.this);
-        listView.setAdapter(notificationAdapter);
+    private void setListAndCheckBoxInInit() {
+        userViewModel.getUser(userId);
+        userViewModel
+                .getSelectedUserLiveData()
+                .observe(
+                        this,
+                        user -> {
+                            if (user != null) {
+                                setAllNotification(user.getAllNotificationActivate());
+                                Log.i("Notif", "User bool activate = " + user.getAllNotificationActivate());
+                                adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, user.getSpeciesNotifications());
+                                listView.setAdapter(adapter);
+                            }
+                            checkBox.setChecked(user.getAllNotificationActivate());
+                        }
+                );
     }
 
     void changeBooleanAllNotification(){
@@ -133,6 +152,33 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 			);
     }
 
+    private void addItemNotificationForUser(String speciesChoosed){
+        userViewModel.getUser(userId);
+        userViewModel
+                .getSelectedUserLiveData()
+                .observe(
+                        this,
+                        user -> {
+                            if (user != null) {
+                                userViewModel.insertUser(user);
+                                userViewModel
+                                        .getInsertedUserLiveData()
+                                        .observe(
+                                                this,
+                                                databaseUser -> {
+                                                    if (databaseUser != null) {
+                                                        ArrayList<String> notif = databaseUser.getSpeciesNotifications();
+                                                        notif.add(speciesChoosed);
+                                                        databaseUser.setSpeciesNotifications(notif);
+                                                        userViewModel.insertUser(databaseUser);
+                                                    }
+                                                }
+                                        );
+                                Log.i("Notif", "List in user après ajout = " + user.getSpeciesNotifications());
+                            }
+                        }
+                );
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -223,34 +269,64 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         return allNotification;
     }
 
-    public Boolean notificationActivate(String birdId){
-        boolean notifActivate = getAllNotification();
-        if(!notifActivate){
+    public Boolean notificationActivate(String nameSpecies){
+        AtomicBoolean notifActivate = new AtomicBoolean(false);
+        userViewModel.getUser(userId);
+        userViewModel
+            .getSelectedUserLiveData()
+            .observe(
+                this,
+                user -> {
+                    if (user != null) {
+                        for(String name : user.getSpeciesNotifications()){
+                            if(name.equals(nameSpecies)){
+                                notifActivate.set(true);
+                            }
+                        }
+                    }
+                }
+            );
+        return getAllNotification()||notifActivate.get();
+    }
+
+    void deleteBird(String speciesName){
             userViewModel.getUser(userId);
             userViewModel
-				.getSelectedUserLiveData()
-				.observe(
-					this,
-					user -> {
-						if (user != null) {
-							// TODO io
-							// Parcourir le tableau de string avec les id des oiseaux notifiés
-						}
-					}
-				);
+                    .getSelectedUserLiveData()
+                    .observe(
+                            this,
+                            user -> {
+                                if (user != null) {
+                                    userViewModel.insertUser(user);
+                                    userViewModel
+                                            .getInsertedUserLiveData()
+                                            .observe(
+                                                    this,
+                                                    databaseUser -> {
+                                                        if (databaseUser != null) {
+                                                            databaseUser.deleteItemToSpeciesNotifications(speciesName);
+                                                            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseUser.getSpeciesNotifications());
+                                                            listView.setAdapter(adapter);
+                                                            Log.i("Notif", "List in user après suppression = " + user.getSpeciesNotifications());
+                                                        }
+                                                    }
+                                            );
+                                }
+                            }
+                    );
         }
-        return getAllNotification();
-    }
 
-    private String getNameOfBirdFromId(String birdId){
-        String nameBird = null;
-        // TODO io
-        // chercher dans la base de données l'oiseau associé à l'id
-        return nameBird;
-    }
-
-
-
-
+        private void dialogBoxDelete(String speciesName){
+            new AlertDialog.Builder(this)
+                    .setTitle("Suppression d'une notification")
+                    .setMessage("Voulez-vous vraiment ne plus recevoir de notification pour l'espèce " + speciesName + " ?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(NotificationActivity.this, "Notification pour l'oiseau " + speciesName + " est supprimée.", Toast.LENGTH_SHORT).show();
+                            deleteBird(speciesName);
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
+        }
 
 }

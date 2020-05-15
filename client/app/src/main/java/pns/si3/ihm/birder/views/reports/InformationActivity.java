@@ -167,7 +167,7 @@ public class InformationActivity extends AppCompatActivity {
 							if (foundSpecies != null) {
 								for (Species species : foundSpecies) {
 									Log.e(TAG, species.getFrenchCommonName());
-									textInfoName.setText("Nom scientifique : " + species.getFrenchCommonName());
+									textInfoName.setText("Nom scientifique : " + species.getName());
 								}
 							}
 						}

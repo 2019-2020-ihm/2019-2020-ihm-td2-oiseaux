@@ -70,7 +70,8 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent returnReportActivity = new Intent(ChoiceSpeciesActivity.this, ReportActivity.class);
+                Intent returnReportActivity = new Intent();
+                Log.i(TAG,adapter.getItem(position));
                 returnReportActivity.putExtra("name", adapter.getItem(position));
                 setResult(RESULT_OK, returnReportActivity);
                 finish();
