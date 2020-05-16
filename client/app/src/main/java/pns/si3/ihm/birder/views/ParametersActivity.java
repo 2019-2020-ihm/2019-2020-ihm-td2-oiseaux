@@ -1,185 +1,109 @@
 package pns.si3.ihm.birder.views;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
-
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
+import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class ParametersActivity extends AppCompatActivity {
-	/**
-	 * The tag for the log messages.
-	 */
-	private static final String TAG = "ParametersActivity";
 
     /**
-     * The authentication view model.
+     * The auth view model.
      */
     private AuthViewModel authViewModel;
 
     /**
-     * The activity fields.
+     * The user view model.
      */
-    private EditText editPassword;
-    private EditText editConfirmPassword;
+    private UserViewModel userViewModel;
 
-	/**
-	 * The activity buttons.
-	 */
-	private Button buttonReturn;
+    /**
+     * The buttons of the activity.
+     */
     private Button buttonChangePassword;
+    private Button buttonDeleteAccount;
+    private Button buttonReturn;
+
+    /**
+     * The fields of the activity.
+     */
+    private TextView textUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameters);
-		initViewModel();
-		initFields();
-		initButtons();
-    }
-
-	/**
-	 * Initializes the activity fields.
-	 */
-	private void initFields() {
-		editPassword = findViewById(R.id.editText_parameters_mdp);
-		editConfirmPassword = findViewById(R.id.editText_parameters_confirm_mdp);
-	}
-
-	/**
-	 * Initializes the activity buttons.
-	 */
-	private void initButtons(){
-        // Return button.
-        buttonReturn = findViewById(R.id.button_param);
-        buttonReturn.setOnClickListener(v -> {
-			finish();
-		});
-
-        // Submit button.
-		buttonChangePassword = findViewById(R.id.button_parameters_confirm);
-		buttonChangePassword.setOnClickListener(v -> {
-			submit();
-		});
+        initViewModels();
+        initButtonsAndFields();
     }
 
     /**
-     * Initializes the authentication view model that holds the data.
+     * Initializes the view models that hold the data.
      */
-    private void initViewModel() {
+    private void initViewModels() {
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
     }
 
-	/**
-	 * Submit the password change, if the form is valid.
-	 */
-	private void submit() {
-		if (isFormValid()) {
-			updatePassword();
-		}
-	}
+    private void initButtonsAndFields(){
+        buttonChangePassword = findViewById(R.id.change_password);
+        buttonDeleteAccount = findViewById(R.id.delete_account);
+        buttonReturn = findViewById(R.id.buttonParamsRetour);
+        textUser = findViewById(R.id.textUser);
 
-    /**
-     * Checks if the form is valid.
-     * @return Whether the form is valid, or not.
-     */
-    private boolean isFormValid() {
-    	// Get the values.
-		String password = editPassword.getText().toString();
-		String confirmPassword = editConfirmPassword.getText().toString();
+        buttonDeleteAccount.setOnClickListener(v -> {
+            dialogBox();
+            deleteAccount();
+        });
 
-        // Password is empty.
-		if (password.isEmpty()) {
-			editPassword.setError("Veuillez saisir un mot de passe.");
-			editConfirmPassword.setText("");
-			editPassword.requestFocus();
-			return false;
-		}
+        buttonChangePassword.setOnClickListener(v -> {
+            startActivity(new Intent(ParametersActivity.this, PasswordActivity.class));
+        });
 
-		// Confirm password is empty.
-		if (confirmPassword.isEmpty()) {
-			editConfirmPassword.setError("Veuillez resaisir votre mot de passe.");
-			editConfirmPassword.requestFocus();
-			return false;
-		}
+        buttonReturn.setOnClickListener(v -> {
+            finish();
+        });
 
-		// Passwords don't match.
-		if (!password.equals(confirmPassword)) {
-			editConfirmPassword.setError("Les mots de passe ne correspondent pas.");
-			editConfirmPassword.setText("");
-			editConfirmPassword.requestFocus();
-			return false;
-		}
-
-		// Password not long enough.
-		if (password.length() < 6) {
-			editPassword.setError("Votre mot de passe doit comporter au moins 6 caractères.");
-			editPassword.setText("");
-			editConfirmPassword.setText("");
-			editPassword.requestFocus();
-			return false;
-		}
-
-        return true;
+        userViewModel.getUser(authViewModel.getAuthenticationId());
+        userViewModel.getSelectedUserLiveData()
+                .observe(this,
+                        selectedUser -> {
+                    if(selectedUser != null){
+                        textUser.setText("Connecté, "+ selectedUser.getFirstName() + " " + selectedUser.getLastName());
+                    }
+                        });
     }
 
-	/**
-	 * Updates the user password.
-	 */
-	private void updatePassword() {
-		// Get the password.
-		String password = editPassword.getText().toString();
+    private void dialogBox(){
+        new AlertDialog.Builder(this)
+                .setTitle("Suppression du compte")
+                .setMessage("Voulez-vous vraiment supprimer votre compte ?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> deleteAccount())
+                .setNegativeButton(android.R.string.no, null).show();
+    }
 
-		// Update the password.
-		authViewModel.updatePassword(password);
+    private void deleteAccount(){
+        authViewModel.deleteUser();
+        authViewModel.getUserDeletedLiveData()
+                .observe(this, userDelected -> {
+                    if(userDelected != null){
+                        Toast.makeText(this, "Compte supprimé !", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        authViewModel.signOut();
+        startActivity(new Intent(ParametersActivity.this, MainActivity.class).putExtra("userDeleted", "True"));
+    }
 
-		// Request succeeded.
-		authViewModel.getPasswordUpdatedLiveData()
-			.observe(
-				this,
-				passwordChanged -> {
-					if (passwordChanged) {
-						// Reset password.
-						editPassword.setText("");
-						editConfirmPassword.setText("");
-
-						// Success toast.
-						Toast.makeText(
-							this,
-							"Votre mot de passe a bien été modifié.",
-							Toast.LENGTH_SHORT
-						).show();
-
-						// Close the activity.
-						finish();
-					}
-				}
-			);
-
-		// Request failed.
-		authViewModel.getAuthenticationErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null){
-						Log.e(TAG, "Password change failed");
-						Log.e(TAG, error.getMessage());
-
-						// Error toast.
-						Toast.makeText(
-							this,
-							"Le mot de passe n'a pas pu être modifié !",
-							Toast.LENGTH_SHORT
-						).show();
-					}
-				}
-			);
-	}
 }

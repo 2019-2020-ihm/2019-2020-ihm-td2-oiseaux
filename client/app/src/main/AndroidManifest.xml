@@ -42,10 +42,11 @@
         <activity android:name="pns.si3.ihm.birder.views.GpsActivity" />
         <activity android:name="pns.si3.ihm.birder.views.AccountActivity" />
         <activity android:name="pns.si3.ihm.birder.views.notifications.NotificationActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.ParametersActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.PasswordActivity" />
         <activity android:name="pns.si3.ihm.birder.views.ChoiceSpeciesActivity"/>
         <activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity"/>
         <activity android:name="pns.si3.ihm.birder.views.reports.InformationOneSpeciesActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.ParametersActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

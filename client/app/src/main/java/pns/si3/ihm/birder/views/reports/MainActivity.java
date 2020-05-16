@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+		if(authViewModel.getAuthenticationId() == null){
+			authViewModel.signOut();
+		}
 	}
 
 	/**
@@ -201,6 +205,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	protected void onRestart() {
 		super.onRestart();
 		setSpinner();
+		initButtons();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Bundle bundle = getIntent().getExtras();
+		if(bundle != null){
+			if(bundle.get("userDeleted").equals("True")){
+				Toast.makeText(this, "Compte supprimé !", Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 
 	public void setSpinner(){
