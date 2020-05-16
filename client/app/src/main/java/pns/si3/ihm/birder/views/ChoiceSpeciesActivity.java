@@ -26,11 +26,12 @@ import java.util.ArrayList;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
+import pns.si3.ihm.birder.views.reports.InformationOneSpeciesActivity;
 
 public class ChoiceSpeciesActivity extends AppCompatActivity {
 
     /**
-     * The return button.
+     * The fields of the activity.
      */
     private Button returnButton;
     private EditText editText;
@@ -41,6 +42,12 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
     private ListView listView;
     private TextView textView;
     private String TAG = "ChoiceSpecies";
+    private String speciesId;
+
+    /**
+     * What we want to show.
+     */
+    private String want;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,8 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
         Configuration.getInstance().load(getApplicationContext(),
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
         setContentView(R.layout.activity_choicespecies);
+
+        want = getIntent().getStringExtra("want");
 
         initElements();
         initViewModels();
@@ -65,10 +74,14 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
                 listItems);
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if(want.equals("allSpecies")){
+                Intent showInformation = new Intent(ChoiceSpeciesActivity.this, InformationOneSpeciesActivity.class);
+                Log.i(TAG,adapter.getItem(position));
+                setSpeciesId(adapter.getItem(position));
+                showInformation.putExtra("speciesId", speciesId);
+                startActivity(showInformation);
+            } else {
                 Intent returnReportActivity = new Intent();
                 Log.i(TAG,adapter.getItem(position));
                 returnReportActivity.putExtra("name", adapter.getItem(position));
@@ -77,17 +90,14 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
             }
         });
 
-        imageViewSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editText.getText().toString().isEmpty()){
-                    editText.setError("Veuillez saisir une espèce.");
-                }
-                else {
-                    adapter.clear();
-                    adapter.notifyDataSetChanged();
-                    findSpecies();
-                }
+        imageViewSearch.setOnClickListener(v -> {
+            if(editText.getText().toString().isEmpty()){
+                editText.setError("Veuillez saisir une espèce.");
+            }
+            else {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                findSpecies();
             }
         });
         returnButton.setOnClickListener(v -> finish());
@@ -102,6 +112,20 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void setSpeciesId(String frenchCommonName){
+        speciesViewModel.getSearchedSpeciesLiveData()
+                .observe(this,
+                        speciesList -> {
+                            if(speciesList != null) {
+                                for (Species speciesSelected : speciesList) {
+                                    if(speciesSelected.getFrenchCommonName().equals(frenchCommonName)){
+                                        speciesId = speciesSelected.getId();
+                                    }
+                                }
+                            }
+                        });
     }
 
     private void findSpecies(){

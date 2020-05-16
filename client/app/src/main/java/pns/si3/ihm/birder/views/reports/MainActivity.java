@@ -27,6 +27,7 @@ import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
+import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -148,7 +149,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 				startActivity(intent);
 			}
 			break;
-			case 2: //Compte (connecté) / Se connecter (déconnecté)
+			case 2://Liste des oiseaux
+			{
+				Intent intent = new Intent(MainActivity.this, ChoiceSpeciesActivity.class);
+				intent.putExtra("want", "allSpecies");
+				startActivity(intent);
+			}
+				break;
+			case 3: //Compte (connecté) / Se connecter (déconnecté)
 			{
 				if (authViewModel.isAuthenticated()) {
 					Intent intent = new Intent(MainActivity.this, AccountActivity.class);
@@ -159,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 					startActivity(intent);
 				}
 			}break;
-			case 3:{
+			case 4:{
 				// The user is connected.
 				if (authViewModel.isAuthenticated()) {
 					// Sign out the user.
@@ -202,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		List<String> list = new ArrayList<>();
 		list.add("Menu");
 		list.add("Voir Carte");
+		list.add("Liste des oiseaux");
 
 		// The user is connected.
 		if (authViewModel.isAuthenticated()) {

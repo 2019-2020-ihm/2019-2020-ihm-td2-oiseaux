@@ -57,6 +57,7 @@ public class InformationActivity extends AppCompatActivity {
     private TextView textInfoAuteur;
     private TextView textGender;
     private TextView textAge;
+    private Species species;
 
 	/**
 	 * The report view model.
@@ -120,13 +121,17 @@ public class InformationActivity extends AppCompatActivity {
 		});
 
 		imageQuestion = findViewById(R.id.imageView_question);
-		imageQuestion.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-			Intent intent = new Intent(InformationActivity.this, GiveSpeciesActivity.class);
-			intent.putExtra("picturePath", report.getPicturePath());
-			intent.putExtra("reportId", report.getId());
-			startActivityForResult(intent, REQUEST_INFORM_SPECIES);
+		imageQuestion.setOnClickListener(v -> {
+			if(textInfoEspece.getText().toString().equals("Inconnue")) {
+				Intent intent = new Intent(InformationActivity.this, GiveSpeciesActivity.class);
+				intent.putExtra("picturePath", report.getPicturePath());
+				intent.putExtra("reportId", report.getId());
+				startActivityForResult(intent, REQUEST_INFORM_SPECIES);
+			}
+			else {
+				Intent intent = new Intent(InformationActivity.this, InformationOneSpeciesActivity.class);
+				intent.putExtra("speciesId", species.getId());
+				startActivity(intent);
 			}
 		});
     }
@@ -190,11 +195,11 @@ public class InformationActivity extends AppCompatActivity {
 								// Species found.
 								if (foundSpecies != null && foundSpecies.size() > 0) {
 									Species bestMatch = foundSpecies.get(0);
+									species = bestMatch;
 									textInfoName.setText("Nom scientifique : " + bestMatch.getName());
 								}
 							}
 					);
-			imageQuestion.setVisibility(View.GONE);
 		}else {
 			textInfoEspece.setText("Espèce non renseignée");
 			textInfoName.setVisibility(View.GONE);

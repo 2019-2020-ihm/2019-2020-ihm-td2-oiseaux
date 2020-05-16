@@ -76,12 +76,19 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
                 startActivity(intent);
             }
             break;
-            case 2: // Map
+            case 2://Liste des oiseaux
+            {
+                Intent intent = new Intent(AccountActivity.this, ChoiceSpeciesActivity.class);
+                intent.putExtra("want", "allSpecies");
+                startActivity(intent);
+            }
+            break;
+            case 3: // Map
             {
                 Intent intent = new Intent(AccountActivity.this, MapActivity.class);
                 startActivity(intent);
             }break;
-            case 3: //Compte (connecté) / Se connecter (déconnecté)
+            case 4: //Compte (connecté) / Se connecter (déconnecté)
             {
                 if (auth.getCurrentUser() != null) {
                     // Sign out the user.
@@ -115,6 +122,7 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
         List<String> list = new ArrayList<>();
         list.add("Menu");
         list.add("Dernières signalisations");
+        list.add("Liste des oiseaux");
         list.add("Voir Carte");
         // The user is connected.
         if (auth.getCurrentUser() != null) {

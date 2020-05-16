@@ -45,6 +45,7 @@
         <activity android:name="pns.si3.ihm.birder.views.ParametersActivity" />
         <activity android:name="pns.si3.ihm.birder.views.ChoiceSpeciesActivity"/>
         <activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.reports.InformationOneSpeciesActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

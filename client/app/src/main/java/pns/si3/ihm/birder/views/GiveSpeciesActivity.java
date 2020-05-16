@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +33,6 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
-import pns.si3.ihm.birder.views.notifications.NotificationActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class GiveSpeciesActivity extends AppCompatActivity {

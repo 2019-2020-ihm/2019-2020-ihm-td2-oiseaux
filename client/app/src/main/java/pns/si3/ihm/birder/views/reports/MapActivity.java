@@ -31,6 +31,7 @@ import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
+import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -132,7 +133,14 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 				Intent intent = new Intent(MapActivity.this, MainActivity.class);
 				startActivity(intent);
 			}break;
-			case 2: //Compte (connecté) / Se connecter (déconnecté)
+			case 2://Liste des oiseaux
+			{
+				Intent intent = new Intent(MapActivity.this, ChoiceSpeciesActivity.class);
+				intent.putExtra("want", "allSpecies");
+				startActivity(intent);
+			}
+			break;
+			case 3: //Compte (connecté) / Se connecter (déconnecté)
 			{
 				if (auth.getCurrentUser() != null) {
 					Intent intent = new Intent(MapActivity.this, AccountActivity.class);
@@ -143,7 +151,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 					startActivity(intent);
 				}
 			}break;
-			case 3:// Déconnexion (connecté)
+			case 4:// Déconnexion (connecté)
 			{
 				// The user is connected.
 				if (auth.getCurrentUser() != null) {
@@ -181,6 +189,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 		List<String> list = new ArrayList<String>();
 		list.add("Menu");
 		list.add("Dernières signalisations");
+		list.add("Liste des oiseaux");
 		// The user is connected.
 		if (auth.getCurrentUser() != null) {
 			list.add("Compte");
