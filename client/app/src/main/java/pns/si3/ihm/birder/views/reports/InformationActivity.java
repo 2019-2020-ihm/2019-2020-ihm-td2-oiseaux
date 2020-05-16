@@ -47,6 +47,8 @@ public class InformationActivity extends AppCompatActivity {
     private TextView textInfoNumber;
     private TextView textInfoDate;
     private TextView textInfoAuteur;
+    private TextView textGender;
+    private TextView textAge;
 
 	/**
 	 * The report view model.
@@ -120,6 +122,8 @@ public class InformationActivity extends AppCompatActivity {
         textInfoDate = findViewById(R.id.textInfoDate);
         textInfoAuteur = findViewById(R.id.textInfoAuteur);
         textInfoName = findViewById(R.id.textInfoNom);
+        textGender = findViewById(R.id.textInfoGender);
+        textAge = findViewById(R.id.textInfoAge);
     }
 
 	/**
@@ -152,28 +156,43 @@ public class InformationActivity extends AppCompatActivity {
 	 * Update the report values.
 	 */
 	private void updateReport() {
-		textInfoEspece.setText("Espèce : " + report.getSpecies());
+		if(!report.getSpecies().equals("Inconnue")){
+			textInfoEspece.setText("Espèce : " + report.getSpecies());
+			// Search the species on the database (based on user input).
+			speciesViewModel.searchSpecies(report.getSpecies());
+
+			// Query succeeded.
+			speciesViewModel
+					.getSearchedSpeciesLiveData()
+					.observe(
+							this,
+							foundSpecies -> {
+								// Species found.
+								if (foundSpecies != null && foundSpecies.size() > 0) {
+									Species bestMatch = foundSpecies.get(0);
+									textInfoName.setText("Nom scientifique : " + bestMatch.getName());
+								}
+							}
+					);
+		}else {
+			textInfoEspece.setText("Espèce non renseignée");
+			textInfoName.setVisibility(View.GONE);
+		}
+
 		textInfoNumber.setText("Nombre : " + report.getNumber());
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm, dd-MM-yyyy ");
 		String date = formatter.format(report.getDate());
 		textInfoDate.setText("Date : " + date);
 
-		// Search the species on the database (based on user input).
-		speciesViewModel.searchSpecies(report.getSpecies());
 
-		// Query succeeded.
-		speciesViewModel
-			.getSearchedSpeciesLiveData()
-			.observe(
-				this,
-				foundSpecies -> {
-					// Species found.
-					if (foundSpecies != null && foundSpecies.size() > 0) {
-						Species bestMatch = foundSpecies.get(0);
-						textInfoName.setText("Nom scientifique : " + bestMatch.getName());
-					}
-				}
-			);
+		if(report.getAge() != null && !report.getAge().equals("")) {
+			if (Integer.valueOf(report.getAge()) > 1) {
+				textAge.setText("Age : environ " + report.getAge() + " ans");
+			} else textAge.setText("Age : environ " + report.getAge() + " an");
+		}
+		else textAge.setVisibility(View.GONE);
+		if(report.getGender() != null) textGender.setText("Genre : " + report.getGender());
+		else textGender.setVisibility(View.GONE);
 
 		// Query failed.
 		speciesViewModel

@@ -9,9 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
-import android.location.Address;
 import android.location.Criteria;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,10 +17,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -32,13 +34,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import org.osmdroid.util.GeoPoint;
-
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -47,13 +43,14 @@ import java.util.Locale;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
-import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
+import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.GpsActivity;
+import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationApp;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
 
@@ -67,7 +64,7 @@ import static pns.si3.ihm.birder.views.notifications.NotificationApp.CHANNEL_ID;
  */
 public class ReportActivity
 		extends AppCompatActivity
-		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
+		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener
 {
 	public static final int REQUEST_PICTURE = 1;
 	public static final int REQUEST_POSITION = 2;
@@ -107,7 +104,12 @@ public class ReportActivity
 	EditText editDate;
     EditText editTime;
 	EditText editLocation;
+	EditText editAge;
+	Spinner spinnerGender;
+	TextView textAge;
+	TextView textGender;
 	TextView textViewSpecies;
+	String gender;
 
 	/**
 	 * The date and time values.
@@ -141,6 +143,12 @@ public class ReportActivity
 	Button submitButton;
 	ImageView searchImage;
 	ImageView cancelImage;
+	Switch switchAdvanced;
+
+	/**
+	 * Boolean to know if notification has to be send.
+	 */
+	private Boolean notificationActivate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +158,7 @@ public class ReportActivity
 		initFields();
 		initValues();
 		initButtons();
+		setSpinner();
     }
 
 	@Override
@@ -198,6 +207,10 @@ public class ReportActivity
 		textViewSpecies = findViewById(R.id.text_speciesName);
 		editNumber = findViewById(R.id.edit_number);
 		editLocation = findViewById(R.id.edit_location);
+		editAge = findViewById(R.id.edit_age);
+		spinnerGender = findViewById(R.id.spinner_gender);
+		textAge = findViewById(R.id.text_age);
+		textGender = findViewById(R.id.text_gender);
 
 		// Edit date field.
 		editDate = findViewById(R.id.edit_date);
@@ -276,13 +289,30 @@ public class ReportActivity
 
         cancelImage = findViewById(R.id.imageView_report_cancel);
         cancelImage.setVisibility(ImageView.INVISIBLE);
-        cancelImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelImage.setVisibility(ImageView.INVISIBLE);
-                textViewSpecies.setText("Inconnue");
-            }
-        });
+        cancelImage.setOnClickListener(v -> {
+			cancelImage.setVisibility(ImageView.INVISIBLE);
+			textViewSpecies.setText("Inconnue");
+		});
+
+        switchAdvanced = findViewById(R.id.switch_advanced);
+        setFieldsOfAdvancedMode(View.GONE);
+        switchAdvanced.setOnClickListener(v -> {
+			if(switchAdvanced.isChecked()){
+				setFieldsOfAdvancedMode(View.VISIBLE);
+			}
+			else{
+				setFieldsOfAdvancedMode(View.GONE);
+				editAge.setText("");
+				gender = null;
+			}
+		});
+	}
+
+	private void setFieldsOfAdvancedMode(int visibility){
+		spinnerGender.setVisibility(visibility);
+		textGender.setVisibility(visibility);
+		editAge.setVisibility(visibility);
+		textAge.setVisibility(visibility);
 	}
 
 	/**
@@ -408,7 +438,8 @@ public class ReportActivity
                                         user -> {
                                             if (user != null) {
                                             	if (user.getAllNotificationActivate() != null) {
-													sendNotification(user.getAllNotificationActivate(),createdReport.getSpecies());
+													setNotificationActivated(createdReport.getSpecies());
+
 												}
                                             }
                                         }
@@ -443,6 +474,7 @@ public class ReportActivity
 		int number = Integer.parseInt(editNumber.getText().toString());
 		String userId = authViewModel.getAuthenticationId();
 		Date date = getSelectedDate();
+		String age = editAge.getText().toString();
 
 		// Init the report.
 		return new Report(
@@ -451,7 +483,9 @@ public class ReportActivity
 			species,
 			number,
 			pictureUri,
-			date
+			date,
+			gender,
+			age
 		);
 	}
 
@@ -463,11 +497,14 @@ public class ReportActivity
 		// Get values.
 		String species = textViewSpecies.getText().toString();
 		String number = editNumber.getText().toString();
+		String age = editAge.getText().toString();
 
 		// Species is empty.
-		if (species.isEmpty()) {
-			textViewSpecies.setError("Veuillez choisir une espèce.");
-			return false;
+		if (species.equals("Inconnue")) {
+			if(picture.getDrawable().getConstantState() == getResources().getDrawable(R.drawable.gallery).getConstantState()) {
+				Toast.makeText(this, "Veuillez choisir une espèce si vous ne renseignez pas d'image.", Toast.LENGTH_SHORT).show();
+				return false;
+			}
 		}
 
 		// Number is empty.
@@ -482,6 +519,15 @@ public class ReportActivity
 			editNumber.setError("Veuillez saisir un nombre valide d'individus.");
 			editNumber.requestFocus();
 			return false;
+		}
+
+		// Number is invalid.
+		if (!age.isEmpty()) {
+            if(!isNumeric(age)) {
+                editAge.setError("Veuillez saisir un nombre valide pour l'âge.");
+                editAge.requestFocus();
+                return false;
+            }
 		}
 
 		return true;
@@ -707,31 +753,86 @@ public class ReportActivity
 	/*                            NOTIFICATIONS                           */
 	/*====================================================================*/
 
-    public void sendNotification(Boolean notificationActivated, String nameBird){
-		if(notificationActivated)
-			sendNotificationChannel(CHANNEL_ID,NotificationCompat.PRIORITY_DEFAULT, nameBird);
-	}
-
-    public void sendNotificationChannel(String channelId, int priority, String nameBird){
+    public void sendNotification( String nameBird){
         Bitmap bitmap = null;
         try {
             if(android.os.Build.VERSION.SDK_INT >= 28) {
                 ImageDecoder.Source source = ImageDecoder.createSource(this.getContentResolver(), pictureUri);
                 bitmap = ImageDecoder.decodeBitmap(source);
-
                 }
         }
         catch (Exception e) {
             bitmap = null;
         }
-		NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
+        if(nameBird.equals("Inconnue")) nameBird = "Un oiseau vient d'être signalé !";
+        else nameBird = "L'oiseau " + nameBird.toLowerCase() +" vient d\'être signalé !";
+		NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
 				.setSmallIcon(R.drawable.bird)
 				.setLargeIcon(bitmap)
 				.setContentTitle("Nouveau signalement")
-				.setContentText("L'oiseau " + nameBird.toLowerCase() +" vient d\'être signalé !")
+				.setContentText(nameBird)
 				.setTimeoutAfter(3600000)
-				.setPriority(priority);
+				.setPriority(NotificationCompat.PRIORITY_DEFAULT);
 		NotificationApp.getNotificationManager().notify(++notificationId, notification.build());
+	}
+
+	public void setNotificationActivated(String nameSpecies){
+    	notificationActivate = false;
+		userViewModel.getUser(authViewModel.getAuthenticationId());
+		userViewModel
+				.getSelectedUserLiveData()
+				.observe(
+						this,
+						user -> {
+							if (user != null) {
+								for(String name : user.getSpeciesNotifications()){
+									if(name.equals(nameSpecies)){
+										notificationActivate = true;
+									}
+								}
+								if(user.getAllNotificationActivate()) notificationActivate = true;
+								Log.i(TAG, "Booléen notif activé " + notificationActivate);
+								if(notificationActivate){
+									sendNotification(nameSpecies);
+								}
+							}
+						}
+				);
+	}
+
+	/*====================================================================*/
+	/*                               SPINNER                              */
+	/*====================================================================*/
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		switch(position){
+			case 0://Female
+				gender = "Femelle";
+				break;
+			case 1: //Male
+				gender = "Male";
+				break;
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+
+	}
+
+	public void setSpinner(){
+		final Spinner spinner = findViewById(R.id.spinner_gender);
+		spinner.setAdapter(null);
+		spinner.setOnItemSelectedListener(this);
+		List<String> list = new ArrayList<>();
+		list.add("Femelle");
+		list.add("Male");
+
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+				android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(dataAdapter);
 	}
 
 }

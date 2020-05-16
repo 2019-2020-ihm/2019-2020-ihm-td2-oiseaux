@@ -36,7 +36,6 @@
         app:layout_constraintRight_toRightOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <ListView
         android:id="@+id/listview_notification"
         android:layout_width="wrap_content"

@@ -50,6 +50,18 @@ public class Report {
 	private Date date;
 
 	/**
+	 * The gender of the bird reported.
+	 */
+	private String gender;
+
+
+	/**
+	 * The age of the bird reported.
+	 */
+	private String age;
+
+
+	/**
 	 * Default constructor.
 	 */
 	public Report() {}
@@ -60,7 +72,9 @@ public class Report {
 		String species,
 		int number,
 		Uri pictureUri,
-		Date date
+		Date date,
+		String gender,
+		String age
 	) {
 		this.id = id;
 		this.userId = userId;
@@ -69,6 +83,8 @@ public class Report {
 		this.pictureUri = pictureUri;
 		this.picturePath = null;
 		this.date = date;
+		this.gender = gender;
+		this.age = age;
 	}
 
 	@Exclude
@@ -129,5 +145,21 @@ public class Report {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getAge() {
+		return age;
+	}
+
+	public void setAge(String age) {
+		this.age = age;
 	}
 }

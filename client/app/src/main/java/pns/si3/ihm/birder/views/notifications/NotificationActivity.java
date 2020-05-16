@@ -20,7 +20,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import etudes.fr.demoosm.R;
@@ -62,11 +64,8 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
             changeBooleanAllNotification();
             Log.i("Notif", "Notif bool = " + getAllNotification());
         });
-        imageView.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 startActivityForResult(new Intent(NotificationActivity.this, ChoiceSpeciesActivity.class), REQUEST_SPECIES);
-             }});
+        imageView.setOnClickListener(v -> startActivityForResult(new Intent(
+                NotificationActivity.this, ChoiceSpeciesActivity.class), REQUEST_SPECIES));
     }
 
     @Override
@@ -152,29 +151,38 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 			);
     }
 
-    private void addItemNotificationForUser(String speciesChoosed){
+    private void addItemNotificationForUser(String speciesChoosed) {
+        // Get the user.
         userViewModel.getUser(userId);
         userViewModel
                 .getSelectedUserLiveData()
                 .observe(
                         this,
                         user -> {
+                            // User found.
                             if (user != null) {
-                                userViewModel.insertUser(user);
-                                userViewModel
-                                        .getInsertedUserLiveData()
-                                        .observe(
-                                                this,
-                                                databaseUser -> {
-                                                    if (databaseUser != null) {
-                                                        ArrayList<String> notif = databaseUser.getSpeciesNotifications();
-                                                        notif.add(speciesChoosed);
-                                                        databaseUser.setSpeciesNotifications(notif);
-                                                        userViewModel.insertUser(databaseUser);
+                                // Update the user (locally).
+                                ArrayList<String> notif = user.getSpeciesNotifications();
+                                if (!notif.contains(speciesChoosed)) {
+                                    notif.add(speciesChoosed);
+                                    user.setSpeciesNotifications(notif);
+                                    // Update the user (online).
+                                    userViewModel.insertUser(user);
+                                    userViewModel
+                                            .getInsertedUserLiveData()
+                                            .observe(
+                                                    this,
+                                                    insertedUser -> {
+                                                        // User updated.
+                                                        if (insertedUser != null) {
+                                                            Log.e("Notif", "User updated!");
+                                                        }
                                                     }
-                                                }
-                                        );
-                                Log.i("Notif", "List in user après ajout = " + user.getSpeciesNotifications());
+                                            );
+                                }
+                                else{
+                                    Toast.makeText(this, "L'espèce choisi est déjà dans la liste.", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
                 );
@@ -269,51 +277,36 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         return allNotification;
     }
 
-    public Boolean notificationActivate(String nameSpecies){
-        AtomicBoolean notifActivate = new AtomicBoolean(false);
-        userViewModel.getUser(userId);
-        userViewModel
-            .getSelectedUserLiveData()
-            .observe(
-                this,
-                user -> {
-                    if (user != null) {
-                        for(String name : user.getSpeciesNotifications()){
-                            if(name.equals(nameSpecies)){
-                                notifActivate.set(true);
-                            }
-                        }
-                    }
-                }
-            );
-        return getAllNotification()||notifActivate.get();
-    }
 
     void deleteBird(String speciesName){
-            userViewModel.getUser(userId);
-            userViewModel
-                    .getSelectedUserLiveData()
-                    .observe(
-                            this,
-                            user -> {
-                                if (user != null) {
-                                    userViewModel.insertUser(user);
-                                    userViewModel
-                                            .getInsertedUserLiveData()
-                                            .observe(
-                                                    this,
-                                                    databaseUser -> {
-                                                        if (databaseUser != null) {
-                                                            databaseUser.deleteItemToSpeciesNotifications(speciesName);
-                                                            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseUser.getSpeciesNotifications());
-                                                            listView.setAdapter(adapter);
-                                                            Log.i("Notif", "List in user après suppression = " + user.getSpeciesNotifications());
-                                                        }
+        userViewModel.getUser(userId);
+        userViewModel
+                .getSelectedUserLiveData()
+                .observe(
+                        this,
+                        user -> {
+                            // User found.
+                            if (user != null) {
+                                // Update the user (locally).
+                                ArrayList<String> notif = user.getSpeciesNotifications();
+                                notif.remove(speciesName);
+                                user.setSpeciesNotifications(notif);
+                                // Update the user (online).
+                                userViewModel.insertUser(user);
+                                userViewModel
+                                        .getInsertedUserLiveData()
+                                        .observe(
+                                                this,
+                                                insertedUser -> {
+                                                    // User updated.
+                                                    if (insertedUser != null) {
+                                                        Log.e("Notif", "User updated!");
                                                     }
-                                            );
-                                }
+                                                }
+                                        );
                             }
-                    );
+                        }
+                );
         }
 
         private void dialogBoxDelete(String speciesName){
