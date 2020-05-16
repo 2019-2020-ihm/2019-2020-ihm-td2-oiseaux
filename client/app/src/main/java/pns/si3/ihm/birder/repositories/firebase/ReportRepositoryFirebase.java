@@ -273,6 +273,34 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	}
 
 	/**
+	 * Deletes a report.
+	 * @param report The report to be delete.
+	 * @return The deleted report.
+	 */
+	public LiveData<Report> deleteReport(Report report) {
+		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+
+		// Delete the report.
+		firebaseFirestore
+			.collection("reports")
+			.document(report.getId())
+			.delete()
+			.addOnCompleteListener(
+				reportTask -> {
+					if (reportTask.isSuccessful()) {
+						// Query succeeded.
+						reportLiveData.setValue(report);
+					} else {
+						// Query failed.
+						errorLiveData.setValue(reportTask.getException());
+					}
+				}
+			);
+
+		return reportLiveData;
+	}
+
+	/**
 	 * Returns the report errors (updated in real time).
 	 * @return The report errors (updated in real time).
 	 */

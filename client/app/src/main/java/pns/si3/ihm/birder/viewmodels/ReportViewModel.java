@@ -27,7 +27,6 @@ public class ReportViewModel extends ViewModel {
 	 */
 	private LiveData<List<Report>> reportsLiveData;
 
-
 	/**
 	 * The selected report (updated in real time).
 	 */
@@ -42,6 +41,11 @@ public class ReportViewModel extends ViewModel {
 	 * The updated report.
 	 */
 	private LiveData<Report> updatedReportLiveData;
+
+	/**
+	 * The deleted report.
+	 */
+	private LiveData<Report> deletedReportLiveData;
 
 	/**
 	 * The report errors (updated in real time).
@@ -62,6 +66,7 @@ public class ReportViewModel extends ViewModel {
 		selectedReportLiveData = new MutableLiveData<>();
 		createdReportLiveData = new MutableLiveData<>();
 		updatedReportLiveData = new MutableLiveData<>();
+		deletedReportLiveData = new MutableLiveData<>();
 		reportErrorsLiveData = reportRepository.getErrors();
 	}
 
@@ -102,6 +107,14 @@ public class ReportViewModel extends ViewModel {
 	}
 
 	/**
+	 * Returns the deleted report.
+	 * @return The deleted report.
+	 */
+	public LiveData<Report> getDeletedReportLiveData() {
+		return deletedReportLiveData;
+	}
+
+	/**
 	 * Returns the report errors (updated in real time).
 	 * @return The report errors (updated in real time).
 	 */
@@ -135,6 +148,14 @@ public class ReportViewModel extends ViewModel {
 	 */
 	public void updateReport(Report report) {
 		updatedReportLiveData = reportRepository.updateReport(report);
+	}
+
+	/**
+	 * Requests the deletion of a report.
+	 * @param report The report to be deleted.
+	 */
+	public void deleteReport(Report report) {
+		deletedReportLiveData = reportRepository.deleteReport(report);
 	}
 
 	/**

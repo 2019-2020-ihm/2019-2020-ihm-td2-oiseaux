@@ -36,9 +36,16 @@ public interface ReportRepository {
 	/**
 	 * Updates a report.
 	 * @param report The report to be updated.
-	 * @return The report to be updated.
+	 * @return The updated report.
 	 */
 	LiveData<Report> updateReport(Report report);
+
+	/**
+	 * Deletes a report.
+	 * @param report The report to be deleted.
+	 * @return The deleted report.
+	 */
+	LiveData<Report> deleteReport(Report report);
 
 	/**
 	 * Returns the report errors (updated in real time).
