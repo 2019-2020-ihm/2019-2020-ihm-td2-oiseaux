@@ -25,9 +25,14 @@ public class AuthViewModel extends ViewModel {
 	private LiveData<User> authenticatedUserLiveData;
 
 	/**
-	 * Whether the password of the user, has been updated or not.
+	 * Whether the password of the user has been updated, or not.
 	 */
 	private LiveData<Boolean> passwordUpdatedLiveData;
+
+	/**
+	 * Whether the user has been deleted, or not.
+	 */
+	private LiveData<Boolean> userDeletedLiveData;
 
 	/**
 	 * The authentication errors (updated in real time).
@@ -46,6 +51,7 @@ public class AuthViewModel extends ViewModel {
 		// Initialize the live data.
 		authenticatedUserLiveData = new MutableLiveData<>();
 		passwordUpdatedLiveData = new MutableLiveData<>();
+		userDeletedLiveData = new MutableLiveData<>();
 		authenticationErrorsLiveData = authRepository.getErrors();
 	}
 
@@ -62,11 +68,19 @@ public class AuthViewModel extends ViewModel {
 	}
 
 	/**
-	 * Returns whether the password of the user, has been updated or not.
-	 * @return Whether the password of the user, has been updated or not.
+	 * Returns whether the password of the user has been updated, or not.
+	 * @return Whether the password of the user has been updated, or not.
 	 */
 	public LiveData<Boolean> getPasswordUpdatedLiveData() {
 		return passwordUpdatedLiveData;
+	}
+
+	/**
+	 * Returns whether the user has been deleted, or not.
+	 * @return Whether the user has been deleted, or not.
+	 */
+	public LiveData<Boolean> getUserDeletedLiveData() {
+		return userDeletedLiveData;
 	}
 
 	/**
@@ -98,15 +112,7 @@ public class AuthViewModel extends ViewModel {
 	}
 
 	/**
-	 * Updates the password of the authenticated user.
-	 * @param newPassword The new password of the user.
-	 */
-	public void updatePassword(String newPassword) {
-		passwordUpdatedLiveData = authRepository.updatePassword(newPassword);
-	}
-
-	/**
-	 * Signs in the user using an email and a password.
+	 * Request the authentication of a user.
 	 * @param email The email of the user.
 	 * @param password The password of the user.
 	 */
@@ -115,12 +121,27 @@ public class AuthViewModel extends ViewModel {
 	}
 
 	/**
-	 * Creates a user using an email and a password.
+	 * Request the creation of a user.
 	 * @param email The email of the user.
 	 * @param password The password of the user.
 	 */
 	public void createUserWithEmailAndPassword(String email, String password) {
 		authenticatedUserLiveData = authRepository.createUserWithEmailAndPassword(email, password);
+	}
+
+	/**
+	 * Requests the password update of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 */
+	public void updatePassword(String newPassword) {
+		passwordUpdatedLiveData = authRepository.updatePassword(newPassword);
+	}
+
+	/**
+	 * Requests the deletion of the authenticated user.
+	 */
+	public void deleteUser() {
+		userDeletedLiveData = authRepository.deleteUser();
 	}
 
 	/**

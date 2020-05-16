@@ -60,6 +60,77 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	}
 
 	/**
+	 * Signs in a user with an email and password.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 * @return The authenticated user.
+	 */
+	public LiveData<User> signInWithEmailAndPassword(String email, String password) {
+		MutableLiveData<User> userLiveData = new MutableLiveData<>();
+
+		// Sign in with Firebase Auth.
+		firebaseAuth
+			.signInWithEmailAndPassword(email, password)
+			.addOnCompleteListener(
+				authTask -> {
+					if (authTask.isSuccessful()) {
+						// Sign in succeeded.
+						FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+						if (firebaseUser != null) {
+							User user = new User(
+								firebaseUser.getUid(),
+								null,
+								null,
+								firebaseUser.getEmail()
+							);
+							userLiveData.setValue(user);
+						}
+					} else {
+						// Sign in failed.
+						errorLiveData.setValue(authTask.getException());
+					}
+				}
+			);
+
+		return userLiveData;
+	}
+
+	/**
+	 * Creates a user with an email and password.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 * @return The created user.
+	 */
+	public LiveData<User> createUserWithEmailAndPassword(String email, String password) {
+		MutableLiveData<User> userLiveData = new MutableLiveData<>();
+
+		// Sign up with firebase.
+		firebaseAuth.createUserWithEmailAndPassword(email, password)
+			.addOnCompleteListener(
+				task -> {
+					if (task.isSuccessful()) {
+						// Sign up succeeded.
+						FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+						if (firebaseUser != null) {
+							User user = new User(
+								firebaseUser.getUid(),
+								null,
+								null,
+								firebaseUser.getEmail()
+							);
+							userLiveData.setValue(user);
+						}
+					} else {
+						// Sign up failed.
+						errorLiveData.setValue(task.getException());
+					}
+				}
+			);
+
+		return userLiveData;
+	}
+
+	/**
 	 * Updates the password of the authenticated user.
 	 * @param newPassword The new password of the user.
 	 * @return Whether the password has been updated, or not.
@@ -96,74 +167,39 @@ public class AuthRepositoryFirebase implements AuthRepository {
 	}
 
 	/**
-	 * Signs in a user with an email and password.
-	 * @param email The email of the user.
-	 * @param password The password of the user.
-	 * @return A live data of the authenticated user.
+	 * Deletes the authenticated user.
+	 * @return Whether the user has been deleted, or not.
 	 */
-	public LiveData<User> signInWithEmailAndPassword(String email, String password) {
-		MutableLiveData<User> userLiveData = new MutableLiveData<>();
+	@Override
+	public LiveData<Boolean> deleteUser() {
+		MutableLiveData<Boolean> deletedUserLiveData = new MutableLiveData<>();
 
-		// Sign in with Firebase Auth.
-		firebaseAuth
-			.signInWithEmailAndPassword(email, password)
-			.addOnCompleteListener(
-				authTask -> {
-					if (authTask.isSuccessful()) {
-						// Sign in succeeded.
-						FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-						if (firebaseUser != null) {
-							User user = new User(
-								firebaseUser.getUid(),
-								null,
-								null,
-								firebaseUser.getEmail()
-							);
-							userLiveData.setValue(user);
+		// The user is authenticated.
+		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+		if (firebaseUser != null) {
+			// Update the password.
+			firebaseUser
+				.delete()
+				.addOnCompleteListener(
+					authTask -> {
+						if (authTask.isSuccessful()) {
+							// User deleted.
+							deletedUserLiveData.setValue(true);
+						} else {
+							// User not deleted.
+							deletedUserLiveData.setValue(false);
+							errorLiveData.setValue(authTask.getException());
 						}
-					} else {
-						// Sign in failed.
-						errorLiveData.setValue(authTask.getException());
 					}
-				}
-			);
+				);
 
-		return userLiveData;
-	}
+		} else {
+			// User not authenticated.
+			deletedUserLiveData.setValue(false);
+			errorLiveData.setValue(new UserNotAuthenticatedException());
+		}
 
-	/**
-	 * Signs up a user with an email and password.
-	 * @param email The email of the user.
-	 * @param password The password of the user.
-	 * @return A live data of the created user.
-	 */
-	public LiveData<User> createUserWithEmailAndPassword(String email, String password) {
-		MutableLiveData<User> userLiveData = new MutableLiveData<>();
-
-		// Sign up with firebase.
-		firebaseAuth.createUserWithEmailAndPassword(email, password)
-			.addOnCompleteListener(
-				task -> {
-					if (task.isSuccessful()) {
-						// Sign up succeeded.
-						FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-						if (firebaseUser != null) {
-							User user = new User(
-								firebaseUser.getUid(),
-								null,
-								null,
-								firebaseUser.getEmail()
-							);
-							userLiveData.setValue(user);
-						}
-					} else {
-						// Sign up failed.
-						errorLiveData.setValue(task.getException());
-					}
-				}
-			);
-
-		return userLiveData;
+		return deletedUserLiveData;
 	}
 
 	/**

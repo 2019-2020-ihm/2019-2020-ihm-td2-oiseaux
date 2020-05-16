@@ -19,11 +19,18 @@ public interface UserRepository {
 	LiveData<User> getUser(String id);
 
 	/**
-	 * Inserts a user.
+	 * Creates or updates a user.
 	 * @param user The user to be inserted.
 	 * @return The inserted user.
 	 */
 	LiveData<User> insertUser(User user);
+
+	/**
+	 * Deletes a user.
+	 * @param user The user to be deleted.
+	 * @return The deleted user.
+	 */
+	LiveData<User> deleteUser(User user);
 
 	/**
 	 * Returns the user errors (updated in real time).

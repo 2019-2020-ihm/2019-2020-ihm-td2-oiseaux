@@ -1,7 +1,6 @@
 package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import pns.si3.ihm.birder.models.User;
 
@@ -19,9 +18,26 @@ public interface AuthRepository {
 
 	/**
 	 * Returns the id of the authenticated user.
-	 * @return The id of the user, if he's authenticated, null otherwise.
+	 * @return The id of the user, if the user is authenticated;
+	 * <code>null</code> otherwise.
 	 */
 	String getAuthenticationId();
+
+	/**
+	 * Signs in a user with an email and password.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 * @return The authenticated user.
+	 */
+	LiveData<User> signInWithEmailAndPassword(String email, String password);
+
+	/**
+	 * Signs up a user with an email and password.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 * @return The created user.
+	 */
+	LiveData<User> createUserWithEmailAndPassword(String email, String password);
 
 	/**
 	 * Updates the password of the authenticated user.
@@ -31,20 +47,10 @@ public interface AuthRepository {
 	LiveData<Boolean> updatePassword(String newPassword);
 
 	/**
-	 * Signs in a user with an email and password.
-	 * @param email The email of the user.
-	 * @param password The password of the user.
-	 * @return A live data of the authenticated user.
+	 * Deletes the authenticated user.
+	 * @return Whether the user has been deleted, or not.
 	 */
-	LiveData<User> signInWithEmailAndPassword(String email, String password);
-
-	/**
-	 * Signs up a user with an email and password.
-	 * @param email The email of the user.
-	 * @param password The password of the user.
-	 * @return A live data of the authenticated user.
-	 */
-	LiveData<User> createUserWithEmailAndPassword(String email, String password);
+	LiveData<Boolean> deleteUser();
 
 	/**
 	 * Signs out a user.

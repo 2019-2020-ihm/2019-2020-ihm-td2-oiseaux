@@ -30,6 +30,11 @@ public class UserViewModel extends ViewModel {
 	private LiveData<User> insertedReportLiveData;
 
 	/**
+	 * The deleted user.
+	 */
+	private LiveData<User> deletedReportLiveData;
+
+	/**
 	 * The user errors.
 	 */
 	private LiveData<Exception> userErrorsLiveData;
@@ -46,6 +51,7 @@ public class UserViewModel extends ViewModel {
 		// Initialize the live data.
 		selectedReportLiveData = new MutableLiveData<>();
 		insertedReportLiveData = new MutableLiveData<>();
+		deletedReportLiveData = new MutableLiveData<>();
 		userErrorsLiveData = userRepository.getErrors();
 	}
 
@@ -67,6 +73,14 @@ public class UserViewModel extends ViewModel {
 	 */
 	public LiveData<User> getInsertedUserLiveData() {
 		return insertedReportLiveData;
+	}
+
+	/**
+	 * Returns the deleted user.
+	 * @return The deleted user.
+	 */
+	public LiveData<User> getDeletedUserLiveData() {
+		return deletedReportLiveData;
 	}
 
 	/**
@@ -95,6 +109,14 @@ public class UserViewModel extends ViewModel {
 	 */
 	public void insertUser(User user) {
 		insertedReportLiveData = userRepository.insertUser(user);
+	}
+
+	/**
+	 * Requests the deletion of a user.
+	 * @param user The user to be deleted.
+	 */
+	public void deleteUser(User user) {
+		deletedReportLiveData = userRepository.deleteUser(user);
 	}
 
 	/**

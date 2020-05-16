@@ -106,6 +106,34 @@ public class UserRepositoryFirebase implements UserRepository {
 	}
 
 	/**
+	 * Deletes a user.
+	 * @param user The user to be deleted.
+	 * @return The deleted user.
+	 */
+	public LiveData<User> deleteUser(User user) {
+		MutableLiveData<User> userLiveData = new MutableLiveData<>();
+
+		// Delete the user.
+		firebaseFirestore
+			.collection("users")
+			.document(user.getId())
+			.delete()
+			.addOnCompleteListener(
+				userTask -> {
+					if (userTask.isSuccessful()) {
+						// Query succeeded.
+						userLiveData.setValue(user);
+					} else {
+						// Query failed.
+						errorLiveData.setValue(userTask.getException());
+					}
+				}
+			);
+
+		return userLiveData;
+	}
+
+	/**
 	 * Returns the user errors (updated in real time).
 	 * @return The user errors (updated in real time).
 	 */
