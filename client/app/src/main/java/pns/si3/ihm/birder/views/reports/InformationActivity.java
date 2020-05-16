@@ -122,7 +122,7 @@ public class InformationActivity extends AppCompatActivity {
 
 		imageQuestion = findViewById(R.id.imageView_question);
 		imageQuestion.setOnClickListener(v -> {
-			if(textInfoEspece.getText().toString().equals("Inconnue")) {
+			if(textInfoEspece.getText().toString().equals("Espèce non renseignée")) {
 				Intent intent = new Intent(InformationActivity.this, GiveSpeciesActivity.class);
 				intent.putExtra("picturePath", report.getPicturePath());
 				intent.putExtra("reportId", report.getId());
