@@ -171,7 +171,7 @@ public class ReportRepositoryFirebase implements ReportRepository {
 
 	/**
 	 * Stores a report.
-	 * @param report The report to be stored.
+	 * @param report The report to be created.
 	 * @return The created report.
 	 */
 	private LiveData<Report> storeReport(Report report) {
@@ -242,6 +242,34 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			);
 
 		return picturePathLiveData;
+	}
+
+	/**
+	 * Updates a report.
+	 * @param report The report to be updated.
+	 * @return The updated report.
+	 */
+	public LiveData<Report> updateReport(Report report) {
+		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+
+		// Update the report.
+		firebaseFirestore
+			.collection("reports")
+			.document(report.getId())
+			.set(report)
+			.addOnCompleteListener(
+				reportTask -> {
+					if (reportTask.isSuccessful()) {
+						// Query succeeded.
+						reportLiveData.setValue(report);
+					} else {
+						// Query failed.
+						errorLiveData.setValue(reportTask.getException());
+					}
+				}
+			);
+
+		return reportLiveData;
 	}
 
 	/**

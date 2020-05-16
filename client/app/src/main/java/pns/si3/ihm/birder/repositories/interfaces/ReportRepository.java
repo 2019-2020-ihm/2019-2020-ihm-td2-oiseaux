@@ -34,6 +34,13 @@ public interface ReportRepository {
 	LiveData<Report> createReport(Report report);
 
 	/**
+	 * Updates a report.
+	 * @param report The report to be updated.
+	 * @return The report to be updated.
+	 */
+	LiveData<Report> updateReport(Report report);
+
+	/**
 	 * Returns the report errors (updated in real time).
 	 * @return The report errors (updated in real time).
 	 */

@@ -39,6 +39,11 @@ public class ReportViewModel extends ViewModel {
 	private LiveData<Report> createdReportLiveData;
 
 	/**
+	 * The updated report.
+	 */
+	private LiveData<Report> updatedReportLiveData;
+
+	/**
 	 * The report errors (updated in real time).
 	 */
 	private LiveData<Exception> reportErrorsLiveData;
@@ -56,6 +61,7 @@ public class ReportViewModel extends ViewModel {
 		reportsLiveData = reportRepository.getReports();
 		selectedReportLiveData = new MutableLiveData<>();
 		createdReportLiveData = new MutableLiveData<>();
+		updatedReportLiveData = new MutableLiveData<>();
 		reportErrorsLiveData = reportRepository.getErrors();
 	}
 
@@ -88,6 +94,14 @@ public class ReportViewModel extends ViewModel {
 	}
 
 	/**
+	 * Returns the updated report.
+	 * @return The updated report.
+	 */
+	public LiveData<Report> getUpdatedReportLiveData() {
+		return updatedReportLiveData;
+	}
+
+	/**
 	 * Returns the report errors (updated in real time).
 	 * @return The report errors (updated in real time).
 	 */
@@ -113,6 +127,14 @@ public class ReportViewModel extends ViewModel {
 	 */
 	public void createReport(Report report) {
 		createdReportLiveData = reportRepository.createReport(report);
+	}
+
+	/**
+	 * Requests the update of a report.
+	 * @param report The report to be updated.
+	 */
+	public void updateReport(Report report) {
+		updatedReportLiveData = reportRepository.updateReport(report);
 	}
 
 	/**
