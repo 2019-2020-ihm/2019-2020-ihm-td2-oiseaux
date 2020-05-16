@@ -30,15 +30,16 @@ import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-	private FirebaseAuth auth;
 	private MapView map;
 	private ReportViewModel reportViewModel;
+	private UserViewModel userViewModel;
 	private ReportsAdapter reportsAdapter;
 	private List<Report> reports;
 	IMapController mapController;
@@ -46,7 +47,6 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		auth = FirebaseAuth.getInstance();
 
 		Configuration.getInstance().load(   getApplicationContext(),
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
@@ -70,6 +70,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	 * Initializes the view models that hold the data.
 	 */
 	private void initViewModels() {
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 	}
 
@@ -142,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 			break;
 			case 3: //Compte (connecté) / Se connecter (déconnecté)
 			{
-				if (auth.getCurrentUser() != null) {
+				if (userViewModel.isAuthenticated()) {
 					Intent intent = new Intent(MapActivity.this, AccountActivity.class);
 					startActivity(intent);
 				}
@@ -154,9 +155,9 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 			case 4:// Déconnexion (connecté)
 			{
 				// The user is connected.
-				if (auth.getCurrentUser() != null) {
+				if (userViewModel.isAuthenticated()) {
 					// Sign out the user.
-					auth.signOut();
+					userViewModel.signOut();
 
 					// Success toast.
 					Toast.makeText(
@@ -186,12 +187,12 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	public void setSpinner(){
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);
 		spinner.setOnItemSelectedListener(this);
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add("Menu");
 		list.add("Dernières signalisations");
 		list.add("Liste des oiseaux");
 		// The user is connected.
-		if (auth.getCurrentUser() != null) {
+		if (userViewModel.isAuthenticated()) {
 			list.add("Compte");
 			list.add("Se déconnecter");
 		}

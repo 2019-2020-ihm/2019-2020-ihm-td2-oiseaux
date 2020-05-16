@@ -20,13 +20,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import etudes.fr.demoosm.R;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
@@ -36,6 +33,10 @@ import pns.si3.ihm.birder.views.reports.MapActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class NotificationActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
+	/**
+	 * The tag for the log messages.
+	 */
+	private static final String TAG = "NotificationActivity";
 
     private ListView listView;
     private CheckBox checkBox;
@@ -43,7 +44,6 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     private FirebaseAuth auth;
     private Boolean allNotification = true;
     private UserViewModel userViewModel;
-    private AuthViewModel authViewModel;
     private SpeciesViewModel speciesViewModel;
     private String userId;
     public static final int REQUEST_SPECIES = 1;
@@ -85,9 +85,9 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
     void init(){
         auth = FirebaseAuth.getInstance();
-        listView = (ListView) findViewById(R.id.listview_notification);
-        imageView = (ImageView) findViewById(R.id.imageview_add_notification);
-        checkBox = (CheckBox) findViewById(R.id.checkbox_all_notif);
+        listView = findViewById(R.id.listview_notification);
+        imageView = findViewById(R.id.imageview_add_notification);
+        checkBox = findViewById(R.id.checkbox_all_notif);
         setSpinner();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -102,50 +102,66 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
     private void initViewModel(){
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
-        userId = authViewModel.getAuthenticationId();
+        userId = userViewModel.getAuthenticationId();
     }
 
 
     private void setListAndCheckBoxInInit() {
-        userViewModel.getUser(userId);
         userViewModel
-                .getSelectedUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            if (user != null) {
-                                setAllNotification(user.getAllNotificationActivate());
-                                Log.i("Notif", "User bool activate = " + user.getAllNotificationActivate());
-                                adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, user.getSpeciesNotifications());
-                                listView.setAdapter(adapter);
-                            }
-                            checkBox.setChecked(user.getAllNotificationActivate());
-                        }
-                );
+			.getUser()
+			.observe(
+				this,
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						User user = task.getData();
+						setAllNotification(user.getAllNotificationActivate());
+						Log.i("Notif", "User bool activate = " + user.getAllNotificationActivate());
+						adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, user.getSpeciesNotifications());
+						listView.setAdapter(adapter);
+						checkBox.setChecked(user.getAllNotificationActivate());
+					}
+				}
+			);
     }
 
     void changeBooleanAllNotification(){
-        userViewModel.getUser(userId);
         userViewModel
-			.getSelectedUserLiveData()
+			.getUser()
 			.observe(
 				this,
-				user -> {
-					if (user != null) {
-                        userViewModel.insertUser(user);
-						userViewModel
-							.getInsertedUserLiveData()
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						// Get the user.
+						User user = task.getData();
+
+						// Update the user notifications.
+						user.setAllNotificationActivate(getAllNotification());
+                        userViewModel
+							.updateUser(user)
 							.observe(
 								this,
-								databaseUser -> {
-									if (databaseUser != null) {
-										databaseUser.setAllNotificationActivate(getAllNotification());
-										userViewModel.insertUser(databaseUser);
+								secondTask -> {
+									// User updated.
+									if (secondTask.isSuccessful()) {
+										Log.i(TAG, "User updated.");
+									}
+
+									// User not updated.
+									else {
+										Throwable error = task.getError();
+										Log.e(TAG, error.getMessage());
 									}
 								}
 							);
+					}
+
+					// User not found.
+					else {
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);
@@ -153,39 +169,53 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
     private void addItemNotificationForUser(String speciesChoosed) {
         // Get the user.
-        userViewModel.getUser(userId);
         userViewModel
-                .getSelectedUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            // User found.
-                            if (user != null) {
-                                // Update the user (locally).
-                                ArrayList<String> notif = user.getSpeciesNotifications();
-                                if (!notif.contains(speciesChoosed)) {
-                                    notif.add(speciesChoosed);
-                                    user.setSpeciesNotifications(notif);
-                                    // Update the user (online).
-                                    userViewModel.insertUser(user);
-                                    userViewModel
-                                            .getInsertedUserLiveData()
-                                            .observe(
-                                                    this,
-                                                    insertedUser -> {
-                                                        // User updated.
-                                                        if (insertedUser != null) {
-                                                            Log.e("Notif", "User updated!");
-                                                        }
-                                                    }
-                                            );
-                                }
-                                else{
-                                    Toast.makeText(this, "L'espèce choisi est déjà dans la liste.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                );
+			.getUser(userId)
+			.observe(
+				this,
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						// Get the user.
+						User user = task.getData();
+
+						// Update the user (locally).
+						ArrayList<String> notif = user.getSpeciesNotifications();
+						if (!notif.contains(speciesChoosed)) {
+							notif.add(speciesChoosed);
+							user.setSpeciesNotifications(notif);
+
+							// Update the user (online).
+							userViewModel
+								.updateUser(user)
+								.observe(
+									this,
+									secondTask -> {
+										// User updated.
+										if (secondTask.isSuccessful()) {
+											Log.i(TAG, "User updated!");
+										}
+
+										// User not updated.
+										else {
+											Throwable error = task.getError();
+											Log.e(TAG, error.getMessage());
+										}
+									}
+								);
+						}
+						else{
+							Toast.makeText(this, "L'espèce choisi est déjà dans la liste.", Toast.LENGTH_SHORT).show();
+						}
+					}
+
+					// User not found.
+					else {
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
     }
 
     @Override
@@ -279,34 +309,48 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
 
     void deleteBird(String speciesName){
-        userViewModel.getUser(userId);
         userViewModel
-                .getSelectedUserLiveData()
-                .observe(
-                        this,
-                        user -> {
-                            // User found.
-                            if (user != null) {
-                                // Update the user (locally).
-                                ArrayList<String> notif = user.getSpeciesNotifications();
-                                notif.remove(speciesName);
-                                user.setSpeciesNotifications(notif);
-                                // Update the user (online).
-                                userViewModel.insertUser(user);
-                                userViewModel
-                                        .getInsertedUserLiveData()
-                                        .observe(
-                                                this,
-                                                insertedUser -> {
-                                                    // User updated.
-                                                    if (insertedUser != null) {
-                                                        Log.e("Notif", "User updated!");
-                                                    }
-                                                }
-                                        );
-                            }
-                        }
-                );
+			.getUser(userId)
+			.observe(
+				this,
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						// Get the user.
+						User user = task.getData();
+
+						// Update the user (locally).
+						ArrayList<String> notif = user.getSpeciesNotifications();
+						notif.remove(speciesName);
+						user.setSpeciesNotifications(notif);
+
+						// Update the user (online).
+						userViewModel
+							.updateUser(user)
+							.observe(
+								this,
+								secondTask -> {
+									// User updated.
+									if (secondTask.isSuccessful()) {
+										Log.i(TAG, "User updated!");
+									}
+
+									// User not updated.
+									else {
+										Throwable error = task.getError();
+										Log.e(TAG, error.getMessage());
+									}
+								}
+							);
+					}
+
+					// User not found.
+					else {
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
         }
 
         private void dialogBoxDelete(String speciesName){

@@ -1,8 +1,8 @@
 package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
+import pns.si3.ihm.birder.models.StateData;
 import pns.si3.ihm.birder.models.User;
 
 /**
@@ -12,35 +12,69 @@ import pns.si3.ihm.birder.models.User;
  */
 public interface UserRepository {
 	/**
-	 * Returns a user (updated in real time).
+	 * Returns whether the user is authenticated, or not.
+	 * @return Whether the user is authenticated, or not.
+	 */
+	boolean isAuthenticated();
+
+	/**
+	 * Returns the id of the authenticated user.
+	 * @return The id of the user, if the user is authenticated;
+	 * <code>null</code> otherwise.
+	 */
+	String getAuthenticationId();
+
+	/**
+	 * Returns the authenticated user (updated in real time).
+	 * @return The authenticated user (updated in real time).
+	 */
+	LiveData<StateData<User>> getUser();
+
+	/**
+	 * Returns a user by id (updated in real time).
 	 * @param id The id of the user.
-	 * @return The user (updated in real time).
+	 * @return The selected user (updated in real time).
 	 */
-	LiveData<User> getUser(String id);
+	LiveData<StateData<User>> getUser(String id);
 
 	/**
-	 * Creates or updates a user.
-	 * @param user The user to be inserted.
-	 * @return The inserted user.
+	 * Signs in the user with an email and password.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 * @return The authenticated user (updated in real time).
 	 */
-	LiveData<User> insertUser(User user);
+	LiveData<StateData<User>> signIn(String email, String password);
 
 	/**
-	 * Deletes a user.
-	 * @param user The user to be deleted.
-	 * @return The deleted user.
+	 * Signs out the user.
 	 */
-	LiveData<User> deleteUser(User user);
+	void signOut();
 
 	/**
-	 * Returns the user errors (updated in real time).
-	 * @return The user errors (updated in real time).
+	 * Creates a user.
+	 * @param user The user to be created.
+	 * @param password The password of the user.
+	 * @return The created user.
 	 */
-	LiveData<Exception> getErrors();
+	LiveData<StateData<User>> createUser(User user, String password);
 
 	/**
-	 * Clears the user errors.
-	 * This avoids receiving the same error multiple times.
+	 * Updates the authenticated user.
+	 * @param user The user to be updated.
+	 * @return The updated user.
 	 */
-	void clearErrors();
+	LiveData<StateData<User>> updateUser(User user);
+
+	/**
+	 * Updates the password of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 * @return Whether the password has been updated, or not.
+	 */
+	LiveData<StateData<Void>> updatePassword(String newPassword);
+
+	/**
+	 * Deletes the authenticated user.
+	 * @return Whether the user has been deleted, or not.
+	 */
+	LiveData<StateData<Void>> deleteUser();
 }

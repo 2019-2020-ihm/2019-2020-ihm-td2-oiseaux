@@ -2,7 +2,6 @@ package pns.si3.ihm.birder.views.pictures;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
@@ -27,8 +26,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import etudes.fr.demoosm.R;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
-import pns.si3.ihm.birder.viewmodels.ReportViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 /**
  * Picture activity.
@@ -45,9 +43,9 @@ public class PictureActivity extends AppCompatActivity {
 	private static final String TAG = "PictureActivity";
 
 	/**
-	 * The authentication view model.
+	 * The user view model.
 	 */
-	AuthViewModel authViewModel;
+	UserViewModel userViewModel;
 
 	/**
 	 * The activity values.
@@ -76,7 +74,8 @@ public class PictureActivity extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (!authViewModel.isAuthenticated()) {
+		// The user is not authenticated.
+		if (!userViewModel.isAuthenticated()) {
 			finish();
 		}
 	}
@@ -85,7 +84,7 @@ public class PictureActivity extends AppCompatActivity {
 	 * Initializes the view models that hold the data.
 	 */
 	private void initViewModels() {
-		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
 	/**

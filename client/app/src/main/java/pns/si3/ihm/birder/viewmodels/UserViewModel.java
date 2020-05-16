@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import pns.si3.ihm.birder.models.StateData;
 import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.repositories.interfaces.UserRepository;
 import pns.si3.ihm.birder.repositories.firebase.UserRepositoryFirebase;
@@ -20,26 +21,6 @@ public class UserViewModel extends ViewModel {
 	private UserRepository userRepository;
 
 	/**
-	 * The selected user (updated in real time).
-	 */
-	private LiveData<User> selectedUserLiveData;
-
-	/**
-	 * The inserted user.
-	 */
-	private LiveData<User> insertedUserLiveData;
-
-	/**
-	 * The deleted user.
-	 */
-	private LiveData<User> deletedUserLiveData;
-
-	/**
-	 * The user errors.
-	 */
-	private LiveData<Exception> userErrorsLiveData;
-
-	/**
 	 * Constructs a user view model.
 	 */
 	public UserViewModel() {
@@ -47,48 +28,6 @@ public class UserViewModel extends ViewModel {
 
 		// Initialize the repositories.
 		userRepository = new UserRepositoryFirebase();
-
-		// Initialize the live data.
-		selectedUserLiveData = new MutableLiveData<>();
-		insertedUserLiveData = new MutableLiveData<>();
-		deletedUserLiveData = new MutableLiveData<>();
-		userErrorsLiveData = userRepository.getErrors();
-	}
-
-	/*====================================================================*/
-	/*                              LIVE DATA                             */
-	/*====================================================================*/
-
-	/**
-	 * Returns the selected user (updated in real time).
-	 * @return The selected user (updated in real time).
-	 */
-	public LiveData<User> getSelectedUserLiveData() {
-		return selectedUserLiveData;
-	}
-
-	/**
-	 * Returns the inserted user.
-	 * @return The inserted user.
-	 */
-	public LiveData<User> getInsertedUserLiveData() {
-		return insertedUserLiveData;
-	}
-
-	/**
-	 * Returns the deleted user.
-	 * @return The deleted user.
-	 */
-	public LiveData<User> getDeletedUserLiveData() {
-		return deletedUserLiveData;
-	}
-
-	/**
-	 * Returns the user errors.
-	 * @return The user errors.
-	 */
-	public LiveData<Exception> getUserErrorsLiveData() {
-		return userErrorsLiveData;
 	}
 
 	/*====================================================================*/
@@ -96,34 +35,83 @@ public class UserViewModel extends ViewModel {
 	/*====================================================================*/
 
 	/**
+	 * Returns whether the user is authenticated, or not.
+	 * @return Whether the user is authenticated, or not.
+	 */
+	public boolean isAuthenticated() {
+		return userRepository.isAuthenticated();
+	}
+
+	/**
+	 * Returns the id of the authenticated user.
+	 * @return The id of the user, if the user is authenticated;
+	 * <code>null</code> otherwise.
+	 */
+	public String getAuthenticationId() {
+		return userRepository.getAuthenticationId();
+	}
+
+	/**
+	 * Requests the sign in of a user.
+	 * @param email The email of the user.
+	 * @param password The password of the user.
+	 */
+	public LiveData<StateData<User>> signIn(String email, String password) {
+		return userRepository.signIn(email, password);
+	}
+
+	/**
+	 * Requests the sign out of the user.
+	 */
+	public void signOut() {
+		userRepository.signOut();
+	}
+
+	/**
 	 * Requests a user.
 	 * @param id The id of the user.
 	 */
-	public void getUser(String id) {
-		selectedUserLiveData = userRepository.getUser(id);
+	public LiveData<StateData<User>> getUser(String id) {
+		return userRepository.getUser(id);
 	}
 
 	/**
-	 * Requests the insertion of a user.
+	 * Requests the authenticated user.
+	 */
+	public LiveData<StateData<User>> getUser() {
+		return userRepository.getUser();
+	}
+
+	/**
+	 * Requests the creation of a user.
 	 * @param user The user to be created.
 	 */
-	public void insertUser(User user) {
-		insertedUserLiveData = userRepository.insertUser(user);
+	public LiveData<StateData<User>> createUser(User user, String password) {
+		return userRepository.createUser(user, password);
 	}
 
 	/**
-	 * Requests the deletion of a user.
-	 * @param user The user to be deleted.
+	 * Requests the update of a user.
+	 * @param user The user to be updated.
 	 */
-	public void deleteUser(User user) {
-		deletedUserLiveData = userRepository.deleteUser(user);
+	public LiveData<StateData<User>> updateUser(User user) {
+		return userRepository.updateUser(user);
 	}
 
 	/**
-	 * Clears the user errors.
-	 * This avoids receiving the same error twice.
+	 * Updates the password of the authenticated user.
+	 * @param newPassword The new password of the user.
+	 * @return Whether the password has been updated, or not.
 	 */
-	public void clearUserErrors() {
-		userRepository.clearErrors();
+	public LiveData<StateData<Void>> updatePassword(String newPassword) {
+		return userRepository.updatePassword(newPassword);
+	}
+
+	/**
+	 * Deletes the authenticated user.
+	 * @return Whether the user has been deleted, or not.
+	 */
+	public LiveData<StateData<Void>> deleteUser() {
+		return userRepository.deleteUser();
 	}
 }

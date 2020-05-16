@@ -38,8 +38,8 @@ public class User {
 
 	public User() {}
 
-	public User(String id, String firstName, String lastName, String email) {
-		this.id = id;
+	public User(String firstName, String lastName, String email) {
+		this.id = null;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;

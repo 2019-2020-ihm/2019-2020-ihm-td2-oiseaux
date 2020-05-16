@@ -22,8 +22,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.List;
-
 import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.repositories.interfaces.SpeciesRepository;

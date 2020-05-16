@@ -12,17 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class ParametersActivity extends AppCompatActivity {
-
-    /**
-     * The auth view model.
-     */
-    private AuthViewModel authViewModel;
-
     /**
      * The user view model.
      */
@@ -53,7 +47,6 @@ public class ParametersActivity extends AppCompatActivity {
      */
     private void initViewModels() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
     }
 
     private void initButtonsAndFields(){
@@ -75,34 +68,47 @@ public class ParametersActivity extends AppCompatActivity {
             finish();
         });
 
-        userViewModel.getUser(authViewModel.getAuthenticationId());
-        userViewModel.getSelectedUserLiveData()
-                .observe(this,
-                        selectedUser -> {
-                    if(selectedUser != null){
-                        textUser.setText("Connecté, "+ selectedUser.getFirstName() + " " + selectedUser.getLastName());
+        // Get the user.
+        userViewModel
+			.getUser()
+        	.observe(
+        		this,
+				task -> {
+        			// User found.
+                    if (task.isSuccessful()) {
+                    	// Get the user.
+						User user = task.getData();
+						String text = "Connecté, "+ user.getFirstName() + " " + user.getLastName();
+                        textUser.setText(text);
                     }
-                        });
+        		});
     }
 
     private void dialogBox(){
         new AlertDialog.Builder(this)
-                .setTitle("Suppression du compte")
-                .setMessage("Voulez-vous vraiment supprimer votre compte ?")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> deleteAccount())
-                .setNegativeButton(android.R.string.no, null).show();
+			.setTitle("Suppression du compte")
+			.setMessage("Voulez-vous vraiment supprimer votre compte ?")
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.setPositiveButton(android.R.string.yes, (dialog, whichButton) -> deleteAccount())
+			.setNegativeButton(android.R.string.no, null).show();
     }
 
     private void deleteAccount(){
-        authViewModel.deleteUser();
-        authViewModel.getUserDeletedLiveData()
-                .observe(this, userDelected -> {
-                    if(userDelected != null){
-                        Toast.makeText(this, "Compte supprimé !", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        authViewModel.signOut();
+    	// Delete the user.
+        userViewModel
+			.deleteUser()
+			.observe(
+				this,
+				task -> {
+				if (task.isSuccessful()) {
+					// Success toast.
+					Toast.makeText(
+						this,
+						"Compte supprimé !",
+						Toast.LENGTH_SHORT
+					).show();
+				}
+			});
         startActivity(new Intent(ParametersActivity.this, MainActivity.class).putExtra("userDeleted", "True"));
     }
 

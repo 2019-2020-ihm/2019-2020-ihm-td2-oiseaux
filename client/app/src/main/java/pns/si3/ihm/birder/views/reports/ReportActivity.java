@@ -43,14 +43,12 @@ import java.util.Locale;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
-import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.GpsActivity;
-import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationApp;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
 
@@ -80,11 +78,6 @@ public class ReportActivity
 	 * The report view model.
 	 */
 	private ReportViewModel reportViewModel;
-
-	/**
-	 * The authentication view model.
-	 */
-	private AuthViewModel authViewModel;
 
     /**
      * The user view model.
@@ -164,7 +157,8 @@ public class ReportActivity
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (!authViewModel.isAuthenticated()) {
+		// The user is not authenticated.
+		if (!userViewModel.isAuthenticated()) {
 			finish();
 		}
 	}
@@ -174,7 +168,6 @@ public class ReportActivity
 	 */
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
-		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
@@ -430,20 +423,10 @@ public class ReportActivity
 							"Votre signalement a été envoyé.",
 							Toast.LENGTH_SHORT
 						).show();
-                        userViewModel.getUser(createdReport.getUserId());
-                        userViewModel
-                                .getSelectedUserLiveData()
-                                .observe(
-                                        this,
-                                        user -> {
-                                            if (user != null) {
-                                            	if (user.getAllNotificationActivate() != null) {
-													setNotificationActivated(createdReport.getSpecies());
 
-												}
-                                            }
-                                        }
-                                );
+						// Send notifications.
+						setNotificationActivated(createdReport.getSpecies());
+
 						// Close the activity.
 						finish();
 					}
@@ -472,7 +455,7 @@ public class ReportActivity
 		// Get the values.
 		String species = textViewSpecies.getText().toString();
 		int number = Integer.parseInt(editNumber.getText().toString());
-		String userId = authViewModel.getAuthenticationId();
+		String userId = userViewModel.getAuthenticationId();
 		Date date = getSelectedDate();
 		String age = editAge.getText().toString();
 
@@ -777,26 +760,40 @@ public class ReportActivity
 
 	public void setNotificationActivated(String nameSpecies){
     	notificationActivate = false;
-		userViewModel.getUser(authViewModel.getAuthenticationId());
 		userViewModel
-				.getSelectedUserLiveData()
-				.observe(
-						this,
-						user -> {
-							if (user != null) {
-								for(String name : user.getSpeciesNotifications()){
-									if(name.equals(nameSpecies)){
-										notificationActivate = true;
-									}
-								}
-								if(user.getAllNotificationActivate()) notificationActivate = true;
-								Log.i(TAG, "Booléen notif activé " + notificationActivate);
-								if(notificationActivate){
-									sendNotification(nameSpecies);
+			.getUser()
+			.observe(
+				this,
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						// Get the user.
+						User user = task.getData();
+
+						// Get the notifications.
+						ArrayList<String> notifications = user.getSpeciesNotifications();
+						if (notifications != null) {
+							// User wants notification for this species.
+							for (String name : user.getSpeciesNotifications()){
+								if (name.equals(nameSpecies)){
+									notificationActivate = true;
+									break;
 								}
 							}
+
+							// User wants all notifications.
+							if (user.getAllNotificationActivate()) {
+								notificationActivate = true;
+							}
+
+							// Send notification.
+							if (notificationActivate){
+								sendNotification(nameSpecies);
+							}
 						}
-				);
+					}
+				}
+			);
 	}
 
 	/*====================================================================*/
@@ -805,11 +802,13 @@ public class ReportActivity
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		switch(position){
-			case 0://Female
+		switch(position) {
+			// Female
+			case 0:
 				gender = "Femelle";
 				break;
-			case 1: //Male
+			// Male
+			case 1:
 				gender = "Male";
 				break;
 		}

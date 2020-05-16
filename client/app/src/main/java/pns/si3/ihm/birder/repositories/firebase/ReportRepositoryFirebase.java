@@ -23,6 +23,11 @@ import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.repositories.interfaces.ReportRepository;
 
+/**
+ * Report repository using Firebase.
+ *
+ * Implementation of the report repository using Firebase.
+ */
 public class ReportRepositoryFirebase implements ReportRepository {
 	/**
 	 * The tag of the log messages.

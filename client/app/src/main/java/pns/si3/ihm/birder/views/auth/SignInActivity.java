@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class SignInActivity extends AppCompatActivity {
@@ -21,11 +21,6 @@ public class SignInActivity extends AppCompatActivity {
 	 * The tag for the log messages.
 	 */
 	private static final String TAG = "SignInActivity";
-
-	/**
-	 * The authentication view model.
-	 */
-	private AuthViewModel authViewModel;
 
 	/**
 	 * The user view model.
@@ -57,7 +52,8 @@ public class SignInActivity extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (authViewModel.isAuthenticated()) {
+		// The user is already authenticated.
+		if (userViewModel.isAuthenticated()) {
 			finish();
 		}
 	}
@@ -66,7 +62,6 @@ public class SignInActivity extends AppCompatActivity {
 	 * Initializes the authentication view model that holds the data.
 	 */
 	private void initViewModel() {
-		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
@@ -120,30 +115,30 @@ public class SignInActivity extends AppCompatActivity {
 		String password = editPassword.getText().toString();
 
 		// Request the sign in.
-		authViewModel.signInWithEmailAndPassword(email, password);
-
-		// Auth succeeded.
-		authViewModel
-			.getAuthenticatedUserLiveData()
+		userViewModel
+			.signIn(email, password)
 			.observe(
 				this,
-				authUser -> {
-					if (authUser != null) {
-						getUserFromDatabase(authUser.getId());
+				task -> {
+					// Authentication succeeded.
+					if (task.isSuccessful()) {
+						// Reset password.
+						editPassword.setText("");
+
+						// Success toast.
+						User user = task.getData();
+						Toast.makeText(
+							this,
+							"Bonjour " + user.getFirstName() + " !",
+							Toast.LENGTH_LONG
+						).show();
+
+						// Close the activity.
+						finish();
 					}
-				}
-			);
 
-		// Auth failed.
-		authViewModel
-			.getAuthenticationErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
-						Log.e(TAG, "Auth failed.");
-						Log.e(TAG, error.getMessage());
-
+					// Authentication failed.
+					else {
 						// Reset password.
 						editPassword.setText("");
 						editPassword.requestFocus();
@@ -158,67 +153,9 @@ public class SignInActivity extends AppCompatActivity {
 							Toast.LENGTH_SHORT
 						).show();
 
-						// Clears the authentication error.
-						authViewModel.clearAuthenticationError();
-					}
-				}
-			);
-	}
-
-	/**
-	 * Gets the user from the database.
-	 * @param id The id of the user.
-	 */
-	private void getUserFromDatabase(String id) {
-		// Request the user.
-		userViewModel.getUser(id);
-
-		// Query succeeded.
-		userViewModel
-			.getSelectedUserLiveData()
-			.observe(
-				this,
-				user -> {
-					if (user != null) {
-						// Reset password.
-						editPassword.setText("");
-
-						// Success toast.
-						Toast.makeText(
-							this,
-							"Bonjour " + user.getFirstName() + " !",
-							Toast.LENGTH_LONG
-						).show();
-
-						// Close the activity.
-						finish();
-					}
-				}
-			);
-
-		// Query failed.
-		userViewModel
-			.getUserErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
-						Log.e(TAG, "Query failed.");
+						// Error logs.
+						Throwable error = task.getError();
 						Log.e(TAG, error.getMessage());
-
-						// Reset password.
-						editPassword.setText("");
-						editPassword.requestFocus();
-
-						// Error toast.
-						Toast.makeText(
-							SignInActivity.this,
-							"Une erreur est survenue.",
-							Toast.LENGTH_SHORT
-						).show();
-
-						// Clear the database error.
-						userViewModel.clearUserErrors();
 					}
 				}
 			);

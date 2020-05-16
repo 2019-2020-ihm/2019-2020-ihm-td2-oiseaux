@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
 
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class PasswordActivity extends AppCompatActivity {
 	/**
@@ -22,7 +22,7 @@ public class PasswordActivity extends AppCompatActivity {
     /**
      * The authentication view model.
      */
-    private AuthViewModel authViewModel;
+    private UserViewModel userViewModel;
 
     /**
      * The activity fields.
@@ -74,7 +74,7 @@ public class PasswordActivity extends AppCompatActivity {
      * Initializes the authentication view model that holds the data.
      */
     private void initViewModel() {
-        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
     }
 
 	/**
@@ -138,14 +138,13 @@ public class PasswordActivity extends AppCompatActivity {
 		String password = editPassword.getText().toString();
 
 		// Update the password.
-		authViewModel.updatePassword(password);
-
-		// Request succeeded.
-		authViewModel.getPasswordUpdatedLiveData()
+		userViewModel
+			.updatePassword(password)
 			.observe(
 				this,
-				passwordChanged -> {
-					if (passwordChanged) {
+				task -> {
+					// Password updated.
+					if (task.isSuccessful()) {
 						// Reset password.
 						editPassword.setText("");
 						editConfirmPassword.setText("");
@@ -160,24 +159,19 @@ public class PasswordActivity extends AppCompatActivity {
 						// Close the activity.
 						finish();
 					}
-				}
-			);
 
-		// Request failed.
-		authViewModel.getAuthenticationErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null){
-						Log.e(TAG, "Password change failed");
-						Log.e(TAG, error.getMessage());
-
+					// Password not updated.
+					else {
 						// Error toast.
 						Toast.makeText(
 							this,
 							"Le mot de passe n'a pas pu être modifié !",
 							Toast.LENGTH_SHORT
 						).show();
+
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);

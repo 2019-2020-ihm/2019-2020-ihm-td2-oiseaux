@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.models.Species;
+import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
@@ -239,14 +240,18 @@ public class InformationActivity extends AppCompatActivity {
 	 * Loads the report user.
 	 */
 	private void loadUser() {
-		userViewModel.getUser(report.getUserId());
+		// Get the user.
 		userViewModel
-			.getSelectedUserLiveData()
+			.getUser(report.getUserId())
 			.observe(
 				this,
-				user -> {
-					if (user != null) {
-						textInfoAuteur.setText("Par : " + user.getFirstName() + " " + user.getLastName());
+				task -> {
+					// User found.
+					if (task.isSuccessful()) {
+						// Get the user.
+						User user = task.getData();
+						String userDisplayName = "Par : " + user.getFirstName() + " " + user.getLastName();
+						textInfoAuteur.setText(userDisplayName);
 					}
 				}
 			);

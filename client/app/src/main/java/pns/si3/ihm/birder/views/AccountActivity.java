@@ -1,7 +1,10 @@
 package pns.si3.ihm.birder.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationActivity;
 import pns.si3.ihm.birder.views.reports.MainActivity;
@@ -16,55 +19,60 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class AccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+	/**
+	 * The user view model.
+	 */
+	private UserViewModel userViewModel;
 
+	/**
+	 * The activity buttons.
+	 */
     private Button buttonNotification;
     private Button buttonStat;
     private Button buttonParams;
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
-
-        buttonNotification =  (Button) findViewById(R.id.button_gestion_notification);
-        buttonStat = (Button) findViewById(R.id.button_stats);
-        buttonParams = (Button) findViewById(R.id.button_parametre_compte);
-        auth = FirebaseAuth.getInstance();
-        setSpinner();
-
-        buttonNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AccountActivity.this, NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        buttonStat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AccountActivity.this, StatisticsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        buttonParams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AccountActivity.this, ParametersActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
+		initViewModel();
+		initButtons();
+		setSpinner();
     }
+
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModel() {
+    	userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+	}
+
+	/**
+	 * Initializes the activity buttons.
+	 */
+    private void initButtons() {
+		buttonNotification = findViewById(R.id.button_gestion_notification);
+		buttonNotification.setOnClickListener(v -> {
+			Intent intent = new Intent(AccountActivity.this, NotificationActivity.class);
+			startActivity(intent);
+		});
+
+		buttonStat = findViewById(R.id.button_stats);
+		buttonStat.setOnClickListener(v -> {
+			Intent intent = new Intent(AccountActivity.this, StatisticsActivity.class);
+			startActivity(intent);
+		});
+
+		buttonParams = findViewById(R.id.button_parametre_compte);
+		buttonParams.setOnClickListener(v -> {
+			Intent intent = new Intent(AccountActivity.this, ParametersActivity.class);
+			startActivity(intent);
+		});
+	}
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -90,9 +98,9 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
             }break;
             case 4: //Compte (connecté) / Se connecter (déconnecté)
             {
-                if (auth.getCurrentUser() != null) {
-                    // Sign out the user.
-                    auth.signOut();
+                if (userViewModel.isAuthenticated()) {
+                    // Signs out the user.
+					userViewModel.signOut();
 
                     // Success toast.
                     Toast.makeText(
@@ -125,7 +133,7 @@ public class AccountActivity extends AppCompatActivity implements AdapterView.On
         list.add("Liste des oiseaux");
         list.add("Voir Carte");
         // The user is connected.
-        if (auth.getCurrentUser() != null) {
+        if (userViewModel.isAuthenticated()) {
             list.add("Se déconnecter");
         }
         // The user is not connected.

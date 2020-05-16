@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.User;
-import pns.si3.ihm.birder.viewmodels.AuthViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -20,11 +19,6 @@ public class SignUpActivity extends AppCompatActivity {
 	 * The tag for the log messages.
 	 */
 	private static final String TAG = "SignUpActivity";
-
-	/**
-	 * The authentication view model.
-	 */
-	private AuthViewModel authViewModel;
 
 	/**
 	 * The user view model.
@@ -58,7 +52,8 @@ public class SignUpActivity extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (authViewModel.isAuthenticated()) {
+		// The user is already authenticated.
+		if (userViewModel.isAuthenticated()) {
 			finish();
 		}
 	}
@@ -67,7 +62,6 @@ public class SignUpActivity extends AppCompatActivity {
 	 * Initializes the authentication view model that holds the data.
 	 */
 	private void initViewModel() {
-		authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 	}
 
@@ -118,67 +112,21 @@ public class SignUpActivity extends AppCompatActivity {
 		String email = editEmail.getText().toString();
 		String password = editPassword.getText().toString();
 
-		// Request the user creation.
-		authViewModel.createUserWithEmailAndPassword(email, password);
+		// Initialize the user.
+		User user = new User(
+			firstName,
+			lastName,
+			email
+		);
 
-		// Auth succeeded.
-		authViewModel
-			.getAuthenticatedUserLiveData()
-			.observe(
-				this,
-				authUser -> {
-					if (authUser != null) {
-						// Init the database user.
-						User user = new User(
-							authUser.getId(),
-							firstName,
-							lastName,
-							authUser.getEmail()
-						);
-
-						// Create the database user.
-						createUserInDatabase(user);
-					}
-				}
-			);
-
-		// Auth failed.
-		authViewModel
-			.getAuthenticationErrorsLiveData()
-			.observe(
-				this,
-				authError -> {
-					if (authError != null) {
-						Log.e(TAG, "Auth failed.");
-						Log.e(TAG, authError.getMessage());
-
-						// Reset passwords.
-						editPassword.setText("");
-						editConfirmPassword.setText("");
-						editPassword.requestFocus();
-
-						// Clears the authentication error.
-						authViewModel.clearAuthenticationError();
-					}
-				}
-			);
-	}
-
-	/**
-	 * Creates a user in the database.
-	 * @param user The user to be created.
-	 */
-	private void createUserInDatabase(User user) {
-		// Request the creation of the user.
-		userViewModel.insertUser(user);
-
-		// Query succeeded.
+		// Create the user.
 		userViewModel
-			.getInsertedUserLiveData()
+			.createUser(user, password)
 			.observe(
 				this,
-				databaseUser -> {
-					if (databaseUser != null) {
+				task -> {
+					// User created.
+					if (task.isSuccessful()) {
 						// Reset password.
 						editPassword.setText("");
 						editConfirmPassword.setText("");
@@ -192,6 +140,18 @@ public class SignUpActivity extends AppCompatActivity {
 
 						// Close the activity.
 						finish();
+					}
+
+					// User not created.
+					else {
+						// Reset passwords.
+						editPassword.setText("");
+						editConfirmPassword.setText("");
+						editPassword.requestFocus();
+
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);
