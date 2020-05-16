@@ -22,17 +22,17 @@ public class UserViewModel extends ViewModel {
 	/**
 	 * The selected user (updated in real time).
 	 */
-	private LiveData<User> selectedReportLiveData;
+	private LiveData<User> selectedUserLiveData;
 
 	/**
 	 * The inserted user.
 	 */
-	private LiveData<User> insertedReportLiveData;
+	private LiveData<User> insertedUserLiveData;
 
 	/**
 	 * The deleted user.
 	 */
-	private LiveData<User> deletedReportLiveData;
+	private LiveData<User> deletedUserLiveData;
 
 	/**
 	 * The user errors.
@@ -49,9 +49,9 @@ public class UserViewModel extends ViewModel {
 		userRepository = new UserRepositoryFirebase();
 
 		// Initialize the live data.
-		selectedReportLiveData = new MutableLiveData<>();
-		insertedReportLiveData = new MutableLiveData<>();
-		deletedReportLiveData = new MutableLiveData<>();
+		selectedUserLiveData = new MutableLiveData<>();
+		insertedUserLiveData = new MutableLiveData<>();
+		deletedUserLiveData = new MutableLiveData<>();
 		userErrorsLiveData = userRepository.getErrors();
 	}
 
@@ -64,7 +64,7 @@ public class UserViewModel extends ViewModel {
 	 * @return The selected user (updated in real time).
 	 */
 	public LiveData<User> getSelectedUserLiveData() {
-		return selectedReportLiveData;
+		return selectedUserLiveData;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class UserViewModel extends ViewModel {
 	 * @return The inserted user.
 	 */
 	public LiveData<User> getInsertedUserLiveData() {
-		return insertedReportLiveData;
+		return insertedUserLiveData;
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class UserViewModel extends ViewModel {
 	 * @return The deleted user.
 	 */
 	public LiveData<User> getDeletedUserLiveData() {
-		return deletedReportLiveData;
+		return deletedUserLiveData;
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class UserViewModel extends ViewModel {
 	 * @param id The id of the user.
 	 */
 	public void getUser(String id) {
-		selectedReportLiveData = userRepository.getUser(id);
+		selectedUserLiveData = userRepository.getUser(id);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class UserViewModel extends ViewModel {
 	 * @param user The user to be created.
 	 */
 	public void insertUser(User user) {
-		insertedReportLiveData = userRepository.insertUser(user);
+		insertedUserLiveData = userRepository.insertUser(user);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class UserViewModel extends ViewModel {
 	 * @param user The user to be deleted.
 	 */
 	public void deleteUser(User user) {
-		deletedReportLiveData = userRepository.deleteUser(user);
+		deletedUserLiveData = userRepository.deleteUser(user);
 	}
 
 	/**
