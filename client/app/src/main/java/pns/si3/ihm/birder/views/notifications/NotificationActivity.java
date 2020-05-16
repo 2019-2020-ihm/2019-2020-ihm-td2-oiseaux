@@ -41,7 +41,6 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     private ListView listView;
     private CheckBox checkBox;
     private ImageView imageView;
-    private FirebaseAuth auth;
     private Boolean allNotification = true;
     private UserViewModel userViewModel;
     private SpeciesViewModel speciesViewModel;
@@ -84,20 +83,16 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
 
     void init(){
-        auth = FirebaseAuth.getInstance();
         listView = findViewById(R.id.listview_notification);
         imageView = findViewById(R.id.imageview_add_notification);
         checkBox = findViewById(R.id.checkbox_all_notif);
         setSpinner();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(!listView.getItemAtPosition(position).toString().isEmpty()){
-                    dialogBoxDelete(listView.getItemAtPosition(position).toString());
-                }
-            }
-        });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+			if(!listView.getItemAtPosition(position).toString().isEmpty()){
+				dialogBoxDelete(listView.getItemAtPosition(position).toString());
+			}
+		});
     }
 
     private void initViewModel(){
@@ -235,7 +230,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
             }break;
             case 3: //Compte (connecté) / Se connecter (déconnecté)
             {
-                if (auth.getCurrentUser() != null) {
+                if (userViewModel.isAuthenticated()) {
                     Intent intent = new Intent(NotificationActivity.this,AccountActivity.class);
                     startActivity(intent);
                 }
@@ -247,9 +242,9 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
             case 4:// Déconnexion (connecté)
             {
                 // The user is connected.
-                if (auth.getCurrentUser() != null) {
+                if (userViewModel.isAuthenticated()) {
                     // Sign out the user.
-                    auth.signOut();
+					userViewModel.signOut();
 
                     // Success toast.
                     Toast.makeText(
@@ -284,7 +279,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
         list.add("Dernières signalisations");
         list.add("Voir Carte");
         // The user is connected.
-        if (auth.getCurrentUser() != null) {
+        if (userViewModel.isAuthenticated()) {
             list.add("Compte");
             list.add("Se déconnecter");
         }
