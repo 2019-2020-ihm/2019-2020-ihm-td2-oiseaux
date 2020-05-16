@@ -68,13 +68,23 @@
 
         <TextView
             android:id="@+id/textInfoEspece"
-            android:layout_width="wrap_content"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="Espèce :"
             android:textSize="24sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView_question"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:layout_constraintLeft_toRightOf="@id/textInfoEspece"
+            app:layout_constraintBottom_toBottomOf="@id/textInfoEspece"
+            app:layout_constraintTop_toTopOf="@id/textInfoEspece"
+            android:src="@drawable/question"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,13 +96,15 @@
 
         <TextView
             android:id="@+id/textInfoNom"
-            android:layout_width="wrap_content"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="Nom scientifique :"
             android:textSize="20sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -114,7 +126,7 @@
 
         <TextView
             android:id="@+id/textInfoDate"
-            android:layout_width="wrap_content"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="30dp"
@@ -166,7 +178,7 @@
         app:layout_constraintTop_toBottomOf="@id/contentAge">
         <TextView
             android:id="@+id/textInfoAuteur"
-            android:layout_width="wrap_content"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="Par :"

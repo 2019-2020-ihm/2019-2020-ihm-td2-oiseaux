@@ -1,12 +1,13 @@
 package pns.si3.ihm.birder.views;
 
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
-import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 public class ChoiceSpeciesActivity extends AppCompatActivity {
 
@@ -50,11 +49,11 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
         setContentView(R.layout.activity_choicespecies);
 
-        initElement();
+        initElements();
         initViewModels();
     }
 
-    private void initElement(){
+    private void initElements(){
         returnButton = findViewById(R.id.button_return_choicespecies);
         imageViewSearch = findViewById(R.id.imageView_choice_search);
         editText = findViewById(R.id.edit_speciesname);
@@ -91,11 +90,17 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
                 }
             }
         });
-        returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+        returnButton.setOnClickListener(v -> finish());
+
+        editText.setOnKeyListener((v, keyCode, event) -> {
+            if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                    (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                imageViewSearch.performClick();
+                InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                return true;
             }
+            return false;
         });
     }
 

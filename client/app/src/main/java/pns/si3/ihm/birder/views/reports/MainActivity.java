@@ -128,6 +128,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	private void initButtons() {
 		setSpinner();
 		button = findViewById(R.id.buttonMain);
+		if(!authViewModel.isAuthenticated()){
+			button.setVisibility(View.GONE);
+		}else{
+			button.setVisibility(View.VISIBLE);
+		}
 		button.setOnClickListener(v -> {
 			Intent intent = new Intent(this, ReportActivity.class);
 			startActivity(intent);

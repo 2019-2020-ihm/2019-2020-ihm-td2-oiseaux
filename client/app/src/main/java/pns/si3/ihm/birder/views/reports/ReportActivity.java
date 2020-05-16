@@ -529,7 +529,6 @@ public class ReportActivity
                 return false;
             }
 		}
-
 		return true;
 	}
 

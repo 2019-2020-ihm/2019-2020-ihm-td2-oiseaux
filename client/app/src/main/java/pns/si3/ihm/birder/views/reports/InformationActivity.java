@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -23,6 +24,7 @@ import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
+import pns.si3.ihm.birder.views.GiveSpeciesActivity;
 
 public class InformationActivity extends AppCompatActivity {
 
@@ -37,11 +39,17 @@ public class InformationActivity extends AppCompatActivity {
     private Button buttonInfoRetour;
     private Button shareSignal;
 
+	/**
+	 * The request code
+	 */
+	public static final int REQUEST_INFORM_SPECIES = 0;
+
 
 	/**
 	 * The activity fields.
 	 */
 	private ImageView imageInfo;
+	private ImageView imageQuestion;
 	private TextView textInfoEspece;
     private TextView textInfoName;
     private TextView textInfoNumber;
@@ -110,6 +118,17 @@ public class InformationActivity extends AppCompatActivity {
 				startActivity(Intent.createChooser(sharingIntent, "Partager via"));
 			}
 		});
+
+		imageQuestion = findViewById(R.id.imageView_question);
+		imageQuestion.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			Intent intent = new Intent(InformationActivity.this, GiveSpeciesActivity.class);
+			intent.putExtra("picturePath", report.getPicturePath());
+			intent.putExtra("reportId", report.getId());
+			startActivityForResult(intent, REQUEST_INFORM_SPECIES);
+			}
+		});
     }
 
 	/**
@@ -124,6 +143,7 @@ public class InformationActivity extends AppCompatActivity {
         textInfoName = findViewById(R.id.textInfoNom);
         textGender = findViewById(R.id.textInfoGender);
         textAge = findViewById(R.id.textInfoAge);
+        imageQuestion = findViewById(R.id.imageView_question);
     }
 
 	/**
@@ -174,9 +194,11 @@ public class InformationActivity extends AppCompatActivity {
 								}
 							}
 					);
+			imageQuestion.setVisibility(View.GONE);
 		}else {
 			textInfoEspece.setText("Espèce non renseignée");
 			textInfoName.setVisibility(View.GONE);
+			imageQuestion.setVisibility(View.VISIBLE);
 		}
 
 		textInfoNumber.setText("Nombre : " + report.getNumber());
@@ -240,6 +262,16 @@ public class InformationActivity extends AppCompatActivity {
 		}
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_INFORM_SPECIES && resultCode == RESULT_OK) {
+			Bundle bundle = data.getExtras();
+			if (bundle != null) {
+				String speciesChoosed = (String) bundle.get("name");
 
+			}
+		}
+	}
 
 }
