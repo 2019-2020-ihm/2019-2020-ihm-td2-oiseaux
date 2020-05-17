@@ -62,79 +62,53 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/content"
+        android:id="@+id/contentInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="256dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="92dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textInfoEspece"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
+
+        <ListView
+            android:id="@+id/listInfo"
+            android:layout_width="320dp"
+            android:layout_height="210dp"
+            android:layout_marginLeft="324dp"
             android:text="Espèce :"
-            android:textSize="30sp"
+            android:textSize="24sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textInfoNom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="40dp"
-            android:text="Nom scientifique :"
-            android:textSize="30sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textInfoNombre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="110dp"
-            android:text="Nombre :"
-            android:textSize="30sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <TextView
-            android:id="@+id/textInfoDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="150dp"
-            android:text="Heure/Date :"
-            android:textSize="30sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textInfoAuteur"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="190dp"
-            android:text="Par :"
-            android:textSize="30sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+        <ImageView
+            android:id="@+id/imageView_question"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/question"
+            app:layout_constraintLeft_toRightOf="@id/listInfo"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/listInfo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/map"
-        android:layout_width="241dp"
-        android:layout_height="124dp"
-        android:layout_marginTop="252dp"
-        app:layout_constraintHorizontal_bias="0.032"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/contentInfo"
+        app:layout_constraintVertical_bias="1.0">
+
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="241dp"
+            android:layout_height="124dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
