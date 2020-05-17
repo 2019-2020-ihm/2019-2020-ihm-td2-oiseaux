@@ -1,6 +1,13 @@
 package pns.si3.ihm.birder.views.reports;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.osmdroid.api.IMapController;
@@ -33,6 +41,8 @@ import pns.si3.ihm.birder.views.AccountActivity;
 import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
+import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
+
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
 	private MapView map;
@@ -41,6 +51,11 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	private ReportsAdapter reportsAdapter;
 	private List<Report> reports;
 	IMapController mapController;
+	/**
+	 * Fields needed to get the current user's position
+	 */
+	private Location userLocation;
+	private LocationManager locationManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,19 +99,25 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 
 							mapController = map.getController();
 							mapController.setZoom(8);
-							GeoPoint startPoint = new GeoPoint(43.65020, 7.00517);
-							mapController.setCenter(startPoint);
+							boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+							GeoPoint startPoint;
 							ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
-							double i = 0 ;
-							int n = 45 + (int)(Math.random() * ((50 - 45) + 1));
-							int n2 = 6 + (int)(Math.random() * ((8 - 6) + 1));
+							if (!permissionGranted){
+								startPoint = new GeoPoint(43.65020, 7.00517);
+							}
+							else {
+								setLocation();
+								startPoint = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+								items.add(new OverlayItem("Vous êtes ici", "",new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude())));
+							}
+
+							mapController.setCenter(startPoint);
+
 							// Update the reports.
 							for(Report report : reports){
-								items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(n + i ,n2 + i)));
-								//the Place icons on the map with a click listener
-								i = Math.random() ;
-								n = 45 + (int)(Math.random() * ((50 - 45) + 1));
-								n2 = 6 + (int)(Math.random() * ((8 - 6) + 1));
+								if(report.getLatitude() != null && report.getLongitude() != null) {
+									items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(report.getLatitude(), report.getLongitude())));
+								}
 							}
 							ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
 									new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -180,6 +201,68 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 
 	}
 
+	private void setLocation() {
+		// Check if permission already granted
+		boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+		if (!permissionGranted)
+			ActivityCompat.requestPermissions(MapActivity.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+
+		String fournisseur = null;
+		if (locationManager == null) {
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			Criteria criteres = new Criteria();
+			// la précision  : (ACCURACY_FINE pour une haute précision ou ACCURACY_COARSE pour une moins bonne précision)
+			criteres.setAccuracy(Criteria.ACCURACY_COARSE);
+			// l'altitude
+			criteres.setAltitudeRequired(false);
+			// la direction
+			criteres.setBearingRequired(false);
+			// la vitesse
+			criteres.setSpeedRequired(false);
+			// un potentiel coût
+			criteres.setCostAllowed(false);
+			// la consommation d'énergie demandée
+			criteres.setPowerRequirement(Criteria.POWER_MEDIUM);
+
+			fournisseur = locationManager.getBestProvider(criteres, true);
+		}
+
+		if (fournisseur != null) {
+			LocationListener locationListener = new LocationListener() {
+				@Override
+				public void onLocationChanged(Location location) {
+					userLocation = location;
+				}
+
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+
+				}
+
+				@Override
+				public void onProviderEnabled(String provider) {
+
+				}
+
+				@Override
+				public void onProviderDisabled(String provider) {
+
+				}
+			};
+
+			// On configure la mise à jour automatique : immédiate et en permanence
+			locationManager.requestLocationUpdates(fournisseur, 0, 0, locationListener);
+			do {
+				userLocation = locationManager.getLastKnownLocation(fournisseur);
+			} while (userLocation == null);
+
+			locationListener.onLocationChanged(userLocation);
+
+			if (locationManager != null) {
+				locationManager.removeUpdates(locationListener);
+			}
+		}
+	}
 
 	public void setSpinner(){
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner_map);

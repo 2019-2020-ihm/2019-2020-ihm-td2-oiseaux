@@ -60,6 +60,15 @@ public class Report {
 	 */
 	private String age;
 
+	/**
+	 * The latitude of the bird reported
+	 */
+	private Double latitude;
+
+	/**
+	 * The longitude of the bird reported
+	 */
+	private Double longitude;
 
 	/**
 	 * Default constructor.
@@ -74,7 +83,9 @@ public class Report {
 		Uri pictureUri,
 		Date date,
 		String gender,
-		String age
+		String age,
+		Double latitude,
+		Double longitude
 	) {
 		this.id = id;
 		this.userId = userId;
@@ -85,6 +96,8 @@ public class Report {
 		this.date = date;
 		this.gender = gender;
 		this.age = age;
+		this.latitude = latitude;
+		this.longitude = longitude;
 	}
 
 	@Exclude
@@ -161,5 +174,21 @@ public class Report {
 
 	public void setAge(String age) {
 		this.age = age;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 }

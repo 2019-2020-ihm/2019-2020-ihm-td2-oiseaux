@@ -497,6 +497,8 @@ public class ReportActivity
 		String userId = userViewModel.getAuthenticationId();
 		Date date = getSelectedDate();
 		String age = editAge.getText().toString();
+		Double latitude = userLocation.getLatitude();
+		Double longitude = userLocation.getLongitude();
 
 		// Init the report.
 		return new Report(
@@ -507,7 +509,9 @@ public class ReportActivity
 			pictureUri,
 			date,
 			gender,
-			age
+			age,
+				latitude,
+				longitude
 		);
 	}
 
@@ -631,6 +635,7 @@ public class ReportActivity
         	Bundle bundle = data.getExtras();
         	if (bundle != null) {
         		Location location = (Location) bundle.get("location");
+        		userLocation = location;
         		editLocation.setText(GpsActivity.getPlaceName(location, this));
 			}
 		} else if (requestCode == REQUEST_SPECIES && resultCode == RESULT_OK){
