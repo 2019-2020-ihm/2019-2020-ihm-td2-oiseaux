@@ -86,11 +86,6 @@ public class ReportActivity
     private UserViewModel userViewModel;
 
 	/**
-	 * The species view model.
-	 */
-	private SpeciesViewModel speciesViewModel;
-
-	/**
 	 * The activity fields.
 	 */
     ImageView picture;
@@ -170,7 +165,6 @@ public class ReportActivity
 	private void initViewModels() {
 		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 		userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
 	/**
@@ -532,8 +526,8 @@ public class ReportActivity
 			date,
 			gender,
 			age,
-				latitude,
-				longitude
+			latitude,
+			longitude
 		);
 	}
 
@@ -569,14 +563,22 @@ public class ReportActivity
 			return false;
 		}
 
-		// Number is invalid.
+		// Age is invalid.
 		if (!age.isEmpty()) {
-            if(!isNumeric(age)) {
+            if (!isNumeric(age)) {
                 editAge.setError("Veuillez saisir un nombre valide pour l'âge.");
                 editAge.requestFocus();
                 return false;
             }
 		}
+
+		// Location is invalid.
+		if (userLocation == null) {
+			editLocation.setError("Veuillez préciser une position.");
+			editLocation.requestFocus();
+			return false;
+		}
+
 		return true;
 	}
 
@@ -605,7 +607,6 @@ public class ReportActivity
 			deletePictureFile(pictureUri);
 		}
 	}
-
 
 	/**
 	 * Sets the picture.
