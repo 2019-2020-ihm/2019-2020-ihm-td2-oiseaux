@@ -1,9 +1,12 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -81,13 +84,15 @@ public class UserRepositoryFirebase implements UserRepository {
 			.signInWithEmailAndPassword(email, password)
 			.addOnCompleteListener(
 				task -> {
+					// Sign in succeeded.
 					if (task.isSuccessful()) {
-						// Sign in succeeded.
 						String userId = getAuthenticationId();
 						StateData<String> stateData = StateData.success(userId);
 						userIdLiveData.setValue(stateData);
-					} else {
-						// Sign in failed.
+					}
+
+					// Sign in failed.
+					else {
 						StateData<String> stateData = StateData.error(task.getException());
 						userIdLiveData.setValue(stateData);
 					}

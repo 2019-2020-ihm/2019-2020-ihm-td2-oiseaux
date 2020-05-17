@@ -67,7 +67,7 @@ public class StateData<T> {
 
 	public static <T> StateData<T> error(Throwable error) {
 		StateData<T> stateData = new StateData<>();
-		stateData.status = DataStatus.SUCCESS;
+		stateData.status = DataStatus.ERROR;
 		stateData.data = null;
 		stateData.error = error;
 		return stateData;
