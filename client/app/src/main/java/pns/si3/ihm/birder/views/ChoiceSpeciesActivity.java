@@ -55,12 +55,14 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
         Configuration.getInstance().load(getApplicationContext(),
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
         setContentView(R.layout.activity_choicespecies);
-
+		initViewModels();
         want = getIntent().getStringExtra("want");
-
         initElements();
-        initViewModels();
     }
+
+	private void initViewModels(){
+		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
+	}
 
     private void initElements(){
         returnButton = findViewById(R.id.button_return_choicespecies);
@@ -131,34 +133,27 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
     private void findSpecies(){
         speciesViewModel.searchSpecies(editText.getText().toString());
         speciesViewModel
-                .getSearchedSpeciesLiveData()
-                .observe(
-                        this,
-                        foundSpecies -> {
-                            if (foundSpecies != null) {
-                                for (Species species : foundSpecies) {
-                                    adapter.add(species.getFrenchCommonName());
-                                    Log.e(TAG, "Trouvé" + species.getFrenchCommonName());
-                                    textView.setText("Veuillez choisir une espèce :");
-                                }
-                            }
-                        }
-                );
+			.getSearchedSpeciesLiveData()
+			.observe(
+				this,
+				foundSpecies -> {
+					if (foundSpecies != null) {
+						for (Species species : foundSpecies) {
+							adapter.add(species.getFrenchCommonName());
+							textView.setText("Veuillez choisir une espèce :");
+						}
+					}
+				}
+			);
         speciesViewModel
-                .getSpeciesErrorsLiveData()
-                .observe(
-                        this,
-                        error -> {
-                            if (error != null) {
-                                Log.e(TAG, error.getMessage());
-                                editText.setError("L'espèce que vous avez saisie est invalide.");
-                            }
-                        }
-                );
+			.getSpeciesErrorsLiveData()
+			.observe(
+				this,
+				error -> {
+					if (error != null) {
+						editText.setError("L'espèce que vous avez saisie est invalide.");
+					}
+				}
+			);
     }
-
-    private void initViewModels(){
-        speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
-    }
-
 }
