@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -102,11 +103,10 @@ public class StatisticsActivity extends AppCompatActivity {
         Trophy trophy2 = new Trophy("5PhotosTrophe", TrophyEnum.CINQPHOTOS);
         Trophy trophy3 = new Trophy("50PhotosTrophe", TrophyEnum.CINQUANTEPHOTOS);
         Trophy trophy4 = new Trophy("100PhotosTrophe", TrophyEnum.CENTPHOTOS);
-        userViewModel.getUser(userViewModel.getAuthenticationId());
-        userViewModel.getUser()
+        userViewModel.getUser(userViewModel.getAuthenticationId())
                 .observe(this,
                         user -> {
-                    if(user != null){
+                    if(user.isSuccessful()){
                         // Set grade
                         int numberOfReport = user.getData().getIdOfReports().size();
                         if (numberOfReport >= 10) gradeText.setText("Grade = " + gradeList.get(2));
@@ -164,6 +164,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
                         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(StatisticsActivity.this, android.R.layout.simple_list_item_1, listNomsBloque);
                         listTrophiesBloquesView.setAdapter(adapter2);
+                        Log.i(TAG,"User nb photo = " + user.getData().getNumberPictureShared());
+                        Log.i(TAG,"User nb oiseaux = " + user.getData().getNumberOfBirdShared());
                     }
                         });
 

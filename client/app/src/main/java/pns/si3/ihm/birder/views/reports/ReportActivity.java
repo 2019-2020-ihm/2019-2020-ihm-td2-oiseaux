@@ -68,6 +68,7 @@ public class ReportActivity
 	public static final int REQUEST_POSITION = 2;
 	public static final int REQUEST_SPECIES = 3;
 	private int notificationId = 0;
+	private  String reportId;
 
 	/**
 	 * The tag for the log messages.
@@ -423,51 +424,51 @@ public class ReportActivity
 							"Votre signalement a été envoyé.",
 							Toast.LENGTH_SHORT
 						).show();
-                        userViewModel.getUser(createdReport.getUserId());
-                        userViewModel
-                                .getUser()
-                                .observe(
-                                        this,
-                                        user -> {
-                                            if (user != null) {
-                                            	//Send Notification
-                                            	if (user.getData().getAllNotificationActivate() != null) {
-													setNotificationActivated(createdReport.getSpecies());
-												}
-												//Update the user (locally)
+						userViewModel
+								.getUser(createdReport.getUserId())
+								.observe(
+										this,
+										task -> {
+											if (task.isSuccessful()) {
+												User user = task.getData();
+												//Send Notification
+												setNotificationActivated(createdReport.getSpecies());
+												// Add data to user
 												Boolean added = false;
-												for(String reportId : user.getData().getIdOfReports()){
-													if(report.getId().equals(reportId)) added = true;
+												for(String reportId : user.getIdOfReports()){
+													if(createdReport.getId().equals(reportId)) added = true;
 												}
 												if(!added){
-													ArrayList<String> newList = user.getData().getIdOfReports();
-													newList.add(report.getId());
-													user.getData().setIdOfReports(newList);
-													if(pictureUri != null){
-														int n = user.getData().getNumberPictureShared();
-														user.getData().setNumberPictureShared(n + 1);
+													ArrayList<String> newList = user.getIdOfReports();
+													newList.add(createdReport.getId());
+													user.setIdOfReports(newList);
+													// Update number of Picture shared.
+													if(createdReport.getPicturePath() != null){
+														int sharedPicture = user.getNumberPictureShared();
+														user.setNumberPictureShared(sharedPicture + 1);
 													}
-													int nb = user.getData().getNumberPictureShared();
-													user.getData().setNumberPictureShared(nb + report.getNumber());
+													//Update the number of Bird reported.
+													int bird = user.getNumberOfBirdShared();
+													user.setNumberOfBirdShared(bird + createdReport.getNumber());
 												}
 
-
-												//Update the user (online)
-												userViewModel.updateUser(user.getData());
-												userViewModel
-														.getUser()
+												//Update the user
+												userViewModel.updateUser(user)
 														.observe(this,
-																insertedUser -> {
+																updateTask -> {
 																	//User updated
-																	if(insertedUser != null){
+																	if(updateTask.isSuccessful()){
+																		Log.i(TAG,"User nb photo = " + user.getNumberPictureShared() );
+																		Log.i(TAG,"User nb oiseaux = " + user.getNumberOfBirdShared() );
 																	}
 																});
-                                            }
-                                        }
-                                );
-						// Close the activity.
-						finish();
+											}
+										}
+								);
+
 					}
+					// Close the activity.
+					finish();
 				}
 			);
 
@@ -578,6 +579,7 @@ public class ReportActivity
 			deletePictureFile(pictureUri);
 		}
 	}
+
 
 	/**
 	 * Sets the picture.

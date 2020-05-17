@@ -56,7 +56,10 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
         setContentView(R.layout.activity_choicespecies);
 		initViewModels();
-        want = getIntent().getStringExtra("want");
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null){
+            want = getIntent().getStringExtra("want");
+        }
         initElements();
     }
 
@@ -77,18 +80,19 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            if(want.equals("allSpecies")){
-                Intent showInformation = new Intent(ChoiceSpeciesActivity.this, InformationOneSpeciesActivity.class);
-                Log.i(TAG,adapter.getItem(position));
-                setSpeciesId(adapter.getItem(position));
-                showInformation.putExtra("speciesId", speciesId);
-                startActivity(showInformation);
-            } else {
+            if(want == null){
                 Intent returnReportActivity = new Intent();
                 Log.i(TAG,adapter.getItem(position));
                 returnReportActivity.putExtra("name", adapter.getItem(position));
                 setResult(RESULT_OK, returnReportActivity);
                 finish();
+            }
+            else if(want.equals("allSpecies")) {
+                Intent showInformation = new Intent(ChoiceSpeciesActivity.this, InformationOneSpeciesActivity.class);
+                Log.i(TAG, adapter.getItem(position));
+                setSpeciesId(adapter.getItem(position));
+                showInformation.putExtra("speciesId", speciesId);
+                startActivity(showInformation);
             }
         });
 

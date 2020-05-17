@@ -3,6 +3,7 @@ package pns.si3.ihm.birder.views;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,12 @@ import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class ParametersActivity extends AppCompatActivity {
+
+    /**
+     * The TAG of the activity.
+     */
+    private final String TAG = "Parameters";
+
     /**
      * The user view model.
      */
@@ -110,9 +117,22 @@ public class ParametersActivity extends AppCompatActivity {
 						"Compte supprimé !",
 						Toast.LENGTH_SHORT
 					).show();
-				}
-			});
-        startActivity(new Intent(ParametersActivity.this, MainActivity.class).putExtra("userDeleted", "True"));
+                    startActivity(new Intent(ParametersActivity.this, MainActivity.class).putExtra("userDeleted", "True"));
+                }
+                // Account not deleted.
+                else {
+                    // Error toast.
+                    Toast.makeText(
+                            this,
+                            "Le compte n'a pas pu être supprimé !",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    // Error logs.
+                    Throwable error = task.getError();
+                    Log.e(TAG,error.getMessage());
+                }
+                });
     }
+
 
 }
