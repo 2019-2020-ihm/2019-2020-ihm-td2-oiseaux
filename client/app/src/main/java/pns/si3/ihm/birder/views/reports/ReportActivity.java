@@ -408,79 +408,101 @@ public class ReportActivity
 		// Initialize the report.
 		Report report = getReport();
 
-		// Request the report creation.
-		reportViewModel.createReport(report);
-
-		// Query succeeded.
+		// Create the report.
 		reportViewModel
-			.getCreatedReportLiveData()
+			.createReport(report)
 			.observe(
 				this,
-				createdReport -> {
-					if (createdReport != null) {
+				task -> {
+					// Report created.
+					if (task.isSuccessful()) {
+						// Get the created report.
+						Report createdReport = task.getData();
+
 						// Success toast.
 						Toast.makeText(
 							ReportActivity.this,
 							"Votre signalement a été envoyé.",
 							Toast.LENGTH_SHORT
 						).show();
-						userViewModel
-								.getUser(createdReport.getUserId())
-								.observe(
-										this,
-										task -> {
-											if (task.isSuccessful()) {
-												User user = task.getData();
-												//Send Notification
-												setNotificationActivated(createdReport.getSpecies());
-												// Add data to user
-												Boolean added = false;
-												for(String reportId : user.getIdOfReports()){
-													if(createdReport.getId().equals(reportId)) added = true;
-												}
-												if(!added){
-													ArrayList<String> newList = user.getIdOfReports();
-													newList.add(createdReport.getId());
-													user.setIdOfReports(newList);
-													// Update number of Picture shared.
-													if(createdReport.getPicturePath() != null){
-														int sharedPicture = user.getNumberPictureShared();
-														user.setNumberPictureShared(sharedPicture + 1);
-													}
-													//Update the number of Bird reported.
-													int bird = user.getNumberOfBirdShared();
-													user.setNumberOfBirdShared(bird + createdReport.getNumber());
-												}
 
-												//Update the user
-												userViewModel.updateUser(user)
-														.observe(this,
-																updateTask -> {
-																	//User updated
-																	if(updateTask.isSuccessful()){
-																		Log.i(TAG,"User nb photo = " + user.getNumberPictureShared() );
-																		Log.i(TAG,"User nb oiseaux = " + user.getNumberOfBirdShared() );
-																	}
-																});
+						// Get the user.
+						userViewModel
+							.getUser(createdReport.getUserId())
+							.observe(
+								this,
+								secondTask -> {
+									// User found.
+									if (secondTask.isSuccessful()) {
+										// Get the user.
+										User user = secondTask.getData();
+
+										// Send Notification
+										setNotificationActivated(createdReport.getSpecies());
+
+										// Add data to user
+										boolean added = false;
+										for (String reportId : user.getIdOfReports()){
+											if (createdReport.getId().equals(reportId)) {
+												added = true;
+												break;
 											}
 										}
-								);
+
+										if (!added) {
+											ArrayList<String> newList = user.getIdOfReports();
+											newList.add(createdReport.getId());
+											user.setIdOfReports(newList);
+
+											// Update number of pictures shared.
+											if(createdReport.getPicturePath() != null){
+												int sharedPicture = user.getNumberPictureShared();
+												user.setNumberPictureShared(sharedPicture + 1);
+											}
+
+											// Update number of birds reported.
+											int bird = user.getNumberOfBirdShared();
+											user.setNumberOfBirdShared(bird + createdReport.getNumber());
+										}
+
+										// Update the user.
+										userViewModel.updateUser(user)
+											.observe(this,
+												thirdTask -> {
+													// User updated
+													if (thirdTask.isSuccessful()){
+														Log.i(TAG, "User nb photo = " + user.getNumberPictureShared());
+														Log.i(TAG, "User nb oiseaux = " + user.getNumberOfBirdShared());
+
+														// Close the activity.
+														finish();
+													}
+
+													// User not updated.
+													else {
+														// Error logs.
+														Throwable thirdError = thirdTask.getError();
+														Log.e(TAG, thirdError.getMessage());
+													}
+												});
+									}
+
+									// User not found.
+									else {
+										// Error logs.
+										Throwable secondError = secondTask.getError();
+										Log.e(TAG, secondError.getMessage());
+									}
+								}
+							);
 
 					}
-					// Close the activity.
-					finish();
-				}
-			);
 
-		// Query failed.
-		reportViewModel
-			.getReportErrorsLiveData()
-			.observe(
-				this,
-				reportError -> {
-					if (reportError != null) {
-						Log.e(TAG, "Report failed.");
-						Log.e(TAG, reportError.getMessage());
+					// Report not created.
+					else {
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);

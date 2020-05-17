@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,6 +45,10 @@ import pns.si3.ihm.birder.views.auth.SignInActivity;
 import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+	/**
+	 * The tag for the log messages.
+	 */
+	private static final String TAG = "MapActivity";
 
 	private MapView map;
 	private ReportViewModel reportViewModel;
@@ -88,57 +93,70 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 
 	private void observeReports() {
 		reportViewModel
-				.getReportsLiveData()
-				.observe(
-						this,
-						reports -> {
-							map = findViewById(R.id.map);
-							map.setTileSource(TileSourceFactory.MAPNIK);
-							map.setBuiltInZoomControls(true);
-							map.setMultiTouchControls(true);
+			.getReports()
+			.observe(
+				this,
+				task -> {
+					// Reports found.
+					if (task.isSuccessful()) {
+						// Get the reports.
+						reports = task.getData();
 
-							mapController = map.getController();
-							mapController.setZoom(8);
-							boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-							GeoPoint startPoint;
-							ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
-							if (!permissionGranted){
-								startPoint = new GeoPoint(43.65020, 7.00517);
-							}
-							else {
-								setLocation();
-								startPoint = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
-								items.add(new OverlayItem("Vous êtes ici", "",new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude())));
-							}
+						map = findViewById(R.id.map);
+						map.setTileSource(TileSourceFactory.MAPNIK);
+						map.setBuiltInZoomControls(true);
+						map.setMultiTouchControls(true);
 
-							mapController.setCenter(startPoint);
-
-							// Update the reports.
-							for(Report report : reports){
-								if(report.getLatitude() != null && report.getLongitude() != null) {
-									items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(report.getLatitude(), report.getLongitude())));
-								}
-							}
-							ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
-									new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-										@Override
-										public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-											//do something
-											return true;
-										}
-
-										@Override
-										public boolean onItemLongPress(final int index, final OverlayItem item) {
-											Intent intent = new Intent(getApplicationContext(),InformationActivity.class);
-											intent.putExtra("id",reports.get(index).getId());
-											startActivity(intent);
-											return false;
-										}
-									});
-							mOverlay.setFocusItemsOnTap(true);
-							map.getOverlays().add(mOverlay);
+						mapController = map.getController();
+						mapController.setZoom(8);
+						boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+						GeoPoint startPoint;
+						ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
+						if (!permissionGranted){
+							startPoint = new GeoPoint(43.65020, 7.00517);
 						}
-				);
+						else {
+							setLocation();
+							startPoint = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+							items.add(new OverlayItem("Vous êtes ici", "",new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude())));
+						}
+
+						mapController.setCenter(startPoint);
+
+						// Update the reports.
+						for(Report report : reports){
+							if(report.getLatitude() != null && report.getLongitude() != null) {
+								items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(report.getLatitude(), report.getLongitude())));
+							}
+						}
+						ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
+							new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+								@Override
+								public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+									//do something
+									return true;
+								}
+
+								@Override
+								public boolean onItemLongPress(final int index, final OverlayItem item) {
+									Intent intent = new Intent(getApplicationContext(),InformationActivity.class);
+									intent.putExtra("id",reports.get(index).getId());
+									startActivity(intent);
+									return false;
+								}
+							});
+						mOverlay.setFocusItemsOnTap(true);
+						map.getOverlays().add(mOverlay);
+					}
+
+					// Reports not found.
+					else {
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
 	}
 
 	@Override

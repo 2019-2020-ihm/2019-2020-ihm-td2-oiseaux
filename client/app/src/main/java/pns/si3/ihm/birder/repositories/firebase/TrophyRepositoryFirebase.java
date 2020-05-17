@@ -42,26 +42,26 @@ public class TrophyRepositoryFirebase {
 
         // Get the user.
         firebaseFirestore
-                .collection("trophys")
-                .document(id)
-                .addSnapshotListener(
-                        (trophySnapshot, error) -> {
-                            if (error == null) {
-                                // Query succeeded.
-                                if (trophySnapshot != null) {
-                                    // User found.
-                                    Trophy trophy = trophySnapshot.toObject(Trophy.class);
-                                    trophyLiveData.setValue(trophy);
-                                } else {
-                                    // User not found.
-                                    errorLiveData.setValue(new DocumentNotFoundException());
-                                }
-                            } else {
-                                // Query failed.
-                                errorLiveData.setValue(error);
-                            }
-                        }
-                );
+			.collection("trophys")
+			.document(id)
+			.addSnapshotListener(
+				(trophySnapshot, error) -> {
+					if (error == null) {
+						// Query succeeded.
+						if (trophySnapshot != null) {
+							// User found.
+							Trophy trophy = trophySnapshot.toObject(Trophy.class);
+							trophyLiveData.setValue(trophy);
+						} else {
+							// User not found.
+							errorLiveData.setValue(new DocumentNotFoundException());
+						}
+					} else {
+						// Query failed.
+						errorLiveData.setValue(error);
+					}
+				}
+			);
 
         return trophyLiveData;
     }
@@ -76,20 +76,20 @@ public class TrophyRepositoryFirebase {
 
         // Create the user.
         firebaseFirestore
-                .collection("trophys")
-                .document(trophy.id)
-                .set(trophy)
-                .addOnCompleteListener(
-                        trophyTask -> {
-                            if (trophyTask.isSuccessful()) {
-                                // Query succeeded.
-                                trophyLiveData.setValue(trophy);
-                            } else {
-                                // Query failed.
-                                errorLiveData.setValue(trophyTask.getException());
-                            }
-                        }
-                );
+			.collection("trophys")
+			.document(trophy.id)
+			.set(trophy)
+			.addOnCompleteListener(
+				trophyTask -> {
+					if (trophyTask.isSuccessful()) {
+						// Query succeeded.
+						trophyLiveData.setValue(trophy);
+					} else {
+						// Query failed.
+						errorLiveData.setValue(trophyTask.getException());
+					}
+				}
+			);
 
         return trophyLiveData;
     }

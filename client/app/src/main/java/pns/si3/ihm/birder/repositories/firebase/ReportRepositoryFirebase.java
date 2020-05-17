@@ -20,6 +20,7 @@ import java.util.List;
 
 import pns.si3.ihm.birder.exceptions.DocumentNotCreatedException;
 import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
+import pns.si3.ihm.birder.models.DataTask;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.repositories.interfaces.ReportRepository;
 
@@ -45,23 +46,11 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	private FirebaseStorage firebaseStorage;
 
 	/**
-	 * The list of reports (updated in real time).
-	 */
-	private MutableLiveData<List<Report>> reportsLiveData;
-
-	/**
-	 * The report errors (updated in real time).
-	 */
-	private MutableLiveData<Exception> errorLiveData;
-
-	/**
 	 * Constructs a report repository.
 	 */
 	public ReportRepositoryFirebase() {
 		firebaseFirestore = FirebaseFirestore.getInstance();
 		firebaseStorage = FirebaseStorage.getInstance();
-		errorLiveData = new MutableLiveData<>();
-		reportsLiveData = new MutableLiveData<>();
 		loadReports();
 	}
 
@@ -69,15 +58,27 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * Loads the reports (updated in real time).
 	 */
 	private void loadReports() {
+
+	}
+
+	/**
+	 * Returns the list of reports (updated in real time).
+	 * @return The list of reports (updated in real time).
+	 */
+	public LiveData<DataTask<List<Report>>> getReports() {
+		MutableLiveData<DataTask<List<Report>>> reportsLiveData = new MutableLiveData<>();
+
+		// Get all reports (in real time).
 		firebaseFirestore
 			.collection("reports")
 			.orderBy("date", Query.Direction.DESCENDING)
 			.addSnapshotListener(
 				(reportsSnapshot, error) -> {
+					// Query succeeded.
 					if (error == null) {
-						// Query succeeded.
+						// Reports found.
 						if (reportsSnapshot != null) {
-							// Reports found.
+							// Get all reports.
 							List<Report> reports = new ArrayList<>();
 							for (QueryDocumentSnapshot reportSnapshot : reportsSnapshot) {
 								Report report = reportSnapshot.toObject(Report.class);
@@ -85,25 +86,28 @@ public class ReportRepositoryFirebase implements ReportRepository {
 								reports.add(report);
 							}
 
-							// Update the reports live data.
-							reportsLiveData.setValue(reports);
-						} else {
-							// Reports not found.
-							errorLiveData.setValue(new DocumentNotFoundException());
+							// Success task.
+							DataTask<List<Report>> dataTask = DataTask.success(reports);
+							reportsLiveData.setValue(dataTask);
 						}
-					} else {
-						// Query failed.
-						errorLiveData.setValue(error);
+
+						// Reports not found.
+						else {
+							// Error task.
+							DataTask<List<Report>> dataTask = DataTask.error(new DocumentNotFoundException());
+							reportsLiveData.setValue(dataTask);
+						}
+					}
+
+					// Query failed.
+					else {
+						// Error task.
+						DataTask<List<Report>> dataTask = DataTask.error(error);
+						reportsLiveData.setValue(dataTask);
 					}
 				}
 			);
-	}
 
-	/**
-	 * Returns the list of reports (updated in real time).
-	 * @return The list of reports (updated in real time).
-	 */
-	public LiveData<List<Report>> getReports() {
 		return reportsLiveData;
 	}
 
@@ -112,31 +116,43 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param id The id of the report.
 	 * @return The report (updated in real time).
 	 */
-	public LiveData<Report> getReport(String id) {
-		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+	public LiveData<DataTask<Report>> getReport(String id) {
+		MutableLiveData<DataTask<Report>> reportLiveData = new MutableLiveData<>();
 
-		// Get the report.
+		// Get the report (in real time).
 		firebaseFirestore
 			.collection("reports")
 			.document(id)
 			.addSnapshotListener(
 				(reportSnapshot, error) -> {
+					// Query succeeded.
 					if (error == null) {
-						// Query succeeded.
+						// Report found.
 						if (reportSnapshot != null) {
-							// Report found.
 							Report report = reportSnapshot.toObject(Report.class);
 							if (report != null) {
+								// Update the report id.
 								report.setId(id);
-								reportLiveData.setValue(report);
+
+								// Success task.
+								DataTask<Report> dataTask = DataTask.success(report);
+								reportLiveData.setValue(dataTask);
 							}
-						} else {
-							// Report not found.
-							errorLiveData.setValue(new DocumentNotFoundException());
 						}
-					} else {
-						// Query failed.
-						errorLiveData.setValue(error);
+
+						// Report not found.
+						else {
+							// Error task.
+							DataTask<Report> dataTask = DataTask.error(new DocumentNotFoundException());
+							reportLiveData.setValue(dataTask);
+						}
+					}
+
+					// Query failed.
+					else {
+						// Error task.
+						DataTask<Report> dataTask = DataTask.error(error);
+						reportLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -146,11 +162,12 @@ public class ReportRepositoryFirebase implements ReportRepository {
 
 	/**
 	 * Creates a report.
-	 * @param report The bird report.
+	 * @param report The report to be created.
 	 * @return The created report.
 	 */
 	@Override
-	public LiveData<Report> createReport(Report report) {
+	public LiveData<DataTask<Report>> createReport(Report report) {
+		// Report has a picture.
 		Uri pictureUri = report.getPictureUri();
 		if (pictureUri != null) {
 			// Generate the picture name.
@@ -162,13 +179,26 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			// Store the picture.
 			return Transformations.switchMap(
 				storePicture(pictureName, pictureUri),
-				picturePath -> {
-					// Store the report.
-					report.setPicturePath(picturePath);
-					return storeReport(report);
+				task -> {
+					// Picture stored.
+					if (task.isSuccessful()) {
+						// Get the picture path.
+						String picturePath = task.getData();
+
+						// Store the report.
+						report.setPicturePath(picturePath);
+						return storeReport(report);
+					}
+
+					// Picture not stored.
+					DataTask<Report> dataTask = DataTask.error(task.getError());
+					return new MutableLiveData<>(dataTask);
 				}
 			);
-		} else {
+		}
+
+		// Report has no picture.
+		else {
 			// Store the report.
 			return storeReport(report);
 		}
@@ -179,29 +209,41 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param report The report to be created.
 	 * @return The created report.
 	 */
-	private LiveData<Report> storeReport(Report report) {
-		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<Report>> storeReport(Report report) {
+		MutableLiveData<DataTask<Report>> reportLiveData = new MutableLiveData<>();
 
 		// Create the report.
 		firebaseFirestore
 			.collection("reports")
 			.add(report)
 			.addOnCompleteListener(
-				reportTask -> {
-					if (reportTask.isSuccessful()) {
-						// Query succeeded.
-						DocumentReference reference = reportTask.getResult();
+				task -> {
+					// Query succeeded.
+					if (task.isSuccessful()) {
+						// Report created.
+						DocumentReference reference = task.getResult();
 						if (reference != null) {
-							// Report created.
+							// Update the report id.
 							report.setId(reference.getId());
-							reportLiveData.setValue(report);
-						} else {
-							// Report not created.
-							errorLiveData.setValue(new DocumentNotCreatedException());
+
+							// Success task.
+							DataTask<Report> dataTask = DataTask.success(report);
+							reportLiveData.setValue(dataTask);
 						}
-					} else {
-						// Query failed.
-						errorLiveData.setValue(reportTask.getException());
+
+						// Report not created.
+						else {
+							// Error task.
+							DataTask<Report> dataTask = DataTask.error(new DocumentNotCreatedException());
+							reportLiveData.setValue(dataTask);
+						}
+					}
+
+					// Query failed.
+					else {
+						// Error task.
+						DataTask<Report> dataTask = DataTask.error(task.getException());
+						reportLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -224,8 +266,8 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param uri The URI of the report picture.
 	 * @return The path of the report picture.
 	 */
-	private LiveData<String> storePicture(String name, Uri uri) {
-		MutableLiveData<String> picturePathLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<String>> storePicture(String name, Uri uri) {
+		MutableLiveData<DataTask<String>> picturePathLiveData = new MutableLiveData<>();
 
 		// Get the picture path.
 		String picturePath = getPicturePath(name);
@@ -235,13 +277,19 @@ public class ReportRepositoryFirebase implements ReportRepository {
 		reference
 			.putFile(uri)
 			.addOnCompleteListener(
-				uploadTask -> {
-					if (uploadTask.isSuccessful()) {
-						// Storage succeeded.
-						picturePathLiveData.setValue(picturePath);
-					} else {
-						// Storage failed.
-						errorLiveData.setValue(uploadTask.getException());
+				task -> {
+					// Picture uploaded.
+					if (task.isSuccessful()) {
+						// Success task.
+						DataTask<String> dataTask = DataTask.success(picturePath);
+						picturePathLiveData.setValue(dataTask);
+					}
+
+					// Picture not uploaded.
+					else {
+						// Error task.
+						DataTask<String> dataTask = DataTask.error(task.getException());
+						picturePathLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -254,8 +302,8 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param report The report to be updated.
 	 * @return The updated report.
 	 */
-	public LiveData<Report> updateReport(Report report) {
-		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+	public LiveData<DataTask<Report>> updateReport(Report report) {
+		MutableLiveData<DataTask<Report>> reportLiveData = new MutableLiveData<>();
 
 		// Update the report.
 		firebaseFirestore
@@ -263,13 +311,19 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			.document(report.getId())
 			.set(report)
 			.addOnCompleteListener(
-				reportTask -> {
-					if (reportTask.isSuccessful()) {
-						// Query succeeded.
-						reportLiveData.setValue(report);
-					} else {
-						// Query failed.
-						errorLiveData.setValue(reportTask.getException());
+				task -> {
+					// Report updated.
+					if (task.isSuccessful()) {
+						// Success task.
+						DataTask<Report> dataTask = DataTask.success(report);
+						reportLiveData.setValue(dataTask);
+					}
+
+					// Report not updated.
+					else {
+						// Error task.
+						DataTask<Report> dataTask = DataTask.error(task.getException());
+						reportLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -282,8 +336,8 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	 * @param report The report to be delete.
 	 * @return The deleted report.
 	 */
-	public LiveData<Report> deleteReport(Report report) {
-		MutableLiveData<Report> reportLiveData = new MutableLiveData<>();
+	public LiveData<DataTask<Report>> deleteReport(Report report) {
+		MutableLiveData<DataTask<Report>> reportLiveData = new MutableLiveData<>();
 
 		// Delete the report.
 		firebaseFirestore
@@ -291,33 +345,20 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			.document(report.getId())
 			.delete()
 			.addOnCompleteListener(
-				reportTask -> {
-					if (reportTask.isSuccessful()) {
-						// Query succeeded.
-						reportLiveData.setValue(report);
+				task -> {
+					// Report deleted.
+					if (task.isSuccessful()) {
+						// Success task.
+						DataTask<Report> dataTask = DataTask.success(report);
+						reportLiveData.setValue(dataTask);
 					} else {
-						// Query failed.
-						errorLiveData.setValue(reportTask.getException());
+						// Error task.
+						DataTask<Report> dataTask = DataTask.error(task.getException());
+						reportLiveData.setValue(dataTask);
 					}
 				}
 			);
 
 		return reportLiveData;
-	}
-
-	/**
-	 * Returns the report errors (updated in real time).
-	 * @return The report errors (updated in real time).
-	 */
-	public LiveData<Exception> getErrors() {
-		return errorLiveData;
-	}
-
-	/**
-	 * Clears the report errors.
-	 * This avoids receiving the same error multiple times.
-	 */
-	public void clearErrors() {
-		errorLiveData.setValue(null);
 	}
 }

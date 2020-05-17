@@ -203,19 +203,28 @@ public class InformationActivity extends AppCompatActivity {
 		String id = intent.getStringExtra("id");
 
 		// Get the report.
-    	reportViewModel.getReport(id);
-		reportViewModel
-			.getSelectedReportLiveData()
+    	reportViewModel
+			.getReport(id)
 			.observe(
 				this,
-				selectedReport -> {
-					if (selectedReport != null) {
-						// Update the report.
-						report = selectedReport;
+				task -> {
+					// Report found.
+					if (task.isSuccessful()) {
+						// Get the report.
+						report = task.getData();
+
+						// Update the fields.
 						updateReport();
 						loadPicture();
 						loadUser();
 						initMap();
+					}
+
+					// Report not found.
+					else {
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);

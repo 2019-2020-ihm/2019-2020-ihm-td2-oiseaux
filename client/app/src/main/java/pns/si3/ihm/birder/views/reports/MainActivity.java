@@ -21,6 +21,7 @@ import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.adapters.ReportsAdapter;
+import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
 import pns.si3.ihm.birder.views.AccountActivity;
@@ -93,27 +94,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	 * Observes the reports (in real time).
 	 */
 	private void observeReports() {
-		// Query succeeded.
+		// Get the reports.
 		reportViewModel
-			.getReportsLiveData()
+			.getReports()
 			.observe(
 				this,
-				reports -> {
-					if (reports != null) {
+				task -> {
+					// Reports found.
+					if (task.isSuccessful()) {
+						// Get the reports.
+						List<Report> reports = task.getData();
+
 						// Update the recycler view.
 						reportsAdapter.setReports(reports);
 					}
-				}
-			);
 
-		// Query failed.
-		reportViewModel
-			.getReportErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
-						// Log the error.
+					// Reports not found.
+					else {
+						// Error logs.
+						Throwable error = task.getError();
 						Log.e(TAG, error.getMessage());
 					}
 				}

@@ -30,6 +30,7 @@ import org.osmdroid.config.Configuration;
 import java.util.ArrayList;
 
 import etudes.fr.demoosm.R;
+import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
@@ -92,29 +93,29 @@ public class GiveSpeciesActivity extends AppCompatActivity {
 
 
     private void initFieldsAndButtons(){
-        buttonRetour = findViewById(R.id.buttonRetour);
         imageOiseau = findViewById(R.id.imageOiseau);
-        editSpeciesName = findViewById(R.id.edit_speciesname_choice);
-        searchButton = findViewById(R.id.imageView_choice_search);
-        textInformation = findViewById(R.id.tv_choiceSpecies);
-        listView = findViewById(R.id.list_choicesBird_choice);
-        listItems = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1,
-                listItems);
-        listView.setAdapter(adapter);
+		textInformation = findViewById(R.id.tv_choiceSpecies);
 
-        buttonRetour.setOnClickListener(v -> goBack());
+		// Return button.
+		buttonRetour = findViewById(R.id.buttonRetour);
+        buttonRetour.setOnClickListener(v -> {
+        	finish();
+		});
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                speciesChoosed = adapter.getItem(position);
-                alertDialog();
-            }
-        });
+        // Species list.
+		listView = findViewById(R.id.list_choicesBird_choice);
+		listItems = new ArrayList<>();
+		adapter = new ArrayAdapter<>(this,
+			android.R.layout.simple_list_item_1,
+			listItems);
+		listView.setAdapter(adapter);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+			speciesChoosed = adapter.getItem(position);
+			alertDialog();
+		});
 
+        // Species name.
+		editSpeciesName = findViewById(R.id.edit_speciesname_choice);
         editSpeciesName.setOnKeyListener((v, keyCode, event) -> {
             if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                     (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -126,12 +127,12 @@ public class GiveSpeciesActivity extends AppCompatActivity {
             return false;
         });
 
+        // Search button.
+		searchButton = findViewById(R.id.imageView_choice_search);
         searchButton.setOnClickListener(v -> {
-            if(editSpeciesName.getText().toString().isEmpty()){
+            if (editSpeciesName.getText().toString().isEmpty()){
                 editSpeciesName.setError("Veuillez saisir une espèce.");
-            }
-            else {
-
+            } else {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
                 findSpecies();
@@ -188,47 +189,52 @@ public class GiveSpeciesActivity extends AppCompatActivity {
      * Update the species of the report @reportId with @speciesChoiced
      */
     private void updateReport(){
-        reportViewModel.getReport(reportId);
-        reportViewModel.getSelectedReportLiveData()
+    	// Get the report.
+        reportViewModel
+			.getReport(reportId)
 			.observe(this,
-				report -> {
-					if(report != null){
+				task -> {
+					// Report found.
+					if (task.isSuccessful()) {
+						// Get the report.
+						Report report = task.getData();
 						report.setSpecies(speciesChoosed);
-						//Update the report
-						reportViewModel.updateReport(report);
+
+						// Update the report
 						reportViewModel
-							.getUpdatedReportLiveData()
+							.updateReport(report)
 							.observe(
 								this,
-								insertedReport -> {
+								secondTask -> {
 									// User updated.
-									if (insertedReport != null) {
-										Log.i("Notif", "User updated!");
+									if (secondTask.isSuccessful()) {
+										Log.i(TAG, "User updated.");
+
+										// Send result.
+										Intent returnInformationActivity = new Intent();
+										setResult(RESULT_OK, returnInformationActivity);
+										finish();
+									}
+
+									// User not updated.
+									else {
+										// Error logs.
+										Throwable error = secondTask.getError();
+										Log.e(TAG, error.getMessage());
 									}
 								}
 							);
 					}
 				});
-        Intent returnInformationActivity = new Intent();
-        setResult(RESULT_OK, returnInformationActivity);
-        finish();
     }
 
 
     private void alertDialog(){
         new AlertDialog.Builder(this)
-                .setTitle("Changement de l'espèce")
-                .setMessage("Voulez-vous associé l'espèce " + speciesChoosed + " à l'image ?")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        updateReport();
-                    }})
-                .setNegativeButton(android.R.string.no, null).show();
-    }
-
-    public void goBack() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+			.setTitle("Changement de l'espèce")
+			.setMessage("Voulez-vous associé l'espèce " + speciesChoosed + " à l'image ?")
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.setPositiveButton(android.R.string.yes, (dialog, whichButton) -> updateReport())
+			.setNegativeButton(android.R.string.no, null).show();
     }
 }

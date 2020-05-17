@@ -1,19 +1,16 @@
 package pns.si3.ihm.birder.repositories.firebase;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import pns.si3.ihm.birder.exceptions.DocumentNotFoundException;
 import pns.si3.ihm.birder.exceptions.UserNotAuthenticatedException;
-import pns.si3.ihm.birder.models.StateData;
+import pns.si3.ihm.birder.models.DataTask;
 import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.repositories.interfaces.UserRepository;
 
@@ -76,8 +73,8 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param password The password of the user.
 	 * @return The id of the authenticated user.
 	 */
-	private LiveData<StateData<String>> signInAuthenticationOnly(String email, String password) {
-		MutableLiveData<StateData<String>> userIdLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<String>> signInAuthenticationOnly(String email, String password) {
+		MutableLiveData<DataTask<String>> userIdLiveData = new MutableLiveData<>();
 
 		// Sign in the user.
 		firebaseAuth
@@ -86,15 +83,19 @@ public class UserRepositoryFirebase implements UserRepository {
 				task -> {
 					// Sign in succeeded.
 					if (task.isSuccessful()) {
+						// Get the user id.
 						String userId = getAuthenticationId();
-						StateData<String> stateData = StateData.success(userId);
-						userIdLiveData.setValue(stateData);
+
+						// Success task.
+						DataTask<String> dataTask = DataTask.success(userId);
+						userIdLiveData.setValue(dataTask);
 					}
 
 					// Sign in failed.
 					else {
-						StateData<String> stateData = StateData.error(task.getException());
-						userIdLiveData.setValue(stateData);
+						// Error task.
+						DataTask<String> dataTask = DataTask.error(task.getException());
+						userIdLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -108,23 +109,26 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param password The password of the user.
 	 * @return The id of the created user.
 	 */
-	private LiveData<StateData<String>> createUserAuthenticationOnly(String email, String password) {
-		MutableLiveData<StateData<String>> userIdLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<String>> createUserAuthenticationOnly(String email, String password) {
+		MutableLiveData<DataTask<String>> userIdLiveData = new MutableLiveData<>();
 
 		// Create the user.
 		firebaseAuth
 			.createUserWithEmailAndPassword(email, password)
 			.addOnCompleteListener(
 				task -> {
+					// User created.
 					if (task.isSuccessful()) {
-						// Creation succeeded.
+						// Get the user id.
 						String userId = getAuthenticationId();
-						StateData<String> stateData = StateData.success(userId);
-						userIdLiveData.setValue(stateData);
+
+						// Success task.
+						DataTask<String> dataTask = DataTask.success(userId);
+						userIdLiveData.setValue(dataTask);
 					} else {
-						// Creation failed.
-						StateData<String> stateData = StateData.error(task.getException());
-						userIdLiveData.setValue(stateData);
+						// Error task.
+						DataTask<String> dataTask = DataTask.error(task.getException());
+						userIdLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -137,10 +141,10 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param email The email of the user.
 	 * @return Whether the email has been updated, or not.
 	 */
-	private LiveData<StateData<Void>> updateEmail(String email) {
-		MutableLiveData<StateData<Void>> emailUpdatedLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<Void>> updateEmail(String email) {
+		MutableLiveData<DataTask<Void>> emailUpdatedLiveData = new MutableLiveData<>();
 
-		// The user is authenticated.
+		// User authenticated.
 		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 		if (firebaseUser != null) {
 			// Update the email.
@@ -148,21 +152,28 @@ public class UserRepositoryFirebase implements UserRepository {
 				.updateEmail(email)
 				.addOnCompleteListener(
 					task -> {
+						// Email updated.
 						if (task.isSuccessful()) {
-							// Email updated.
-							StateData<Void> stateData = StateData.success();
-							emailUpdatedLiveData.setValue(stateData);
-						} else {
-							// Email not updated.
-							StateData<Void> stateData = StateData.error(task.getException());
-							emailUpdatedLiveData.setValue(stateData);
+							// Success task.
+							DataTask<Void> dataTask = DataTask.success();
+							emailUpdatedLiveData.setValue(dataTask);
+						}
+
+						// Email not updated.
+						else {
+							// Error task.
+							DataTask<Void> dataTask = DataTask.error(task.getException());
+							emailUpdatedLiveData.setValue(dataTask);
 						}
 					}
 				);
-		} else {
-			// User not authenticated.
-			StateData<Void> stateData = StateData.error(new UserNotAuthenticatedException());
-			emailUpdatedLiveData.setValue(stateData);
+		}
+
+		// User not authenticated.
+		else {
+			// Error task.
+			DataTask<Void> dataTask = DataTask.error(new UserNotAuthenticatedException());
+			emailUpdatedLiveData.setValue(dataTask);
 		}
 
 		return emailUpdatedLiveData;
@@ -173,10 +184,10 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param newPassword The new password of the user.
 	 * @return Whether the password has been updated, or not.
 	 */
-	public LiveData<StateData<Void>> updatePassword(String newPassword) {
-		MutableLiveData<StateData<Void>> passwordUpdatedLiveData = new MutableLiveData<>();
+	public LiveData<DataTask<Void>> updatePassword(String newPassword) {
+		MutableLiveData<DataTask<Void>> passwordUpdatedLiveData = new MutableLiveData<>();
 
-		// The user is authenticated.
+		// User authenticated.
 		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 		if (firebaseUser != null) {
 			// Update the password.
@@ -184,21 +195,28 @@ public class UserRepositoryFirebase implements UserRepository {
 				.updatePassword(newPassword)
 				.addOnCompleteListener(
 					task -> {
+						// Password updated.
 						if (task.isSuccessful()) {
-							// Password updated.
-							StateData<Void> stateData = StateData.success();
-							passwordUpdatedLiveData.setValue(stateData);
-						} else {
-							// Password not updated.
-							StateData<Void> stateData = StateData.error(task.getException());
-							passwordUpdatedLiveData.setValue(stateData);
+							// Success task.
+							DataTask<Void> dataTask = DataTask.success();
+							passwordUpdatedLiveData.setValue(dataTask);
+						}
+
+						// Password not updated.
+						else {
+							// Error task.
+							DataTask<Void> dataTask = DataTask.error(task.getException());
+							passwordUpdatedLiveData.setValue(dataTask);
 						}
 					}
 				);
-		} else {
-			// User not authenticated.
-			StateData<Void> stateData = StateData.error(new UserNotAuthenticatedException());
-			passwordUpdatedLiveData.setValue(stateData);
+		}
+
+		// User not authenticated.
+		else {
+			// Error task.
+			DataTask<Void> dataTask = DataTask.error(new UserNotAuthenticatedException());
+			passwordUpdatedLiveData.setValue(dataTask);
 		}
 
 		return passwordUpdatedLiveData;
@@ -208,10 +226,10 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * Deletes the authenticated user.
 	 * @return Whether the user has been deleted, or not.
 	 */
-	private LiveData<StateData<Void>> deleteUserAuthenticationOnly() {
-		MutableLiveData<StateData<Void>> deletedUserLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<Void>> deleteUserAuthenticationOnly() {
+		MutableLiveData<DataTask<Void>> deletedUserLiveData = new MutableLiveData<>();
 
-		// The user is authenticated.
+		// User authenticated.
 		FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 		if (firebaseUser != null) {
 			// Update the password.
@@ -219,22 +237,29 @@ public class UserRepositoryFirebase implements UserRepository {
 				.delete()
 				.addOnCompleteListener(
 					task -> {
+						// User deleted.
 						if (task.isSuccessful()) {
-							// User deleted.
-							StateData<Void> stateData = StateData.success();
-							deletedUserLiveData.setValue(stateData);
-						} else {
-							// User not deleted.
-							StateData<Void> stateData = StateData.error(task.getException());
-							deletedUserLiveData.setValue(stateData);
+							// Success task.
+							DataTask<Void> dataTask = DataTask.success();
+							deletedUserLiveData.setValue(dataTask);
+						}
+
+						// User not deleted.
+						else {
+							// Error task.
+							DataTask<Void> dataTask = DataTask.error(task.getException());
+							deletedUserLiveData.setValue(dataTask);
 						}
 					}
 				);
 
-		} else {
-			// User not authenticated.
-			StateData<Void> stateData = StateData.error(new UserNotAuthenticatedException());
-			deletedUserLiveData.setValue(stateData);
+		}
+
+		// User not authenticated.
+		else {
+			// Error task.
+			DataTask<Void> dataTask = DataTask.error(new UserNotAuthenticatedException());
+			deletedUserLiveData.setValue(dataTask);
 		}
 
 		return deletedUserLiveData;
@@ -249,34 +274,43 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param id The id of the user.
 	 * @return The selected user (updated in real time).
 	 */
-	public LiveData<StateData<User>> getUser(String id) {
-		MutableLiveData<StateData<User>> userLiveData = new MutableLiveData<>();
+	public LiveData<DataTask<User>> getUser(String id) {
+		MutableLiveData<DataTask<User>> userLiveData = new MutableLiveData<>();
 
-		// Get the user.
+		// Get the user (in real time).
 		firebaseFirestore
 			.collection("users")
 			.document(id)
 			.addSnapshotListener(
 				(snapshot, error) -> {
+					// Query succeeded.
 					if (error == null) {
-						// Query succeeded.
+						// User found.
 						if (snapshot != null && snapshot.exists()) {
-							// User found.
 							User user = snapshot.toObject(User.class);
 							if (user != null) {
+								// Update the user id.
 								user.setId(id);
-								StateData<User> stateData = StateData.success(user);
-								userLiveData.setValue(stateData);
+
+								// Success task.
+								DataTask<User> dataTask = DataTask.success(user);
+								userLiveData.setValue(dataTask);
 							}
-						} else {
-							// User not found.
-							StateData<User> stateData = StateData.error(new DocumentNotFoundException());
-							userLiveData.setValue(stateData);
 						}
-					} else {
-						// Query failed.
-						StateData<User> stateData = StateData.error(error);
-						userLiveData.setValue(stateData);
+
+						// User not found.
+						else {
+							// Error task.
+							DataTask<User> dataTask = DataTask.error(new DocumentNotFoundException());
+							userLiveData.setValue(dataTask);
+						}
+					}
+
+					// Query failed.
+					else {
+						// Error task.
+						DataTask<User> dataTask = DataTask.error(error);
+						userLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -289,23 +323,28 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param user The user to be created.
 	 * @return The created user.
 	 */
-	private LiveData<StateData<User>> insertUserDatabaseOnly(User user) {
-		MutableLiveData<StateData<User>> createdUserLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<User>> insertUserDatabaseOnly(User user) {
+		MutableLiveData<DataTask<User>> createdUserLiveData = new MutableLiveData<>();
 
+		// Insert the user.
 		firebaseFirestore
 			.collection("users")
 			.document(user.getId())
 			.set(user)
 			.addOnCompleteListener(
 				task -> {
+					// User inserted.
 					if (task.isSuccessful()) {
-						// Creation succeeded.
-						StateData<User> stateData = StateData.success(user);
-						createdUserLiveData.setValue(stateData);
-					} else {
-						// Creation failed.
-						StateData<User> stateData = StateData.error(task.getException());
-						createdUserLiveData.setValue(stateData);
+						// Success task.
+						DataTask<User> dataTask = DataTask.success(user);
+						createdUserLiveData.setValue(dataTask);
+					}
+
+					// User not inserted.
+					else {
+						// Error task.
+						DataTask<User> dataTask = DataTask.error(task.getException());
+						createdUserLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -318,8 +357,8 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @param id The id of the user.
 	 * @return Whether the user has been deleted, or not.
 	 */
-	private LiveData<StateData<Void>> deleteUserDatabaseOnly(String id) {
-		MutableLiveData<StateData<Void>> userDeletedLiveData = new MutableLiveData<>();
+	private LiveData<DataTask<Void>> deleteUserDatabaseOnly(String id) {
+		MutableLiveData<DataTask<Void>> userDeletedLiveData = new MutableLiveData<>();
 
 		// Delete the user.
 		firebaseFirestore
@@ -328,14 +367,18 @@ public class UserRepositoryFirebase implements UserRepository {
 			.delete()
 			.addOnCompleteListener(
 				task -> {
+					// User deleted.
 					if (task.isSuccessful()) {
-						// User deleted.
-						StateData<Void> stateData = StateData.success();
-						userDeletedLiveData.setValue(stateData);
-					} else {
-						// User not deleted.
-						StateData<Void> stateData = StateData.error(task.getException());
-						userDeletedLiveData.setValue(stateData);
+						// Success task.
+						DataTask<Void> dataTask = DataTask.success();
+						userDeletedLiveData.setValue(dataTask);
+					}
+
+					// User not deleted.
+					else {
+						// Error task.
+						DataTask<Void> dataTask = DataTask.error(task.getException());
+						userDeletedLiveData.setValue(dataTask);
 					}
 				}
 			);
@@ -353,16 +396,16 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @return The authenticated user.
 	 */
 	@Override
-	public LiveData<StateData<User>> getUser() {
+	public LiveData<DataTask<User>> getUser() {
+		// User authenticated.
 		String userId = getAuthenticationId();
 		if (userId != null) {
-			// Get the authenticated user.
 			return getUser(userId);
 		}
 
 		// User not authenticated.
-		StateData<User> stateData = StateData.error(new UserNotAuthenticatedException());
-		return new MutableLiveData<>(stateData);
+		DataTask<User> dataTask = DataTask.error(new UserNotAuthenticatedException());
+		return new MutableLiveData<>(dataTask);
 	}
 
 	/**
@@ -372,11 +415,12 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @return The authenticated user (updated in real time).
 	 */
 	@Override
-	public LiveData<StateData<User>> signIn(String email, String password) {
+	public LiveData<DataTask<User>> signIn(String email, String password) {
 		return Transformations.switchMap(
 			// Sign in the user.
 			signInAuthenticationOnly(email, password),
 			signInUser -> {
+				// User authenticated.
 				if (signInUser.isSuccessful()) {
 					// Get the user.
 					String userId = signInUser.getData();
@@ -384,8 +428,8 @@ public class UserRepositoryFirebase implements UserRepository {
 				}
 
 				// User not authenticated.
-				StateData<User> stateData = StateData.error(signInUser.getError());
-				return new MutableLiveData<>(stateData);
+				DataTask<User> dataTask = DataTask.error(signInUser.getError());
+				return new MutableLiveData<>(dataTask);
 			}
 		);
 	}
@@ -404,11 +448,12 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @return The created user.
 	 */
 	@Override
-	public LiveData<StateData<User>> createUser(User user, String password) {
+	public LiveData<DataTask<User>> createUser(User user, String password) {
 		return Transformations.switchMap(
 			// Create the authentication user.
 			createUserAuthenticationOnly(user.getEmail(), password),
 			createUser -> {
+				// User created.
 				if (createUser.isSuccessful()) {
 					// Create the database user.
 					String userId = createUser.getData();
@@ -416,9 +461,9 @@ public class UserRepositoryFirebase implements UserRepository {
 					return insertUserDatabaseOnly(user);
 				}
 
-				// Creation failed.
-				StateData<User> stateData = StateData.error(createUser.getError());
-				return new MutableLiveData<>(stateData);
+				// User not created.
+				DataTask<User> dataTask = DataTask.error(createUser.getError());
+				return new MutableLiveData<>(dataTask);
 			}
 		);
 	}
@@ -445,20 +490,21 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @return The updated user.
 	 */
 	@Override
-	public LiveData<StateData<User>> updateUser(User user) {
+	public LiveData<DataTask<User>> updateUser(User user) {
 		if (emailChanged(user)) {
 			return Transformations.switchMap(
 				// Update the authentication email.
 				updateEmail(user.getEmail()),
 				updateEmail -> {
+					// Email updated.
 					if (updateEmail.isSuccessful()) {
 						// Update the database user.
 						return insertUserDatabaseOnly(user);
 					}
 
 					// Email not updated.
-					StateData<User> stateData = StateData.error(updateEmail.getError());
-					return new MutableLiveData<>(stateData);
+					DataTask<User> dataTask = DataTask.error(updateEmail.getError());
+					return new MutableLiveData<>(dataTask);
 				}
 			);
 		} else {
@@ -472,7 +518,7 @@ public class UserRepositoryFirebase implements UserRepository {
 	 * @return The deleted user.
 	 */
 	@Override
-	public LiveData<StateData<Void>> deleteUser() {
+	public LiveData<DataTask<Void>> deleteUser() {
 		// Get the id of the authenticated user.
 		String userId = getAuthenticationId();
 
@@ -480,12 +526,13 @@ public class UserRepositoryFirebase implements UserRepository {
 			// Delete the authentication user.
 			deleteUserAuthenticationOnly(),
 			deleteUser -> {
+				// User deleted.
 				if (deleteUser.isSuccessful()) {
 					// Delete the database user.
 					return deleteUserDatabaseOnly(userId);
 				}
 
-				// Deletion failed.
+				// User not deleted.
 				return new MutableLiveData<>(deleteUser);
 			}
 		);

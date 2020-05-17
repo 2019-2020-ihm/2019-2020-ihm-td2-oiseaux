@@ -2,7 +2,7 @@ package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
 
-import pns.si3.ihm.birder.models.StateData;
+import pns.si3.ihm.birder.models.DataTask;
 import pns.si3.ihm.birder.models.User;
 
 /**
@@ -28,14 +28,14 @@ public interface UserRepository {
 	 * Returns the authenticated user (updated in real time).
 	 * @return The authenticated user (updated in real time).
 	 */
-	LiveData<StateData<User>> getUser();
+	LiveData<DataTask<User>> getUser();
 
 	/**
 	 * Returns a user by id (updated in real time).
 	 * @param id The id of the user.
 	 * @return The selected user (updated in real time).
 	 */
-	LiveData<StateData<User>> getUser(String id);
+	LiveData<DataTask<User>> getUser(String id);
 
 	/**
 	 * Signs in the user with an email and password.
@@ -43,7 +43,7 @@ public interface UserRepository {
 	 * @param password The password of the user.
 	 * @return The authenticated user (updated in real time).
 	 */
-	LiveData<StateData<User>> signIn(String email, String password);
+	LiveData<DataTask<User>> signIn(String email, String password);
 
 	/**
 	 * Signs out the user.
@@ -56,25 +56,25 @@ public interface UserRepository {
 	 * @param password The password of the user.
 	 * @return The created user.
 	 */
-	LiveData<StateData<User>> createUser(User user, String password);
+	LiveData<DataTask<User>> createUser(User user, String password);
 
 	/**
 	 * Updates the authenticated user.
 	 * @param user The user to be updated.
 	 * @return The updated user.
 	 */
-	LiveData<StateData<User>> updateUser(User user);
+	LiveData<DataTask<User>> updateUser(User user);
 
 	/**
 	 * Updates the password of the authenticated user.
 	 * @param newPassword The new password of the user.
 	 * @return Whether the password has been updated, or not.
 	 */
-	LiveData<StateData<Void>> updatePassword(String newPassword);
+	LiveData<DataTask<Void>> updatePassword(String newPassword);
 
 	/**
 	 * Deletes the authenticated user.
 	 * @return Whether the user has been deleted, or not.
 	 */
-	LiveData<StateData<Void>> deleteUser();
+	LiveData<DataTask<Void>> deleteUser();
 }

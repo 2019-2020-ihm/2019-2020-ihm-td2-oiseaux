@@ -1,10 +1,9 @@
 package pns.si3.ihm.birder.viewmodels;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import pns.si3.ihm.birder.models.StateData;
+import pns.si3.ihm.birder.models.DataTask;
 import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.repositories.interfaces.UserRepository;
 import pns.si3.ihm.birder.repositories.firebase.UserRepositoryFirebase;
@@ -52,49 +51,55 @@ public class UserViewModel extends ViewModel {
 	}
 
 	/**
-	 * Requests the sign in of a user.
+	 * Returns the authenticated user (updated in real time).
+	 * @return The authenticated user (updated in real time).
+	 */
+	public LiveData<DataTask<User>> getUser() {
+		return userRepository.getUser();
+	}
+
+	/**
+	 * Returns a user by id (updated in real time).
+	 * @param id The id of the user.
+	 * @return The selected user (updated in real time).
+	 */
+	public LiveData<DataTask<User>> getUser(String id) {
+		return userRepository.getUser(id);
+	}
+
+	/**
+	 * Signs in the user with an email and password.
 	 * @param email The email of the user.
 	 * @param password The password of the user.
+	 * @return The authenticated user (updated in real time).
 	 */
-	public LiveData<StateData<User>> signIn(String email, String password) {
+	public LiveData<DataTask<User>> signIn(String email, String password) {
 		return userRepository.signIn(email, password);
 	}
 
 	/**
-	 * Requests the sign out of the user.
+	 * Signs out the user.
 	 */
 	public void signOut() {
 		userRepository.signOut();
 	}
 
 	/**
-	 * Requests a user.
-	 * @param id The id of the user.
-	 */
-	public LiveData<StateData<User>> getUser(String id) {
-		return userRepository.getUser(id);
-	}
-
-	/**
-	 * Requests the authenticated user.
-	 */
-	public LiveData<StateData<User>> getUser() {
-		return userRepository.getUser();
-	}
-
-	/**
-	 * Requests the creation of a user.
+	 * Creates a user.
 	 * @param user The user to be created.
+	 * @param password The password of the user.
+	 * @return The created user.
 	 */
-	public LiveData<StateData<User>> createUser(User user, String password) {
+	public LiveData<DataTask<User>> createUser(User user, String password) {
 		return userRepository.createUser(user, password);
 	}
 
 	/**
-	 * Requests the update of a user.
+	 * Updates the authenticated user.
 	 * @param user The user to be updated.
+	 * @return The updated user.
 	 */
-	public LiveData<StateData<User>> updateUser(User user) {
+	public LiveData<DataTask<User>> updateUser(User user) {
 		return userRepository.updateUser(user);
 	}
 
@@ -103,7 +108,7 @@ public class UserViewModel extends ViewModel {
 	 * @param newPassword The new password of the user.
 	 * @return Whether the password has been updated, or not.
 	 */
-	public LiveData<StateData<Void>> updatePassword(String newPassword) {
+	public LiveData<DataTask<Void>> updatePassword(String newPassword) {
 		return userRepository.updatePassword(newPassword);
 	}
 
@@ -111,7 +116,7 @@ public class UserViewModel extends ViewModel {
 	 * Deletes the authenticated user.
 	 * @return Whether the user has been deleted, or not.
 	 */
-	public LiveData<StateData<Void>> deleteUser() {
+	public LiveData<DataTask<Void>> deleteUser() {
 		return userRepository.deleteUser();
 	}
 }
