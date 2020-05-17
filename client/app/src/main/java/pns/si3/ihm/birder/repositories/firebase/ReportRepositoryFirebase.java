@@ -12,7 +12,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -32,10 +31,12 @@ import pns.si3.ihm.birder.repositories.interfaces.ReportRepository;
  * Implementation of the report repository using Firebase.
  */
 public class ReportRepositoryFirebase implements ReportRepository {
+	public static final ReportRepositoryFirebase instance = new ReportRepositoryFirebase();
+
 	/**
 	 * The tag of the log messages.
 	 */
-	static final String TAG = "ReportRepository";
+	public static final String TAG = "ReportRepository";
 
 	/**
 	 * The firebase firestore instance.
@@ -53,14 +54,6 @@ public class ReportRepositoryFirebase implements ReportRepository {
 	public ReportRepositoryFirebase() {
 		firebaseFirestore = FirebaseFirestore.getInstance();
 		firebaseStorage = FirebaseStorage.getInstance();
-		loadReports();
-	}
-
-	/**
-	 * Loads the reports (updated in real time).
-	 */
-	private void loadReports() {
-
 	}
 
 	/**

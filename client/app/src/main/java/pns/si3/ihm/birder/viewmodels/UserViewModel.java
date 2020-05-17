@@ -29,10 +29,6 @@ public class UserViewModel extends ViewModel {
 		userRepository = new UserRepositoryFirebase();
 	}
 
-	/*====================================================================*/
-	/*                               REQUESTS                             */
-	/*====================================================================*/
-
 	/**
 	 * Returns whether the user is authenticated, or not.
 	 * @return Whether the user is authenticated, or not.
