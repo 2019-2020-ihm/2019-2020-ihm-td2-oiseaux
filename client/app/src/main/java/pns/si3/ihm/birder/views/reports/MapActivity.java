@@ -1,7 +1,10 @@
 package pns.si3.ihm.birder.views.reports;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -65,15 +68,15 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		Configuration.getInstance().load(   getApplicationContext(),
-				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
+		LocationManager locationManager;
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		Configuration.getInstance().load(getApplicationContext(),
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
 		setContentView(R.layout.activity_map);
 		initViewModels();
 		setSpinner();
 		init();
 		observeReports();
-
 	}
 
 	/**
@@ -96,30 +99,39 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 			.getReports()
 			.observe(
 				this,
-				task -> {
-					// Reports found.
-					if (task.isSuccessful()) {
-						// Get the reports.
-						reports = task.getData();
+					task -> {
+						// Reports found.
+						if (task.isSuccessful()) {
+							// Get the reports.
+							reports = task.getData();
 
-						map = findViewById(R.id.map);
-						map.setTileSource(TileSourceFactory.MAPNIK);
-						map.setBuiltInZoomControls(true);
-						map.setMultiTouchControls(true);
+							map = findViewById(R.id.map);
+							map.setTileSource(TileSourceFactory.MAPNIK);
+							map.setBuiltInZoomControls(true);
+							map.setMultiTouchControls(true);
+							mapController = map.getController();
+							mapController.setZoom(8);
+							GeoPoint startPoint;
+							ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
+							boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+							if (permissionGranted){
+								LocationManager locationManager;
+								locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+								if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+									createGpsDisabledAlert();
+									startPoint = new GeoPoint(43.65020, 7.00517);
+								}
+								else {
+									setLocation();
+									startPoint = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
+									items.add(new OverlayItem("Vous êtes ici", "",new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude())));
 
-						mapController = map.getController();
-						mapController.setZoom(8);
-						boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-						GeoPoint startPoint;
-						ArrayList<OverlayItem> items = new ArrayList<OverlayItem>(); // future liste de nos signalisations
-						if (!permissionGranted){
-							startPoint = new GeoPoint(43.65020, 7.00517);
-						}
-						else {
-							setLocation();
-							startPoint = new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude());
-							items.add(new OverlayItem("Vous êtes ici", "",new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude())));
-						}
+								}
+							}
+							else{
+								startPoint = new GeoPoint(43.65020, 7.00517);
+							}
+							mapController.setCenter(startPoint);
 
 						mapController.setCenter(startPoint);
 
@@ -278,6 +290,29 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 				locationManager.removeUpdates(locationListener);
 			}
 		}
+	}
+
+	private void createGpsDisabledAlert() {
+		AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
+		localBuilder
+				.setMessage("Le GPS est désactivé, voulez-vous l'activer ?")
+				.setCancelable(false)
+				.setPositiveButton("Activer le GPS ",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+								startActivity(new Intent("android.settings.LOCATION_SOURCE_SETTINGS"));
+								finish();
+							}
+						}
+				);
+		localBuilder.setNegativeButton("Ne pas activer le GPS",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+					}
+				}
+		);
+		localBuilder.create().show();
+
 	}
 
 	public void setSpinner(){
