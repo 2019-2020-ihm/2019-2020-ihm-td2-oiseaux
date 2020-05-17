@@ -34,7 +34,25 @@ public class User {
 	 */
 	private Boolean allNotificationActivate;
 
+	/**
+	 * All the name of species that the user want to be notify.
+	 */
 	private ArrayList<String> speciesNotifications;
+
+	/**
+	 * The number of picture shared by the user.
+	 */
+	private int numberPictureShared;
+
+	/**
+	 * The id of all reports shared by the user.
+	 */
+	private ArrayList<String> idOfReports;
+
+	/**
+	 * The number of bird shared by the user.
+	 */
+	private int numberOfBirdShared;
 
 	public User() {}
 
@@ -45,6 +63,9 @@ public class User {
 		this.email = email;
 		this.allNotificationActivate = true;
 		this.speciesNotifications = new ArrayList<>();
+		this.numberPictureShared = 0;
+		this.idOfReports = new ArrayList<>();
+		this.numberOfBirdShared = 0;
 	}
 
 	@Exclude
@@ -98,7 +119,27 @@ public class User {
 		this.speciesNotifications = speciesNotifications;
 	}
 
-	public void deleteItemToSpeciesNotifications(String speciesName){
-		this.speciesNotifications.remove(speciesName);
+	public int getNumberPictureShared() {
+		return numberPictureShared;
+	}
+
+	public void setNumberPictureShared(int numberPictureShared) {
+		this.numberPictureShared = numberPictureShared;
+	}
+
+	public ArrayList<String> getIdOfReports() {
+		return idOfReports;
+	}
+
+	public void setIdOfReports(ArrayList<String> idOfReports) {
+		this.idOfReports = idOfReports;
+	}
+
+	public int getNumberOfBirdShared() {
+		return numberOfBirdShared;
+	}
+
+	public void setNumberOfBirdShared(int numberOfBirdShared) {
+		this.numberOfBirdShared = numberOfBirdShared;
 	}
 }

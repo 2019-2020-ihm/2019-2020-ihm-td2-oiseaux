@@ -423,10 +423,48 @@ public class ReportActivity
 							"Votre signalement a été envoyé.",
 							Toast.LENGTH_SHORT
 						).show();
+                        userViewModel.getUser(createdReport.getUserId());
+                        userViewModel
+                                .getUser()
+                                .observe(
+                                        this,
+                                        user -> {
+                                            if (user != null) {
+                                            	//Send Notification
+                                            	if (user.getData().getAllNotificationActivate() != null) {
+													setNotificationActivated(createdReport.getSpecies());
+												}
+												//Update the user (locally)
+												Boolean added = false;
+												for(String reportId : user.getData().getIdOfReports()){
+													if(report.getId().equals(reportId)) added = true;
+												}
+												if(!added){
+													ArrayList<String> newList = user.getData().getIdOfReports();
+													newList.add(report.getId());
+													user.getData().setIdOfReports(newList);
+													if(pictureUri != null){
+														int n = user.getData().getNumberPictureShared();
+														user.getData().setNumberPictureShared(n + 1);
+													}
+													int nb = user.getData().getNumberPictureShared();
+													user.getData().setNumberPictureShared(nb + report.getNumber());
+												}
 
-						// Send notifications.
-						setNotificationActivated(createdReport.getSpecies());
 
+												//Update the user (online)
+												userViewModel.updateUser(user.getData());
+												userViewModel
+														.getUser()
+														.observe(this,
+																insertedUser -> {
+																	//User updated
+																	if(insertedUser != null){
+																	}
+																});
+                                            }
+                                        }
+                                );
 						// Close the activity.
 						finish();
 					}

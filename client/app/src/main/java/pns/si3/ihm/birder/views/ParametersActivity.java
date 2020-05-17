@@ -57,7 +57,6 @@ public class ParametersActivity extends AppCompatActivity {
 
         buttonDeleteAccount.setOnClickListener(v -> {
             dialogBox();
-            deleteAccount();
         });
 
         buttonChangePassword.setOnClickListener(v -> {
@@ -84,13 +83,17 @@ public class ParametersActivity extends AppCompatActivity {
         		});
     }
 
-    private void dialogBox(){
+    private void dialogBox() {
         new AlertDialog.Builder(this)
-			.setTitle("Suppression du compte")
-			.setMessage("Voulez-vous vraiment supprimer votre compte ?")
-			.setIcon(android.R.drawable.ic_dialog_alert)
-			.setPositiveButton(android.R.string.yes, (dialog, whichButton) -> deleteAccount())
-			.setNegativeButton(android.R.string.no, null).show();
+                .setTitle("Suppression du compte")
+                .setMessage("Voulez-vous vraiment supprimer votre compte ?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton("Oui", (dialog, whichButton) -> delete())
+                .setNegativeButton("Non", null).show();
+    }
+
+    private void delete(){
+        deleteAccount();
     }
 
     private void deleteAccount(){
