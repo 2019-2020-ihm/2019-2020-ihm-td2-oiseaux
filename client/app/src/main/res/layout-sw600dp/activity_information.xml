@@ -139,4 +139,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map" />
 
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="419dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="436dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
