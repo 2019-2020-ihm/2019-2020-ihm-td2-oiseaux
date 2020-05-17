@@ -1,15 +1,12 @@
 package pns.si3.ihm.birder.views;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,16 +25,15 @@ import com.google.firebase.storage.StorageReference;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
-import pns.si3.ihm.birder.views.reports.MainActivity;
 
 public class GiveSpeciesActivity extends AppCompatActivity {
-
     /**
      * The tag for the log messages.
      */
@@ -53,13 +49,12 @@ public class GiveSpeciesActivity extends AppCompatActivity {
     private ImageView searchButton;
     private TextView textInformation;
 
-
     /**
      * The others elements.
      */
     private ArrayList<String> listItems;
     private ArrayAdapter<String> adapter;
-    private String speciesChoosed;
+    private String chosenSpecies;
     private String reportId;
     private String picturePath;
 
@@ -86,12 +81,22 @@ public class GiveSpeciesActivity extends AppCompatActivity {
             reportId = (String) bundle.get("reportId");
         }
 
+		initViewModels();
         initFieldsAndButtons();
-        initViewModels();
         updateImageView();
     }
 
+	/**
+	 * Initializes the view models that hold the data.
+	 */
+	private void initViewModels(){
+		reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
+	}
 
+	/**
+	 * Initializes the activity fields and buttons.
+	 */
     private void initFieldsAndButtons(){
         imageOiseau = findViewById(R.id.imageOiseau);
 		textInformation = findViewById(R.id.tv_choiceSpecies);
@@ -110,7 +115,7 @@ public class GiveSpeciesActivity extends AppCompatActivity {
 			listItems);
 		listView.setAdapter(adapter);
         listView.setOnItemClickListener((parent, view, position, id) -> {
-			speciesChoosed = adapter.getItem(position);
+			chosenSpecies = adapter.getItem(position);
 			alertDialog();
 		});
 
@@ -135,60 +140,68 @@ public class GiveSpeciesActivity extends AppCompatActivity {
             } else {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
-                findSpecies();
+                searchSpecies();
             }
         });
 
     }
 
-    private void initViewModels(){
-        reportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
-        speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
-    }
-
-    private void updateImageView(){
+	/**
+	 * Updates the image view.
+	 */
+	private void updateImageView() {
         if (picturePath != null) {
             FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
             StorageReference pictureReference = firebaseStorage.getReference(picturePath);
             Glide
-                    .with(this)
-                    .load(pictureReference)
-                    .into(imageOiseau);
+				.with(this)
+				.load(pictureReference)
+				.into(imageOiseau);
         }
     }
 
-    private void findSpecies(){
+	/**
+	 * Searches species based on user input.
+	 */
+	private void searchSpecies() {
+    	// Search species based on user input.
         speciesViewModel.searchSpecies(editSpeciesName.getText().toString());
+
+        // Get the found species.
         speciesViewModel
-                .getSearchedSpeciesLiveData()
-                .observe(
-                        this,
-                        foundSpecies -> {
-                            if (foundSpecies != null) {
-                                for (Species species : foundSpecies) {
-                                    adapter.add(species.getFrenchCommonName());
-                                    textInformation.setText("Veuillez choisir une espèce :");
-                                }
-                            }
-                        }
-                );
-        speciesViewModel
-                .getSpeciesErrorsLiveData()
-                .observe(
-                        this,
-                        error -> {
-                            if (error != null) {
-                                Log.e(TAG, error.getMessage());
-                                editSpeciesName.setError("L'espèce que vous avez saisie est invalide.");
-                            }
-                        }
-                );
+			.getFoundSpeciesLiveData()
+			.observe(
+				this,
+				task -> {
+					// Species found.
+					if (task.isSuccessful()) {
+						// Get found species.
+						List<Species> foundSpecies = task.getData();
+
+						// Update the list.
+						for (Species species : foundSpecies) {
+							adapter.add(species.getFrenchCommonName());
+							textInformation.setText("Veuillez choisir une espèce :");
+						}
+					}
+
+					// Species not found.
+					else {
+						// Error message.
+						editSpeciesName.setError("L'espèce que vous avez saisie est invalide.");
+
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
+					}
+				}
+			);
     }
 
     /**
-     * Update the species of the report @reportId with @speciesChoiced
+     * Updates the species of the report.
      */
-    private void updateReport(){
+    private void updateReport() {
     	// Get the report.
         reportViewModel
 			.getReport(reportId)
@@ -198,7 +211,7 @@ public class GiveSpeciesActivity extends AppCompatActivity {
 					if (task.isSuccessful()) {
 						// Get the report.
 						Report report = task.getData();
-						report.setSpecies(speciesChoosed);
+						report.setSpecies(chosenSpecies);
 
 						// Update the report
 						reportViewModel
@@ -229,10 +242,13 @@ public class GiveSpeciesActivity extends AppCompatActivity {
     }
 
 
-    private void alertDialog(){
+	/**
+	 * Alerts the user to validate the chosen species.
+	 */
+	private void alertDialog(){
         new AlertDialog.Builder(this)
 			.setTitle("Changement de l'espèce")
-			.setMessage("Voulez-vous associé l'espèce " + speciesChoosed + " à l'image ?")
+			.setMessage("Voulez-vous associé l'espèce " + chosenSpecies + " à l'image ?")
 			.setIcon(android.R.drawable.ic_dialog_alert)
 			.setPositiveButton(android.R.string.yes, (dialog, whichButton) -> updateReport())
 			.setNegativeButton(android.R.string.no, null).show();

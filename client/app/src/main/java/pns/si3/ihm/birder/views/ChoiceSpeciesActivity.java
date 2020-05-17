@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Species;
@@ -29,24 +30,31 @@ import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.views.reports.InformationOneSpeciesActivity;
 
 public class ChoiceSpeciesActivity extends AppCompatActivity {
+	/**
+	 * The tag for the log messages.
+	 */
+	private String TAG = "ChoiceSpecies";
+
+	/**
+	 * The species view model.
+	 */
+	private SpeciesViewModel speciesViewModel;
 
     /**
-     * The fields of the activity.
+     * The activity fields and buttons.
      */
     private Button returnButton;
     private EditText editText;
     private ImageView imageViewSearch;
-    private SpeciesViewModel speciesViewModel;
     private ArrayList<String> listItems;
     private ArrayAdapter<String> adapter;
     private ListView listView;
     private TextView textView;
-    private String TAG = "ChoiceSpecies";
-    private String speciesId;
 
-    /**
-     * What we want to show.
-     */
+	/**
+	 * The activity values.
+	 */
+	private String speciesId;
     private String want;
 
     @Override
@@ -57,37 +65,45 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choicespecies);
 		initViewModels();
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
+        if (bundle != null) {
             want = getIntent().getStringExtra("want");
         }
-        initElements();
+		initButtonsAndFields();
     }
 
+	/**
+	 * Initializes the view models that hold the data.
+	 */
 	private void initViewModels(){
 		speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
 	}
 
-    private void initElements(){
+	/**
+	 * Initializes activity buttons and fields.
+	 */
+    private void initButtonsAndFields(){
+		textView = findViewById(R.id.tv_choice);
+
+    	// Return button.
         returnButton = findViewById(R.id.button_return_choicespecies);
-        imageViewSearch = findViewById(R.id.imageView_choice_search);
-        editText = findViewById(R.id.edit_speciesname);
-        textView = findViewById(R.id.tv_choice);
+		returnButton.setOnClickListener(v -> {
+			finish();
+		});
+
+        // Species list.
         listView = findViewById(R.id.list_choicesBird);
         listItems = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1,
-                listItems);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
         listView.setAdapter(adapter);
-
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            if(want == null){
+            if (want == null){
                 Intent returnReportActivity = new Intent();
                 Log.i(TAG,adapter.getItem(position));
                 returnReportActivity.putExtra("name", adapter.getItem(position));
                 setResult(RESULT_OK, returnReportActivity);
                 finish();
             }
-            else if(want.equals("allSpecies")) {
+            else if (want.equals("allSpecies")) {
                 Intent showInformation = new Intent(ChoiceSpeciesActivity.this, InformationOneSpeciesActivity.class);
                 Log.i(TAG, adapter.getItem(position));
                 setSpeciesId(adapter.getItem(position));
@@ -96,6 +112,8 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
             }
         });
 
+        // Search button.
+		imageViewSearch = findViewById(R.id.imageView_choice_search);
         imageViewSearch.setOnClickListener(v -> {
             if(editText.getText().toString().isEmpty()){
                 editText.setError("Veuillez saisir une espèce.");
@@ -103,11 +121,12 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
             else {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
-                findSpecies();
+                searchSpecies();
             }
         });
-        returnButton.setOnClickListener(v -> finish());
 
+		// Search field.
+		editText = findViewById(R.id.edit_speciesname);
         editText.setOnKeyListener((v, keyCode, event) -> {
             if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                     (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -120,42 +139,64 @@ public class ChoiceSpeciesActivity extends AppCompatActivity {
         });
     }
 
-    private void setSpeciesId(String frenchCommonName){
-        speciesViewModel.getSearchedSpeciesLiveData()
-                .observe(this,
-                        speciesList -> {
-                            if(speciesList != null) {
-                                for (Species speciesSelected : speciesList) {
-                                    if(speciesSelected.getFrenchCommonName().equals(frenchCommonName)){
-                                        speciesId = speciesSelected.getId();
-                                    }
-                                }
-                            }
-                        });
+	/**
+	 * Sets the species id based on user selection.
+	 * @param frenchCommonName The french common name of the selected species.
+	 */
+	private void setSpeciesId(String frenchCommonName) {
+		// Get found species.
+        speciesViewModel
+			.getFoundSpeciesLiveData()
+			.observe(this,
+				task -> {
+					// Species found.
+					if (task.isSuccessful()) {
+						// Get the found species.
+						List<Species> foundSpecies = task.getData();
+
+						// Find the right species.
+						for (Species species : foundSpecies) {
+							if (species.getFrenchCommonName().equals(frenchCommonName)){
+								speciesId = species.getId();
+							}
+						}
+					}
+				});
     }
 
-    private void findSpecies(){
+	/**
+	 * Searches species based on user input.
+	 */
+	private void searchSpecies() {
+    	// Search species based on user input.
         speciesViewModel.searchSpecies(editText.getText().toString());
+
+        // Get found species.
         speciesViewModel
-			.getSearchedSpeciesLiveData()
+			.getFoundSpeciesLiveData()
 			.observe(
 				this,
-				foundSpecies -> {
-					if (foundSpecies != null) {
+				task -> {
+					// Species found.
+					if (task.isSuccessful()) {
+						// Get the found species.
+						List<Species> foundSpecies = task.getData();
+
+						// Update the list.
 						for (Species species : foundSpecies) {
 							adapter.add(species.getFrenchCommonName());
 							textView.setText("Veuillez choisir une espèce :");
 						}
 					}
-				}
-			);
-        speciesViewModel
-			.getSpeciesErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
+
+					// Species not found.
+					else {
+						// Error message.
 						editText.setError("L'espèce que vous avez saisie est invalide.");
+
+						// Error logs.
+						Throwable error = task.getError();
+						Log.e(TAG, error.getMessage());
 					}
 				}
 			);

@@ -30,6 +30,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
@@ -234,26 +235,38 @@ public class InformationActivity extends AppCompatActivity {
 	 * Update the report values.
 	 */
 	private void updateReport() {
-		if(!report.getSpecies().equals("Inconnue")){
+		if (!report.getSpecies().equals("Inconnue")){
 			adapter.add("Espèce : " + report.getSpecies());
 			// Search the species on the database (based on user input).
 			speciesViewModel.searchSpecies(report.getSpecies());
 
 			// Query succeeded.
 			speciesViewModel
-					.getSearchedSpeciesLiveData()
-					.observe(
-							this,
-							foundSpecies -> {
-								// Species found.
-								if (foundSpecies != null && foundSpecies.size() > 0) {
-									Species bestMatch = foundSpecies.get(0);
-									species = bestMatch;
-									adapter.add("Nom scientifique : " + bestMatch.getName());
-								}
+				.getFoundSpeciesLiveData()
+				.observe(
+					this,
+					task -> {
+						// Species found.
+						if (task.isSuccessful()) {
+							List<Species> foundSpecies = task.getData();
+							if (foundSpecies != null && foundSpecies.size() > 0) {
+								// Get the best matching species.
+								Species bestMatch = foundSpecies.get(0);
+								species = bestMatch;
+								adapter.add("Nom scientifique : " + bestMatch.getName());
 							}
-					);
-		}else {
+						}
+
+						// Species not found.
+						else {
+							// Error logs.
+							Throwable error = task.getError();
+							Log.e(TAG, error.getMessage());
+						}
+
+					}
+				);
+		} else {
 			adapter.add("Espèce non renseignée");
 			imageQuestion.setVisibility(View.VISIBLE);
 		}
@@ -271,18 +284,6 @@ public class InformationActivity extends AppCompatActivity {
 		}
 		if(report.getGender() != null) adapter.add("Genre : " + report.getGender());
 
-		// Query failed.
-		speciesViewModel
-			.getSpeciesErrorsLiveData()
-			.observe(
-				this,
-				error -> {
-					if (error != null) {
-						// Log the error.
-						Log.e(TAG, error.getMessage());
-					}
-				}
-			);
 	}
 
 	/**

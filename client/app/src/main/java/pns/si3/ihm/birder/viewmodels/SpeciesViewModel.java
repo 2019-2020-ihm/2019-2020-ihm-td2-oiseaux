@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import pns.si3.ihm.birder.models.DataTask;
 import pns.si3.ihm.birder.models.Species;
 import pns.si3.ihm.birder.repositories.firebase.SpeciesRepositoryFirebase;
 import pns.si3.ihm.birder.repositories.interfaces.SpeciesRepository;
@@ -22,19 +23,9 @@ public class SpeciesViewModel extends ViewModel {
 	private SpeciesRepository speciesRepository;
 
 	/**
-	 * The selected species.
+	 * The list of found species.
 	 */
-	private LiveData<Species> selectedReportLiveData;
-
-	/**
-	 * The searched species.
-	 */
-	private LiveData<List<Species>> searchedReportLiveData;
-
-	/**
-	 * The species errors (updated in real time).
-	 */
-	private LiveData<Exception> speciesErrorsLiveData;
+	private LiveData<DataTask<List<Species>>> foundSpeciesLiveData;
 
 	/**
 	 * Constructs a species view model.
@@ -42,53 +33,20 @@ public class SpeciesViewModel extends ViewModel {
 	public SpeciesViewModel() {
 		super();
 
-		// Initialize the repositories.
+		// Initialize the repository.
 		speciesRepository = new SpeciesRepositoryFirebase();
 
 		// Initialize the live data.
-		selectedReportLiveData = new MutableLiveData<>();
-		searchedReportLiveData = new MutableLiveData<>();
-		speciesErrorsLiveData = speciesRepository.getErrors();
+		foundSpeciesLiveData = speciesRepository.searchSpecies("");
 	}
 
-	/*====================================================================*/
-	/*                              LIVE DATA                             */
-	/*====================================================================*/
-
 	/**
-	 * Returns the selected species.
+	 * Returns a species.
+	 * @param id The id of the species.
 	 * @return The selected species.
 	 */
-	public LiveData<Species> getSelectedSpeciesLiveData() {
-		return selectedReportLiveData;
-	}
-
-	/**
-	 * Returns the searched species.
-	 * @return The searched species.
-	 */
-	public LiveData<List<Species>> getSearchedSpeciesLiveData() {
-		return searchedReportLiveData;
-	}
-
-	/**
-	 * Returns the species errors (updated in real time).
-	 * @return The species errors (updated in real time).
-	 */
-	public LiveData<Exception> getSpeciesErrorsLiveData() {
-		return speciesErrorsLiveData;
-	}
-
-	/*====================================================================*/
-	/*                               REQUESTS                             */
-	/*====================================================================*/
-
-	/**
-	 * Requests a species.
-	 * @param id The id of the species.
-	 */
-	public void getSpecies(String id) {
-		selectedReportLiveData = speciesRepository.getSpecies(id);
+	public LiveData<DataTask<Species>> getSpecies(String id) {
+		return speciesRepository.getSpecies(id);
 	}
 
 	/**
@@ -96,14 +54,14 @@ public class SpeciesViewModel extends ViewModel {
 	 * @param text The text query.
 	 */
 	public void searchSpecies(String text) {
-		searchedReportLiveData = speciesRepository.searchSpecies(text);
+		foundSpeciesLiveData = speciesRepository.searchSpecies(text);
 	}
 
 	/**
-	 * Clears the species errors.
-	 * This avoids receiving the same error multiple times.
+	 * Returns the list of found species.
+	 * @return The list of found species.
 	 */
-	public void clearReportErrors() {
-		speciesRepository.clearErrors();
+	public LiveData<DataTask<List<Species>>> getFoundSpeciesLiveData() {
+		return foundSpeciesLiveData;
 	}
 }
