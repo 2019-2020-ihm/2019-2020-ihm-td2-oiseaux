@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
     android:layout_height="match_parent"
 	android:background="#DADADA">
@@ -71,18 +70,39 @@
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
-		<EditText
-			android:id="@+id/edit_species"
+		<TextView
+			android:id="@+id/text_speciesName"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="20dp"
-			android:layout_marginTop="25dp"
-			android:ems="10"
-			android:hint="Pigeon"
-			android:inputType="text"
-			android:textSize="30sp"
+			android:layout_marginTop="8dp"
+			android:ems="6"
+			android:text="Inconnue"
+			android:textSize="35sp"
 			app:layout_constraintLeft_toRightOf="@id/text_species"
-			app:layout_constraintTop_toTopOf="parent" />
+			app:layout_constraintTop_toTopOf="@id/text_species" />
+
+		<ImageView
+			android:id="@+id/imageView_report_search"
+			android:layout_width="50dp"
+			android:layout_height="50dp"
+			android:src="@drawable/icon_search"
+			app:layout_constraintBottom_toBottomOf="@id/text_speciesName"
+			app:layout_constraintHorizontal_bias="0.114"
+			app:layout_constraintLeft_toRightOf="@+id/text_speciesName"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="@+id/text_speciesName"
+			app:layout_constraintVertical_bias="1.0" />
+
+		<ImageView
+			android:id="@+id/imageView_report_cancel"
+			android:layout_width="60dp"
+			android:layout_height="60dp"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintLeft_toRightOf="@+id/imageView_report_search"
+			app:layout_constraintBottom_toBottomOf="@id/text_speciesName"
+			app:layout_constraintTop_toTopOf="@+id/text_speciesName"
+			android:src="@drawable/cancel"/>
 
 		<TextView
 			android:id="@+id/text_number"
@@ -195,7 +215,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="44dp"
-			android:layout_marginTop="72dp"
+			android:layout_marginTop="84dp"
 			android:text="Heure"
 			android:textAppearance="@style/TextAppearance.AppCompat.Large"
 			android:textSize="35sp"
@@ -220,8 +240,8 @@
 			android:id="@+id/edit_time"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="53dp"
-			android:layout_marginTop="65dp"
+			android:layout_marginLeft="44dp"
+			android:layout_marginTop="80dp"
 			android:clickable="true"
 			android:ems="10"
 			android:focusable="false"
@@ -230,14 +250,60 @@
 			app:layout_constraintLeft_toRightOf="@id/text_time"
 			app:layout_constraintTop_toTopOf="parent" />
 
+		<TextView
+			android:id="@+id/text_gender"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="44dp"
+			android:layout_marginTop="152dp"
+			android:text="Genre"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			android:textSize="30sp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<Spinner
+			android:id="@+id/spinner_gender"
+			android:layout_width="156dp"
+			android:layout_height="36dp"
+			android:layout_marginLeft="56dp"
+			android:layout_marginTop="152dp"
+			android:clickable="true"
+			android:focusable="false"
+			android:inputType="none"
+			app:layout_constraintLeft_toRightOf="@id/text_gender"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/text_age"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="352dp"
+			android:layout_marginTop="152dp"
+			android:text="Age"
+			android:textAppearance="@style/TextAppearance.AppCompat.Large"
+			android:textSize="30sp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<EditText
+			android:id="@+id/edit_age"
+			android:layout_width="50dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="52dp"
+			android:layout_marginTop="152dp"
+			android:inputType="number"
+			app:layout_constraintLeft_toRightOf="@id/text_age"
+			app:layout_constraintTop_toTopOf="parent" />
+
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:id="@+id/layoutImage"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginLeft="600dp"
-		android:layout_marginTop="64dp"
+		android:layout_marginLeft="580dp"
+		android:layout_marginTop="60dp"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/layoutDateHeure">
 
