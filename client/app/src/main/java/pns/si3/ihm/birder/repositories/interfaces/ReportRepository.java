@@ -2,7 +2,6 @@ package pns.si3.ihm.birder.repositories.interfaces;
 
 import androidx.lifecycle.LiveData;
 
-import java.io.File;
 import java.util.List;
 
 import pns.si3.ihm.birder.models.DataTask;
@@ -19,6 +18,12 @@ public interface ReportRepository {
 	 * @return The list of reports (updated in real time).
 	 */
 	LiveData<DataTask<List<Report>>> getReports();
+
+	/**
+	 * Returns the list of created reports (updated in real time).
+	 * @return The list of created reports (updated in real time).
+	 */
+	LiveData<DataTask<List<Report>>>  getCreatedReports();
 
 	/**
 	 * Returns a report (updated in real time).

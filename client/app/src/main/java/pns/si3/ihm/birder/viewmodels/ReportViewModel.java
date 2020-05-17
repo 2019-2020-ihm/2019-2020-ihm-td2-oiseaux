@@ -27,14 +27,22 @@ public class ReportViewModel extends ViewModel {
 	private LiveData<DataTask<List<Report>>> reportsLiveData;
 
 	/**
+	 * The list of created reports (updated in real time).
+	 */
+	private LiveData<DataTask<List<Report>>> createdReportsLiveData;
+
+	/**
 	 * Constructs a report view model.
 	 */
 	public ReportViewModel() {
 		super();
 
-		// Initialize the repositories.
+		// Initialize the repository.
 		reportRepository = new ReportRepositoryFirebase();
+
+		// Initialize the live data.
 		reportsLiveData = reportRepository.getReports();
+		createdReportsLiveData = reportRepository.getCreatedReports();
 	}
 
 	/**
@@ -43,6 +51,14 @@ public class ReportViewModel extends ViewModel {
 	 */
 	public LiveData<DataTask<List<Report>>> getReports() {
 		return reportsLiveData;
+	}
+
+	/**
+	 * Returns the list of created reports (updated in real time).
+	 * @return The list of created reports (updated in real time).
+	 */
+	public LiveData<DataTask<List<Report>>> getCreatedReports() {
+		return createdReportsLiveData;
 	}
 
 	/**

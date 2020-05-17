@@ -7,10 +7,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -73,16 +75,16 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			.collection("reports")
 			.orderBy("date", Query.Direction.DESCENDING)
 			.addSnapshotListener(
-				(reportsSnapshot, error) -> {
+				(snapshots, error) -> {
 					// Query succeeded.
 					if (error == null) {
 						// Reports found.
-						if (reportsSnapshot != null) {
+						if (snapshots != null) {
 							// Get all reports.
 							List<Report> reports = new ArrayList<>();
-							for (QueryDocumentSnapshot reportSnapshot : reportsSnapshot) {
-								Report report = reportSnapshot.toObject(Report.class);
-								report.setId(reportSnapshot.getId());
+							for (QueryDocumentSnapshot snapshot : snapshots) {
+								Report report = snapshot.toObject(Report.class);
+								report.setId(snapshot.getId());
 								reports.add(report);
 							}
 
@@ -124,12 +126,12 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			.collection("reports")
 			.document(id)
 			.addSnapshotListener(
-				(reportSnapshot, error) -> {
+				(snapshot, error) -> {
 					// Query succeeded.
 					if (error == null) {
 						// Report found.
-						if (reportSnapshot != null) {
-							Report report = reportSnapshot.toObject(Report.class);
+						if (snapshot != null) {
+							Report report = snapshot.toObject(Report.class);
 							if (report != null) {
 								// Update the report id.
 								report.setId(id);
@@ -158,6 +160,60 @@ public class ReportRepositoryFirebase implements ReportRepository {
 			);
 
 		return reportLiveData;
+	}
+
+	/**
+	 * Returns all the created reports (updated in real time).
+	 * @return All the created reports (updated in real time).
+	 */
+	public LiveData<DataTask<List<Report>>> getCreatedReports() {
+		MutableLiveData<DataTask<List<Report>>> reportsLiveData = new MutableLiveData<>();
+
+		// Get all created reports (in real time).
+		firebaseFirestore
+			.collection("reports")
+			.orderBy("date", Query.Direction.DESCENDING)
+			.addSnapshotListener(
+				(snapshots, error) -> {
+					// Query succeeded.
+					if (error == null) {
+						// Reports found.
+						if (snapshots != null) {
+							// Get all created reports.
+							List<Report> createdReports = new ArrayList<>();
+							for (DocumentChange documentChange : snapshots.getDocumentChanges()) {
+								// Created report.
+								if (documentChange.getType() == DocumentChange.Type.ADDED) {
+									QueryDocumentSnapshot snapshot = documentChange.getDocument();
+									Report report = snapshot.toObject(Report.class);
+									report.setId(snapshot.getId());
+									createdReports.add(report);
+								}
+							}
+
+							// Success task.
+							DataTask<List<Report>> dataTask = DataTask.success(createdReports);
+							reportsLiveData.setValue(dataTask);
+						}
+
+						// Reports not found.
+						else {
+							// Error task.
+							DataTask<List<Report>> dataTask = DataTask.error(new DocumentNotFoundException());
+							reportsLiveData.setValue(dataTask);
+						}
+					}
+
+					// Query failed.
+					else {
+						// Error task.
+						DataTask<List<Report>> dataTask = DataTask.error(error);
+						reportsLiveData.setValue(dataTask);
+					}
+				}
+			);
+
+		return reportsLiveData;
 	}
 
 	/**
