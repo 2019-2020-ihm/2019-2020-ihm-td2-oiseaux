@@ -186,16 +186,15 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageInfoMap"
-        android:layout_width="241dp"
-        android:layout_height="124dp"
-        android:layout_marginTop="50dp"
-        android:background="#000000"
-        app:srcCompat="@android:drawable/ic_dialog_map"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="241dp"
+            android:layout_height="124dp"
+            android:layout_marginTop="50dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

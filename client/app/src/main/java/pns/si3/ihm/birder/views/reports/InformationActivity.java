@@ -2,6 +2,7 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +17,17 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.OverlayItem;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import etudes.fr.demoosm.R;
 import pns.si3.ihm.birder.models.Report;
@@ -59,6 +70,8 @@ public class InformationActivity extends AppCompatActivity {
     private TextView textGender;
     private TextView textAge;
     private Species species;
+	private MapView map;
+	private IMapController mapController;
 
 	/**
 	 * The report view model.
@@ -83,12 +96,42 @@ public class InformationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		Configuration.getInstance().load(   getApplicationContext(),
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
         setContentView(R.layout.activity_information);
 		initViewModels();
         initButtons();
         initFields();
         loadReport();
     }
+
+    private void initMap(){
+		map = findViewById(R.id.map);
+		map.setTileSource(TileSourceFactory.MAPNIK);
+		map.setBuiltInZoomControls(true);
+		map.setMultiTouchControls(true);
+		mapController = map.getController();
+		mapController.setZoom(12);
+		GeoPoint startPoint = new GeoPoint(report.getLatitude(), report.getLongitude());
+		ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+		items.add(new OverlayItem(report.getSpecies(), "nombre : " + report.getNumber(), new GeoPoint(report.getLatitude(), report.getLongitude())));
+		mapController.setCenter(startPoint);
+		ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(this, items,
+				new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+					@Override
+					public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+						//do something
+						return true;
+					}
+
+					@Override
+					public boolean onItemLongPress(final int index, final OverlayItem item) {
+						return false;
+					}
+				});
+		mOverlay.setFocusItemsOnTap(true);
+		map.getOverlays().add(mOverlay);
+	}
 
 	/**
 	 * Initializes the view models that hold the data.
@@ -173,6 +216,7 @@ public class InformationActivity extends AppCompatActivity {
 						updateReport();
 						loadPicture();
 						loadUser();
+						initMap();
 					}
 				}
 			);

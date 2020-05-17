@@ -50,7 +50,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 	private UserViewModel userViewModel;
 	private ReportsAdapter reportsAdapter;
 	private List<Report> reports;
-	IMapController mapController;
+	private IMapController mapController;
 	/**
 	 * Fields needed to get the current user's position
 	 */
@@ -135,8 +135,6 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 											return false;
 										}
 									});
-
-							System.out.println(mOverlay.size());
 							mOverlay.setFocusItemsOnTap(true);
 							map.getOverlays().add(mOverlay);
 						}
