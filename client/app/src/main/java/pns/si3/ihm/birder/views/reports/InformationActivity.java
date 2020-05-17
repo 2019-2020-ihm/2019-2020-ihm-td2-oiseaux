@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -62,16 +64,13 @@ public class InformationActivity extends AppCompatActivity {
 	 */
 	private ImageView imageInfo;
 	private ImageView imageQuestion;
-	private TextView textInfoEspece;
-    private TextView textInfoName;
-    private TextView textInfoNumber;
-    private TextView textInfoDate;
-    private TextView textInfoAuteur;
-    private TextView textGender;
-    private TextView textAge;
+	private ListView listView;
     private Species species;
 	private MapView map;
 	private IMapController mapController;
+	private ArrayList<String> listItems;
+	private ArrayAdapter<String> adapter;
+
 
 	/**
 	 * The report view model.
@@ -100,8 +99,8 @@ public class InformationActivity extends AppCompatActivity {
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
         setContentView(R.layout.activity_information);
 		initViewModels();
-        initButtons();
-        initFields();
+		initFields();
+		initButtons();
         loadReport();
     }
 
@@ -166,7 +165,8 @@ public class InformationActivity extends AppCompatActivity {
 
 		imageQuestion = findViewById(R.id.imageView_question);
 		imageQuestion.setOnClickListener(v -> {
-			if(textInfoEspece.getText().toString().equals("Espèce non renseignée")) {
+			//Get first element of listView
+			if(adapter.getItem(0).equals("Espèce non renseignée")) {
 				Intent intent = new Intent(InformationActivity.this, GiveSpeciesActivity.class);
 				intent.putExtra("picturePath", report.getPicturePath());
 				intent.putExtra("reportId", report.getId());
@@ -185,14 +185,13 @@ public class InformationActivity extends AppCompatActivity {
 	 */
 	private void initFields(){
         imageInfo = findViewById(R.id.imageInfo);
-        textInfoEspece = findViewById(R.id.textInfoEspece);
-        textInfoNumber = findViewById(R.id.textInfoNombre);
-        textInfoDate = findViewById(R.id.textInfoDate);
-        textInfoAuteur = findViewById(R.id.textInfoAuteur);
-        textInfoName = findViewById(R.id.textInfoNom);
-        textGender = findViewById(R.id.textInfoGender);
-        textAge = findViewById(R.id.textInfoAge);
+        listView = findViewById(R.id.listInfo);
         imageQuestion = findViewById(R.id.imageView_question);
+		listItems = new ArrayList<>();
+		adapter = new ArrayAdapter<>(this,
+				android.R.layout.simple_list_item_1,
+				listItems);
+		listView.setAdapter(adapter);
     }
 
 	/**
@@ -227,7 +226,7 @@ public class InformationActivity extends AppCompatActivity {
 	 */
 	private void updateReport() {
 		if(!report.getSpecies().equals("Inconnue")){
-			textInfoEspece.setText("Espèce : " + report.getSpecies());
+			adapter.add("Espèce : " + report.getSpecies());
 			// Search the species on the database (based on user input).
 			speciesViewModel.searchSpecies(report.getSpecies());
 
@@ -241,30 +240,27 @@ public class InformationActivity extends AppCompatActivity {
 								if (foundSpecies != null && foundSpecies.size() > 0) {
 									Species bestMatch = foundSpecies.get(0);
 									species = bestMatch;
-									textInfoName.setText("Nom scientifique : " + bestMatch.getName());
+									adapter.add("Nom scientifique : " + bestMatch.getName());
 								}
 							}
 					);
 		}else {
-			textInfoEspece.setText("Espèce non renseignée");
-			textInfoName.setVisibility(View.GONE);
+			adapter.add("Espèce non renseignée");
 			imageQuestion.setVisibility(View.VISIBLE);
 		}
 
-		textInfoNumber.setText("Nombre : " + report.getNumber());
+		adapter.add("Nombre : " + report.getNumber());
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm, dd-MM-yyyy ");
 		String date = formatter.format(report.getDate());
-		textInfoDate.setText("Date : " + date);
+		adapter.add("Date : " + date);
 
 
 		if(report.getAge() != null && !report.getAge().equals("")) {
 			if (Integer.valueOf(report.getAge()) > 1) {
-				textAge.setText("Age : environ " + report.getAge() + " ans");
-			} else textAge.setText("Age : environ " + report.getAge() + " an");
+				adapter.add("Age : environ " + report.getAge() + " ans");
+			} else adapter.add("Age : environ " + report.getAge() + " an");
 		}
-		else textAge.setVisibility(View.GONE);
-		if(report.getGender() != null) textGender.setText("Genre : " + report.getGender());
-		else textGender.setVisibility(View.GONE);
+		if(report.getGender() != null) adapter.add("Genre : " + report.getGender());
 
 		// Query failed.
 		speciesViewModel
@@ -295,7 +291,7 @@ public class InformationActivity extends AppCompatActivity {
 						// Get the user.
 						User user = task.getData();
 						String userDisplayName = "Par : " + user.getFirstName() + " " + user.getLastName();
-						textInfoAuteur.setText(userDisplayName);
+						adapter.add(userDisplayName);
 					}
 				}
 			);

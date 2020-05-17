@@ -117,21 +117,21 @@ public class StatisticsActivity extends AppCompatActivity {
                         numberBirdShared.setText("Nombre d'oiseaux renseigné = "+ user.getData().getNumberOfBirdShared());
 
                         if(user.getData().getNumberPictureShared() >= 100) {
-                            listTrophies.add(trophy4);
-                            listTrophies.add(trophy3);
-                            listTrophies.add(trophy2);
                             listTrophies.add(trophy1);
+                            listTrophies.add(trophy2);
+                            listTrophies.add(trophy3);
+                            listTrophies.add(trophy4);
                         }
                         else if(user.getData().getNumberPictureShared() >= 50) {
-                            listTrophies.add(trophy3);
-                            listTrophies.add(trophy2);
                             listTrophies.add(trophy1);
+                            listTrophies.add(trophy2);
+                            listTrophies.add(trophy3);
                             listTrophiesBloques.add(trophy4);
 
                         }
                         else if(user.getData().getNumberPictureShared() >= 5) {
-                            listTrophies.add(trophy2);
                             listTrophies.add(trophy1);
+                            listTrophies.add(trophy2);
                             listTrophiesBloques.add(trophy3);
                             listTrophiesBloques.add(trophy4);
                         }

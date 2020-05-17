@@ -59,18 +59,20 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentEspece"
+        android:id="@+id/contentInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="304dp"
+        android:layout_marginTop="250dp"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layoutMap"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textInfoEspece"
+
+        <ListView
+            android:id="@+id/listInfo"
             android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
+            android:layout_height="210dp"
+            android:layout_marginLeft="20dp"
             android:text="Espèce :"
             android:textSize="24sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -80,117 +82,28 @@
             android:id="@+id/imageView_question"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            app:layout_constraintLeft_toRightOf="@id/textInfoEspece"
-            app:layout_constraintBottom_toBottomOf="@id/textInfoEspece"
-            app:layout_constraintTop_toTopOf="@id/textInfoEspece"
+            app:layout_constraintLeft_toRightOf="@id/listInfo"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/listInfo"
             android:src="@drawable/question"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contentEspece">
 
-        <TextView
-            android:id="@+id/textInfoNom"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Nom scientifique :"
-            android:textSize="20sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentNombreDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contentName">
-        <TextView
-            android:id="@+id/textInfoNombre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Nombre :"
-            android:textSize="24sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <TextView
-            android:id="@+id/textInfoDate"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="30dp"
-            android:text="Heure/Date :"
-            android:textSize="24sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentGender"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contentNombreDate">
-
-            <TextView
-                android:id="@+id/textInfoGender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:text="Genre :"
-                android:textSize="24sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentAge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contentGender">
-        <TextView
-            android:id="@+id/textInfoAge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Age :"
-            android:textSize="24sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contentAge">
-        <TextView
-            android:id="@+id/textInfoAuteur"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Par :"
-            android:textSize="24sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contentInfo">
+
 
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="241dp"
             android:layout_height="124dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
