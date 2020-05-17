@@ -49,10 +49,9 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 		Configuration.getInstance().load(   getApplicationContext(),
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()) );
 		setContentView(R.layout.activity_map);
-
+		initViewModels();
 		setSpinner();
 		init();
-		initViewModels();
 		observeReports();
 
 	}
