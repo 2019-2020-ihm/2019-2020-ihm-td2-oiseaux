@@ -1,7 +1,7 @@
 package pns.si3.ihm.birder.exceptions;
 
 /**
- * User not found exception.
+ * Document not created exception.
  */
 public class DocumentNotCreatedException extends Exception {
 	public DocumentNotCreatedException() {

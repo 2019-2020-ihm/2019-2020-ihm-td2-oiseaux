@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,8 +23,8 @@ import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
-import pns.si3.ihm.birder.views.AccountActivity;
-import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
+import pns.si3.ihm.birder.views.account.AccountActivity;
+import pns.si3.ihm.birder.views.species.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {

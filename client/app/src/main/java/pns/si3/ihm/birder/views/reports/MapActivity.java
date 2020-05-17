@@ -2,7 +2,6 @@ package pns.si3.ihm.birder.views.reports;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,11 +40,11 @@ import pns.si3.ihm.birder.adapters.ReportsAdapter;
 import pns.si3.ihm.birder.models.Report;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
-import pns.si3.ihm.birder.views.AccountActivity;
-import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
+import pns.si3.ihm.birder.views.account.AccountActivity;
+import pns.si3.ihm.birder.views.species.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.auth.SignInActivity;
 
-import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
+import static pns.si3.ihm.birder.views.position.IGPSActivity.REQUEST_CODE;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 	/**

@@ -10,6 +10,12 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 
+/**
+ * Firebase glide module.
+ *
+ * Allows the application to load images from firebase storage.
+ * Glide manages a cache to avoid requesting the same images multiple times.
+ */
 @GlideModule
 public class FirebaseAppGlideModule extends AppGlideModule {
 	@Override

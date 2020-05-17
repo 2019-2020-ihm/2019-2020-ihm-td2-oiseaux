@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +38,8 @@ import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
-import pns.si3.ihm.birder.views.GiveSpeciesActivity;
+import pns.si3.ihm.birder.views.species.GiveSpeciesActivity;
+import pns.si3.ihm.birder.views.species.InformationOneSpeciesActivity;
 
 public class InformationActivity extends AppCompatActivity {
 

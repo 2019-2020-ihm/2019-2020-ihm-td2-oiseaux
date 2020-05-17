@@ -35,18 +35,18 @@
         <activity android:name="pns.si3.ihm.birder.views.auth.SignUpActivity" />
         <activity android:name="pns.si3.ihm.birder.views.reports.ReportActivity" />
         <activity android:name="pns.si3.ihm.birder.views.reports.InformationActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.StatisticsActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.TrophyActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.TrophyBloqueActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.trophies.StatisticsActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.trophies.TrophyActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.trophies.TrophyBloqueActivity" />
         <activity android:name="pns.si3.ihm.birder.views.pictures.PictureActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.GpsActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.AccountActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.position.GpsActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.account.AccountActivity" />
         <activity android:name="pns.si3.ihm.birder.views.notifications.NotificationActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.PasswordActivity" />
-        <activity android:name="pns.si3.ihm.birder.views.ChoiceSpeciesActivity"/>
-        <activity android:name="pns.si3.ihm.birder.views.GiveSpeciesActivity"/>
-        <activity android:name="pns.si3.ihm.birder.views.reports.InformationOneSpeciesActivity"/>
-        <activity android:name="pns.si3.ihm.birder.views.ParametersActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.account.PasswordActivity" />
+        <activity android:name="pns.si3.ihm.birder.views.species.ChoiceSpeciesActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.species.GiveSpeciesActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.species.InformationOneSpeciesActivity"/>
+        <activity android:name="pns.si3.ihm.birder.views.account.ParametersActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

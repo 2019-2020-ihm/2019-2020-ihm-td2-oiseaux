@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 /**
  * User.
+ *
+ * Represents a user with all its information.
  */
 public class User {
 	/**

@@ -27,7 +27,7 @@ import pns.si3.ihm.birder.views.reports.MainActivity;
 import pns.si3.ihm.birder.views.reports.ReportActivity;
 
 /**
- * Reports adapter.
+ * Reports recycler view adapter.
  *
  * Manages a list of reports inside a recycler view.
  */
@@ -134,6 +134,11 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
 		return reports.size();
 	}
 
+	/**
+	 * Reports recycler view holder.
+	 *
+	 * Represents a single report inside the recycler view.
+	 */
 	static class ReportViewHolder extends RecyclerView.ViewHolder {
 		private TextView textSpecies;
 		private TextView textDate;

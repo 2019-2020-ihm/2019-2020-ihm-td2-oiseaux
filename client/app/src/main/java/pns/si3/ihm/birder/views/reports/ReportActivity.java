@@ -47,12 +47,12 @@ import pns.si3.ihm.birder.models.User;
 import pns.si3.ihm.birder.viewmodels.ReportViewModel;
 import pns.si3.ihm.birder.viewmodels.SpeciesViewModel;
 import pns.si3.ihm.birder.viewmodels.UserViewModel;
-import pns.si3.ihm.birder.views.ChoiceSpeciesActivity;
-import pns.si3.ihm.birder.views.GpsActivity;
+import pns.si3.ihm.birder.views.species.ChoiceSpeciesActivity;
 import pns.si3.ihm.birder.views.notifications.NotificationApp;
 import pns.si3.ihm.birder.views.pictures.PictureActivity;
+import pns.si3.ihm.birder.views.position.GpsActivity;
 
-import static pns.si3.ihm.birder.views.IGPSActivity.REQUEST_CODE;
+import static pns.si3.ihm.birder.views.position.IGPSActivity.REQUEST_CODE;
 import static pns.si3.ihm.birder.views.notifications.NotificationApp.CHANNEL_ID;
 
 /**

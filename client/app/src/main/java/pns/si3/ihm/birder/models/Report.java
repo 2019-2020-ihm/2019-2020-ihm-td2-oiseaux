@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class Report {
 	/**
-	 * The unique id of the report.
+	 * The id of the report.
 	 */
 	@Exclude
 	private String id;
