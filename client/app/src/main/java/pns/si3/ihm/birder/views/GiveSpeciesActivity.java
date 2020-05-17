@@ -166,7 +166,6 @@ public class GiveSpeciesActivity extends AppCompatActivity {
                             if (foundSpecies != null) {
                                 for (Species species : foundSpecies) {
                                     adapter.add(species.getFrenchCommonName());
-                                    Log.e(TAG, "Trouvé" + species.getFrenchCommonName());
                                     textInformation.setText("Veuillez choisir une espèce :");
                                 }
                             }
@@ -191,25 +190,25 @@ public class GiveSpeciesActivity extends AppCompatActivity {
     private void updateReport(){
         reportViewModel.getReport(reportId);
         reportViewModel.getSelectedReportLiveData()
-                .observe(this,
-                        report -> {
-                            if(report != null){
-                                report.setSpecies(speciesChoosed);
-                                //Update the report
-                                reportViewModel.updateReport(report);
-                                reportViewModel
-                                        .getUpdatedReportLiveData()
-                                        .observe(
-                                                this,
-                                                insertedReport -> {
-                                                    // User updated.
-                                                    if (insertedReport != null) {
-                                                        Log.e("Notif", "User updated!");
-                                                    }
-                                                }
-                                        );
-                            }
-                        });
+			.observe(this,
+				report -> {
+					if(report != null){
+						report.setSpecies(speciesChoosed);
+						//Update the report
+						reportViewModel.updateReport(report);
+						reportViewModel
+							.getUpdatedReportLiveData()
+							.observe(
+								this,
+								insertedReport -> {
+									// User updated.
+									if (insertedReport != null) {
+										Log.i("Notif", "User updated!");
+									}
+								}
+							);
+					}
+				});
         Intent returnInformationActivity = new Intent();
         setResult(RESULT_OK, returnInformationActivity);
         finish();

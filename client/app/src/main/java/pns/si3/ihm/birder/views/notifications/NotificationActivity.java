@@ -42,7 +42,6 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     private Boolean allNotification = true;
     private UserViewModel userViewModel;
     private SpeciesViewModel speciesViewModel;
-    private String userId;
     public static final int REQUEST_SPECIES = 1;
     ArrayAdapter<String> adapter;
 
@@ -51,9 +50,9 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-
+		initViewModel();
         init();
-        initViewModel();
+
 
         setListAndCheckBoxInInit();
         checkBox.setOnClickListener(v -> {
@@ -96,7 +95,6 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     private void initViewModel(){
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         speciesViewModel = new ViewModelProvider(this).get(SpeciesViewModel.class);
-        userId = userViewModel.getAuthenticationId();
     }
 
 
@@ -163,7 +161,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
     private void addItemNotificationForUser(String speciesChoosed) {
         // Get the user.
         userViewModel
-			.getUser(userId)
+			.getUser()
 			.observe(
 				this,
 				task -> {
@@ -303,7 +301,7 @@ public class NotificationActivity extends AppCompatActivity  implements AdapterV
 
     void deleteBird(String speciesName){
         userViewModel
-			.getUser(userId)
+			.getUser()
 			.observe(
 				this,
 				task -> {
